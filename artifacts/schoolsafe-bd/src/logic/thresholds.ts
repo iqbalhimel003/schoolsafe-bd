@@ -44,25 +44,42 @@ export const RAIN_PRECIP_PROB_HIGH = 60;
 /** Rain amount (mm) at or above which rain risk becomes at least Moderate */
 export const RAIN_AMOUNT_MODERATE = 1.0;
 
-/* ── Air Quality Thresholds (WHO-based) ─────────────────── */
+/* ── Air Quality Thresholds (Bangladesh-calibrated) ─────────
+ *
+ * WHO 2021 annual guideline values (5 µg/m³ PM2.5, 15 µg/m³ PM10)
+ * are far below Bangladesh's typical ambient baseline. Using WHO
+ * strict limits as High triggers "High Risk" on routine school days
+ * and erodes trust in the tool.
+ *
+ * Thresholds below are calibrated to Bangladesh's national 24-hour
+ * standards and WHO Interim Targets so that:
+ *   Low      = mild, awareness-only signal
+ *   Moderate = noticeable; school caution warranted
+ *   High     = genuinely severe; clear action required
+ * ─────────────────────────────────────────────────────────── */
 
-/** PM2.5 (µg/m³) at or above which AQ risk becomes Low */
+/** PM2.5 (µg/m³) at or above which AQ risk becomes Low
+ *  (slight elevation above clean-air baseline) */
 export const AQ_PM25_LOW = 10;
 
-/** PM2.5 (µg/m³) at or above which AQ risk becomes Moderate */
-export const AQ_PM25_MODERATE = 15;
+/** PM2.5 (µg/m³) at or above which AQ risk becomes Moderate
+ *  (≈ WHO IT-1 interim target; noticeably elevated) */
+export const AQ_PM25_MODERATE = 25;
 
-/** PM2.5 (µg/m³) at or above which AQ risk becomes High */
-export const AQ_PM25_HIGH = 35;
+/** PM2.5 (µg/m³) at or above which AQ risk becomes High
+ *  (above Bangladesh national 24h standard of 65 µg/m³;
+ *   genuinely severe for school operations) */
+export const AQ_PM25_HIGH = 75;
 
 /** PM10 (µg/m³) at or above which AQ risk becomes Low */
 export const AQ_PM10_LOW = 25;
 
 /** PM10 (µg/m³) at or above which AQ risk becomes Moderate */
-export const AQ_PM10_MODERATE = 45;
+export const AQ_PM10_MODERATE = 50;
 
-/** PM10 (µg/m³) at or above which AQ risk becomes High */
-export const AQ_PM10_HIGH = 100;
+/** PM10 (µg/m³) at or above which AQ risk becomes High
+ *  (≈ Bangladesh national PM10 24h standard of 150 µg/m³) */
+export const AQ_PM10_HIGH = 150;
 
 /* ── Cold Risk Thresholds ──────────────────────────────── */
 
