@@ -14,6 +14,11 @@
  *   তুলনা, চার্ট, পদ্ধতি, সীমাবদ্ধতা, ফুটার।
  * ========================================================= */
 
+/* `satisfies typeof en` enforces key parity at compile time.
+ * If a key is added to en.ts but omitted here, TypeScript will
+ * raise an error in THIS file — not buried in LanguageContext. */
+import en from "./en";
+
 const bn = {
   /* ── ব্র্যান্ডিং ───────────────────────────────────────── */
   siteName: "স্কুলসেফ বিডি",
@@ -163,4 +168,4 @@ const bn = {
   footerDisclaimer: "এই প্রোটোটাইপটি শুধুমাত্র শিক্ষামূলক উদ্দেশ্যে।",
 };
 
-export default bn;
+export default bn satisfies typeof en;
