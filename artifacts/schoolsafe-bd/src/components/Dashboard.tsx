@@ -13,6 +13,7 @@
  * All text is bilingual via useLanguage().
  * ========================================================= */
 
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -340,6 +341,7 @@ function DashboardPanel({
   const { t, lang } = useLanguage();
   const risk = evaluateRisk(weather, airQuality);
   const locationName = lang === "bn" ? upazila.nameBn : upazila.nameEn;
+  const [showExtraPrecautions, setShowExtraPrecautions] = useState(false);
 
   /* Set of risk types that are currently above None — used for guidance bullet filtering */
   const activeRisks = new Set<RiskType>(
@@ -681,81 +683,121 @@ function DashboardPanel({
             </div>
           </div>
 
-          {/* Section 2: Condition-based extra precautions (conditional per risk) */}
+          {/* Section 2: Condition-based extra precautions (collapsible, conditional per risk) */}
           {(hasAirRisk || hasColdRisk || hasHeatRisk || hasRainRisk || hasAllergyRisk) && (
             <div>
-              <h3 className="text-base font-semibold text-foreground mb-3">
-                {lang === "bn" ? "অবস্থা-ভিত্তিক অতিরিক্ত সতর্কতা" : "Extra Precautions"}
+              {/* Always-visible heading */}
+              <h3 className="text-base font-semibold text-foreground mb-2">
+                {t("extraPrecautionsTitle")}
               </h3>
-              <div className="grid sm:grid-cols-2 gap-3">
-                {hasAirRisk && (
+
+              {/* High-risk badge — visible when overall risk is High and section is collapsed */}
+              {risk.overall === "High" && !showExtraPrecautions && (
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-700 bg-red-100 border border-red-300 rounded-full px-3 py-1">
+                    <span aria-hidden="true">⚠</span>
+                    {t("extraPrecautionsHighRiskNote")}
+                  </span>
+                </div>
+              )}
+
+              {/* Hint line — visible only while collapsed */}
+              {!showExtraPrecautions && (
+                <p className="text-xs text-muted-foreground mb-3 leading-snug">
+                  {t("extraPrecautionsHint")}
+                </p>
+              )}
+
+              {/* Toggle button */}
+              <button
+                onClick={() => setShowExtraPrecautions((v) => !v)}
+                className="mb-3 flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-card hover:bg-muted active:bg-muted/80 text-foreground text-sm font-medium transition-colors shadow-sm"
+                aria-expanded={showExtraPrecautions}
+                aria-controls="extra-precautions-cards"
+              >
+                {showExtraPrecautions ? t("extraPrecautionsToggleHide") : t("extraPrecautionsToggleShow")}
+              </button>
+
+              {/* Collapsible cards — smooth fade/slide via CSS transition on max-height */}
+              <div
+                id="extra-precautions-cards"
+                style={{
+                  maxHeight: showExtraPrecautions ? "2000px" : "0px",
+                  opacity: showExtraPrecautions ? 1 : 0,
+                  overflow: "hidden",
+                  transition: "max-height 0.4s ease, opacity 0.3s ease",
+                }}
+              >
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {hasAirRisk && (
+                    <FilteredGuidanceSection
+                      title={t("guidanceLungTitle")}
+                      bullets={[
+                        { key: "guidanceLung1", risks: ["airQuality"] },
+                        { key: "guidanceLung2", risks: ["airQuality"] },
+                        { key: "guidanceLung3", risks: ["airQuality"] },
+                        { key: "guidanceLung4", risks: ["airQuality"] },
+                      ]}
+                      activeRisks={activeRisks}
+                    />
+                  )}
+                  {hasColdRisk && (
+                    <FilteredGuidanceSection
+                      title={t("guidanceColdSensitiveTitle")}
+                      bullets={[
+                        { key: "guidanceColdSensitive1", risks: ["cold"] },
+                        { key: "guidanceColdSensitive2", risks: ["cold"] },
+                        { key: "guidanceColdSensitive3", risks: ["cold"] },
+                      ]}
+                      activeRisks={activeRisks}
+                    />
+                  )}
+                  {hasHeatRisk && (
+                    <FilteredGuidanceSection
+                      title={t("guidanceHeatSensitiveTitle")}
+                      bullets={[
+                        { key: "guidanceHeatSensitive1", risks: ["heat"] },
+                        { key: "guidanceHeatSensitive2", risks: ["heat"] },
+                        { key: "guidanceHeatSensitive3", risks: ["heat"] },
+                      ]}
+                      activeRisks={activeRisks}
+                    />
+                  )}
+                  {hasRainRisk && (
+                    <FilteredGuidanceSection
+                      title={t("guidanceRainSensitiveTitle")}
+                      bullets={[
+                        { key: "guidanceRainSensitive1", risks: ["rain", "heavyRain", "flood", "storm"] },
+                        { key: "guidanceRainSensitive2", risks: ["rain", "heavyRain", "flood", "storm"] },
+                        { key: "guidanceRainSensitive3", risks: ["rain", "heavyRain", "flood", "storm"] },
+                        { key: "guidanceRainSensitive4", risks: ["rain", "heavyRain", "flood", "storm"] },
+                      ]}
+                      activeRisks={activeRisks}
+                    />
+                  )}
+                  {hasAllergyRisk && (
+                    <FilteredGuidanceSection
+                      title={t("guidanceAllergyTitle")}
+                      bullets={[
+                        { key: "guidanceAllergy1", risks: ["heat", "cold", "airQuality"] },
+                        { key: "guidanceAllergy2", risks: ["heat", "cold", "airQuality"] },
+                        { key: "guidanceAllergy3", risks: ["heat", "cold", "airQuality"] },
+                        { key: "guidanceAllergy4", risks: ["heat", "cold", "airQuality"] },
+                      ]}
+                      activeRisks={activeRisks}
+                    />
+                  )}
                   <FilteredGuidanceSection
-                    title={t("guidanceLungTitle")}
-                    bullets={[
-                      { key: "guidanceLung1", risks: ["airQuality"] },
-                      { key: "guidanceLung2", risks: ["airQuality"] },
-                      { key: "guidanceLung3", risks: ["airQuality"] },
-                      { key: "guidanceLung4", risks: ["airQuality"] },
-                    ]}
+                    title={t("guidanceVulnStudentsTitle")}
+                    bullets={vulnStudentsBullets}
                     activeRisks={activeRisks}
                   />
-                )}
-                {hasColdRisk && (
                   <FilteredGuidanceSection
-                    title={t("guidanceColdSensitiveTitle")}
-                    bullets={[
-                      { key: "guidanceColdSensitive1", risks: ["cold"] },
-                      { key: "guidanceColdSensitive2", risks: ["cold"] },
-                      { key: "guidanceColdSensitive3", risks: ["cold"] },
-                    ]}
+                    title={t("guidanceVulnTeachersTitle")}
+                    bullets={vulnTeachersBullets}
                     activeRisks={activeRisks}
                   />
-                )}
-                {hasHeatRisk && (
-                  <FilteredGuidanceSection
-                    title={t("guidanceHeatSensitiveTitle")}
-                    bullets={[
-                      { key: "guidanceHeatSensitive1", risks: ["heat"] },
-                      { key: "guidanceHeatSensitive2", risks: ["heat"] },
-                      { key: "guidanceHeatSensitive3", risks: ["heat"] },
-                    ]}
-                    activeRisks={activeRisks}
-                  />
-                )}
-                {hasRainRisk && (
-                  <FilteredGuidanceSection
-                    title={t("guidanceRainSensitiveTitle")}
-                    bullets={[
-                      { key: "guidanceRainSensitive1", risks: ["rain", "heavyRain", "flood", "storm"] },
-                      { key: "guidanceRainSensitive2", risks: ["rain", "heavyRain", "flood", "storm"] },
-                      { key: "guidanceRainSensitive3", risks: ["rain", "heavyRain", "flood", "storm"] },
-                      { key: "guidanceRainSensitive4", risks: ["rain", "heavyRain", "flood", "storm"] },
-                    ]}
-                    activeRisks={activeRisks}
-                  />
-                )}
-                {hasAllergyRisk && (
-                  <FilteredGuidanceSection
-                    title={t("guidanceAllergyTitle")}
-                    bullets={[
-                      { key: "guidanceAllergy1", risks: ["heat", "cold", "airQuality"] },
-                      { key: "guidanceAllergy2", risks: ["heat", "cold", "airQuality"] },
-                      { key: "guidanceAllergy3", risks: ["heat", "cold", "airQuality"] },
-                      { key: "guidanceAllergy4", risks: ["heat", "cold", "airQuality"] },
-                    ]}
-                    activeRisks={activeRisks}
-                  />
-                )}
-                <FilteredGuidanceSection
-                  title={t("guidanceVulnStudentsTitle")}
-                  bullets={vulnStudentsBullets}
-                  activeRisks={activeRisks}
-                />
-                <FilteredGuidanceSection
-                  title={t("guidanceVulnTeachersTitle")}
-                  bullets={vulnTeachersBullets}
-                  activeRisks={activeRisks}
-                />
+                </div>
               </div>
             </div>
           )}

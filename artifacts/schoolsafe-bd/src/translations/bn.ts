@@ -366,6 +366,13 @@ const bn = {
   weekHeatSevereTitle: "তীব্র তাপ ≥৩৬°C",
   weekHeatWarmTitle: "উষ্ণ দিন >৩০°C",
 
+  /* ── অতিরিক্ত সতর্কতা টগল ──────────────────────── */
+  extraPrecautionsTitle: "অতিরিক্ত সতর্কতা / Extra Precautions",
+  extraPrecautionsToggleShow: "অতিরিক্ত সতর্কতা দেখুন ▾",
+  extraPrecautionsToggleHide: "অতিরিক্ত সতর্কতা লুকান ▴",
+  extraPrecautionsHint: "সংবেদনশীল বা ঝুঁকিপূর্ণ ব্যক্তিদের জন্য অতিরিক্ত সতর্কতা পাওয়া যাচ্ছে।",
+  extraPrecautionsHighRiskNote: "উচ্চ ঝুঁকি শনাক্ত হয়েছে — অতিরিক্ত সতর্কতা অবলম্বন করা দৃঢ়ভাবে পরামর্শ দেওয়া হচ্ছে।",
+
   /* ── প্রিন্ট / শেয়ার রিপোর্ট ─────────────────────── */
   printButton: "প্রিন্ট / শেয়ার রিপোর্ট",
   printReportTitle: "দৈনিক বিদ্যালয় নিরাপত্তা রিপোর্ট",

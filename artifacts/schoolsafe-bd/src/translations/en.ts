@@ -363,6 +363,13 @@ const en = {
   weekHeatSevereTitle: "Severe heat ≥36°C",
   weekHeatWarmTitle: "Warm day >30°C",
 
+  /* ── Extra Precautions Toggle ───────────────────── */
+  extraPrecautionsTitle: "Extra Precautions / অতিরিক্ত সতর্কতা",
+  extraPrecautionsToggleShow: "Show Extra Precautions ▾",
+  extraPrecautionsToggleHide: "Hide Extra Precautions ▴",
+  extraPrecautionsHint: "Additional precautions available for sensitive or vulnerable groups.",
+  extraPrecautionsHighRiskNote: "High risk detected — extra precautions are strongly advised.",
+
   /* ── Print / Share Report ────────────────────────── */
   printButton: "Print / Share Report",
   printReportTitle: "Daily School Safety Report",
