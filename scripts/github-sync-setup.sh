@@ -9,7 +9,12 @@
 set -e
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-GITHUB_REPO="git@github.com:iqbalhimel003/schoolsafe-bd.git"
+
+# Configurable via env vars (defaults to current SchoolSafe BD repo)
+GITHUB_OWNER="${GITHUB_OWNER:-iqbalhimel003}"
+GITHUB_REPO_NAME="${GITHUB_REPO_NAME:-schoolsafe-bd}"
+GITHUB_REPO="git@github.com:${GITHUB_OWNER}/${GITHUB_REPO_NAME}.git"
+
 KEY_FILE="$HOME/.ssh/id_ed25519"
 
 echo "=== SchoolSafe BD — GitHub Auto-sync Setup ==="
@@ -23,7 +28,7 @@ else
   ssh-keygen -t ed25519 -C "schoolsafe-bd-replit-autosync" -f "$KEY_FILE" -N ""
   echo ""
   echo "NEW PUBLIC KEY (add this as a deploy key to the GitHub repo):"
-  echo "  Repository: https://github.com/iqbalhimel003/schoolsafe-bd/settings/keys"
+  echo "  Repository: https://github.com/${GITHUB_OWNER}/${GITHUB_REPO_NAME}/settings/keys"
   echo ""
   cat "$KEY_FILE.pub"
   echo ""
