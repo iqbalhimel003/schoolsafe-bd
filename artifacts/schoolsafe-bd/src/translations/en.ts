@@ -291,7 +291,6 @@ const en = {
 
   /* ── Tomorrow's Forecast ─────────────────────────── */
   tomorrowSectionTitle: "Tomorrow's Forecast",
-  tomorrowDate: "Date",
   tomorrowMaxTemp: "Max Temp",
   tomorrowMinTemp: "Min Temp",
   tomorrowRainProb: "Rain Probability",
@@ -310,7 +309,6 @@ const en = {
   tomorrowTipAir: "Poor air quality is forecast for tomorrow — keep windows closed and limit prolonged outdoor time.",
   tomorrowTipAuthorities: "School authorities should consider adjusting outdoor assembly, morning exercises, or outdoor activities in advance given tomorrow's elevated conditions.",
   tomorrowNoData: "Tomorrow's forecast is unavailable for this location.",
-  tomorrowLoadingLabel: "Loading tomorrow's forecast…",
   tomorrowTipLowRiskGeneral: "Conditions tomorrow are within normal ranges. Standard school activities can proceed — students should carry water and dress appropriately for the season.",
   tomorrowTipMonitor: "Keep monitoring conditions as tomorrow approaches. Situations may change in the hours ahead. Follow any updates from school authorities or official weather advisories.",
 
