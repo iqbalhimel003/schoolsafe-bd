@@ -39,7 +39,14 @@ router.put("/settings", async (req: Request, res: Response) => {
       ([, v]) => typeof v === "string",
     ) as [string, string][];
 
-    for (const [key, value] of entries) {
+    const toDelete = entries.filter(([, v]) => v.trim() === "").map(([k]) => k);
+    const toUpsert = entries.filter(([, v]) => v.trim() !== "");
+
+    for (const key of toDelete) {
+      await db.delete(siteSettingsTable).where(eq(siteSettingsTable.key, key));
+    }
+
+    for (const [key, value] of toUpsert) {
       await db
         .insert(siteSettingsTable)
         .values({ key, value })
@@ -49,7 +56,7 @@ router.put("/settings", async (req: Request, res: Response) => {
         });
     }
 
-    res.json({ ok: true, updated: entries.length });
+    res.json({ ok: true, updated: toUpsert.length, deleted: toDelete.length });
   } catch (err) {
     res.status(500).json({ error: "Failed to save settings" });
   }

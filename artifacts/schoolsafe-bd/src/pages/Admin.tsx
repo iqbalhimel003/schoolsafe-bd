@@ -173,14 +173,33 @@ function FieldRow({
   const inputClass =
     "w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-y";
 
+  const hasOverride = enValue.trim() !== "" || bnValue.trim() !== "";
+
+  function handleReset() {
+    onChangeEn("");
+    onChangeBn("");
+  }
+
   return (
     <div className="space-y-1">
-      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-        {label}
-        <span className="ml-2 font-normal text-xs text-muted-foreground/60 normal-case">
-          ({fieldKey})
-        </span>
-      </p>
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+          {label}
+          <span className="ml-2 font-normal text-xs text-muted-foreground/60 normal-case">
+            ({fieldKey})
+          </span>
+        </p>
+        {hasOverride && (
+          <button
+            type="button"
+            onClick={handleReset}
+            className="text-xs text-red-500 hover:text-red-700 hover:underline transition-colors shrink-0"
+            title="Clear this override and restore the built-in default"
+          >
+            Reset to default
+          </button>
+        )}
+      </div>
       <div className="grid sm:grid-cols-2 gap-3">
         <div>
           <p className="text-xs text-muted-foreground mb-1">English</p>
@@ -243,20 +262,34 @@ function SingleFieldRow({
   const inputClass =
     "w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary";
 
+  const hasOverride = value.trim() !== "";
+
   return (
     <div className="space-y-1">
-      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-        {label}
-        <span className="ml-2 font-normal text-xs text-muted-foreground/60 normal-case">
-          ({fieldKey})
-        </span>
-      </p>
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+          {label}
+          <span className="ml-2 font-normal text-xs text-muted-foreground/60 normal-case">
+            ({fieldKey})
+          </span>
+        </p>
+        {hasOverride && (
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="text-xs text-red-500 hover:text-red-700 hover:underline transition-colors shrink-0"
+            title="Clear this override and restore the built-in default"
+          >
+            Reset to default
+          </button>
+        )}
+      </div>
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className={inputClass}
-        placeholder="Leave blank to hide"
+        placeholder="Leave blank to hide / use default"
       />
     </div>
   );
@@ -344,7 +377,7 @@ function Editor({
       {/* Content sections */}
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-10">
         <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-sm text-amber-800">
-          <strong>Note:</strong> Leaving a field blank uses the built-in default text. Fill in only the fields you want to override.
+          <strong>Note:</strong> Leaving a field blank uses the built-in default text. Fill in only the fields you want to override. Use the <strong>Reset to default</strong> button on any field to clear your override — the change takes effect when you save.
         </div>
 
         {SECTIONS.map((section) => (
