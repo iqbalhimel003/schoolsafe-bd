@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fetchWeather, fetchAirQuality } from "@/utils/api";
 import { evaluateRisk } from "@/logic/riskEngine";
+import { HEAT_TEMP_ADVISORY } from "@/logic/thresholds";
 import type { Upazila, RiskLevel, RiskType, WeatherData, AirQualityData, RiskResult } from "@/types";
 import { ALL_RISK_TYPES } from "@/types";
 import type { TranslationKeys } from "@/translations/en";
@@ -547,6 +548,20 @@ function DashboardPanel({
         <MetricCard icon="🫧" label={t("pm25Label")} value={airQuality.pm25.toFixed(1)} />
         <MetricCard icon="🌐" label={t("pm10Label")} value={airQuality.pm10.toFixed(1)} />
       </div>
+
+      {/* Heat advisory badge — shown when temp ≥ 30°C but below Moderate/High heat risk */}
+      {(risk.heat === "None" || risk.heat === "Low") &&
+        Math.max(weather.temperature, weather.apparentTemperature) >= HEAT_TEMP_ADVISORY && (
+        <div className="flex items-start gap-3 bg-orange-50 border border-orange-200 rounded-lg px-4 py-3 shadow-sm">
+          <span className="text-xl shrink-0 mt-0.5" aria-hidden="true">🌤️</span>
+          <div>
+            <span className="inline-block text-xs font-semibold text-orange-700 bg-orange-100 border border-orange-300 rounded-full px-2.5 py-0.5 mb-1">
+              {t("heatAdvisoryLabel")}
+            </span>
+            <p className="text-xs text-orange-900 leading-snug">{t("heatAdvisoryDesc")}</p>
+          </div>
+        </div>
+      )}
 
       {/* Overall safety badge — prominent, color-coded box */}
       <div className={`border rounded-xl p-5 shadow-sm ${

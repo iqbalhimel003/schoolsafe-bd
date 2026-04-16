@@ -80,6 +80,10 @@ const en = {
   pm25Label: "PM2.5 (µg/m³)",
   pm10Label: "PM10 (µg/m³)",
 
+  /* ── Heat Advisory (below formal risk threshold) ────── */
+  heatAdvisoryLabel: "Warm",
+  heatAdvisoryDesc: "Temperature is getting warm (≥ 30°C). Ensure students stay hydrated and limit strenuous outdoor activity.",
+
   /* ── Risk Cards ──────────────────────────────────────── */
   riskBreakdownTitle: "Risk Breakdown",
   heatRisk: "Heat Risk",
