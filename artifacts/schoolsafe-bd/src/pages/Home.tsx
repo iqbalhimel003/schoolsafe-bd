@@ -30,6 +30,37 @@ export default function Home() {
     <main>
       <Hero />
 
+      {/* Introduction — two info cards explaining purpose and usage */}
+      <section className="max-w-5xl mx-auto px-4 pt-6 pb-2">
+        <div className="grid sm:grid-cols-2 gap-4">
+          {/* Card 1: What this website does */}
+          <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-lg" aria-hidden="true">📋</span>
+              <h3 className="text-sm font-semibold text-foreground">
+                {t("introWhatTitle")}
+              </h3>
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {t("introWhatText")}
+            </p>
+          </div>
+
+          {/* Card 2: How to use */}
+          <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-lg" aria-hidden="true">🗺️</span>
+              <h3 className="text-sm font-semibold text-foreground">
+                {t("introHowTitle")}
+              </h3>
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {t("introHowText")}
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Location Search */}
       <LocationSelector onUpazilaSelect={setSelectedUpazila} />
 

@@ -25,6 +25,15 @@ const en = {
   langToggleLabel: "বাংলা",
   langToggleTitle: "Switch to Bangla",
 
+  /* ── Intro Cards ─────────────────────────────────────── */
+  introWhatTitle: "What this website does",
+  introWhatText:
+    "This website helps schools understand environmental safety conditions using live data such as weather and air quality. " +
+    "It provides simple safety guidance for school authorities, students, and guardians regarding heat, rain, air quality, cold, flood, and storm-related risks.",
+  introHowTitle: "How to use",
+  introHowText:
+    "Select a district, then select an upazila, and view the live conditions, risk levels, and school safety recommendations for the selected location.",
+
   /* ── Prototype Notice ────────────────────────────────── */
   prototypeNotice:
     "Prototype: currently demonstrates selected pilot upazilas in Kishoreganj district.",
