@@ -402,9 +402,9 @@ function DashboardPanel({
   /* Share handler — native share sheet on mobile, clipboard fallback on desktop */
   async function handleShare() {
     const overall = levelLabel(risk.overall);
-    const shareTitle = `SchoolSafe BD — ${locationName}`;
+    const shareTitle = `SafeSchool — ${locationName}`;
     const shareText =
-      `SchoolSafe BD | ${locationName}\n` +
+      `SafeSchool | ${locationName}\n` +
       `${t("overallSafetyTitle")}: ${overall}\n` +
       `${t("temperature")}: ${weather.temperature.toFixed(1)}°C  ` +
       `${t("humidity")}: ${Math.round(weather.humidity)}%\n` +
@@ -465,7 +465,7 @@ function DashboardPanel({
       <div className="print-only border-b-2 border-black pb-4 mb-2">
         <div className="flex items-center gap-2 mb-1">
           <span aria-hidden="true">🌿</span>
-          <span className="text-lg font-bold">SchoolSafe BD</span>
+          <span className="text-lg font-bold">SafeSchool</span>
         </div>
         <h1 className="text-2xl font-bold">{t("printReportTitle")}</h1>
         <p className="text-base font-semibold mt-1">{locationName}</p>

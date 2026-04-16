@@ -16,7 +16,7 @@
 
 const en = {
   /* ── Branding ─────────────────────────────────────────── */
-  siteName: "SchoolSafe BD",
+  siteName: "SafeSchool",
   siteTagline: "Environmental School Safety — Bangladesh",
   siteDescription:
     "A bilingual environmental safety tool for schools across Bangladesh. Search your district and upazila to see live weather, air quality, and safety recommendations.",
@@ -244,7 +244,7 @@ const en = {
   /* ── Methodology ─────────────────────────────────────── */
   methodologyTitle: "Methodology",
   methodologyText:
-    "SchoolSafe BD uses a transparent rule-based system to assess environmental risks. " +
+    "SafeSchool uses a transparent rule-based system to assess environmental risks. " +
     "Data is fetched from Open-Meteo's free weather and air quality APIs. " +
     "All thresholds are based on publicly available environmental health guidance and are fully editable in the project source code.",
   methodologyRulesTitle: "Risk Rule Summary",
@@ -283,7 +283,7 @@ const en = {
     "Always follow your school's official safety procedures.",
 
   /* ── Footer ─────────────────────────────────────────── */
-  footerPurpose: "SchoolSafe BD — A science fair project for environmental school safety awareness in Bangladesh.",
+  footerPurpose: "SafeSchool — A science fair project for environmental school safety awareness in Bangladesh.",
   footerDataSource: "Weather & Air Quality Data: Open-Meteo (open-meteo.com)",
   footerDisclaimer: "This prototype is for educational purposes only.",
   footerCreditBefore:

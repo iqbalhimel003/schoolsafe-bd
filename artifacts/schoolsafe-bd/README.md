@@ -1,14 +1,14 @@
-# SchoolSafe BD 🌿
+# SafeSchool 🌿
 
 **A bilingual environmental school safety tool for Bangladesh.**
 
-SchoolSafe BD is a science fair prototype that fetches live weather and air quality data for school locations in Bangladesh and displays safety recommendations in both **English and Bangla**. It covers 7 environmental risk types and currently pilots 3 upazilas in Kishoreganj district.
+SafeSchool is a science fair prototype that fetches live weather and air quality data for school locations in Bangladesh and displays safety recommendations in both **English and Bangla**. It covers 7 environmental risk types and currently pilots 3 upazilas in Kishoreganj district.
 
 ---
 
 ## Purpose
 
-Schools in Bangladesh face real environmental risks — extreme heat, cold waves, heavy rain, flooding, poor air quality, and cyclones. SchoolSafe BD gives teachers and administrators a fast, bilingual dashboard to assess conditions and act on safety guidance before the school day begins.
+Schools in Bangladesh face real environmental risks — extreme heat, cold waves, heavy rain, flooding, poor air quality, and cyclones. SafeSchool gives teachers and administrators a fast, bilingual dashboard to assess conditions and act on safety guidance before the school day begins.
 
 ---
 
@@ -44,7 +44,7 @@ Both APIs are completely free and open. No sign-up is needed.
 # From the repository root:
 pnpm install
 
-# Start the SchoolSafe BD dev server:
+# Start the SafeSchool dev server:
 pnpm --filter @workspace/schoolsafe-bd run dev
 ```
 
@@ -118,7 +118,7 @@ To **change a label, heading, or message**, find the key in `en.ts` and change t
 
 ```typescript
 // en.ts
-siteName: "SchoolSafe BD",
+siteName: "SafeSchool",
 
 // bn.ts
 siteName: "স্কুলসেফ বিডি",
@@ -210,4 +210,4 @@ Always follow official guidance and your institution's safety protocols.
 
 ---
 
-*SchoolSafe BD — Environmental School Safety Awareness, Kishoreganj Pilot, Bangladesh.*
+*SafeSchool — Environmental School Safety Awareness, Kishoreganj Pilot, Bangladesh.*
