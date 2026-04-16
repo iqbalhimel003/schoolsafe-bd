@@ -333,10 +333,9 @@ function DashboardPanel({
   const risk = evaluateRisk(weather, airQuality);
   const locationName = lang === "bn" ? upazila.nameBn : upazila.nameEn;
 
-  /* Set of risk types that are currently above Low */
+  /* Set of risk types that are currently above Low — derived from ALL_RISK_TYPES */
   const activeRisks = new Set<RiskType>(
-    (["heat", "rain", "airQuality", "cold", "heavyRain", "flood", "storm"] as RiskType[])
-      .filter((k) => risk[k] !== "Low")
+    ALL_RISK_TYPES.filter((k) => risk[k] !== "Low")
   );
 
   /* ── Tagged bullet arrays ─────────────────────────────── */
