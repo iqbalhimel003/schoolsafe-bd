@@ -82,6 +82,13 @@ export async function fetchWeather(
     rain6h += h.rain[i] ?? 0;
   }
 
+  /* Sum rain over the current hour and up to 23 preceding hours (24-hour window) */
+  let rain24h = 0;
+  const start24hIdx = Math.max(0, idx - 23);
+  for (let i = start24hIdx; i <= idx; i++) {
+    rain24h += h.rain[i] ?? 0;
+  }
+
   return {
     temperature:              h.temperature_2m[idx]            ?? 0,
     humidity:                 h.relativehumidity_2m[idx]       ?? 0,
@@ -90,6 +97,7 @@ export async function fetchWeather(
     rain:                     h.rain[idx]                      ?? 0,
     rain3h,
     rain6h,
+    rain24h,
     windSpeed:                h.windspeed_10m[idx]             ?? 0,
     uvIndex:                  h.uv_index[idx]                  ?? 0,
     visibility:               h.visibility[idx]                ?? 10000,

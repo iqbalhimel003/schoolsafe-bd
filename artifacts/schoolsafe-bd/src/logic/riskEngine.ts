@@ -4,13 +4,8 @@
  * Evaluates all seven environmental risk rules against the
  * thresholds defined in logic/thresholds.ts and returns:
  *   - A RiskLevel for each of the seven hazard types
- *   - An overall badge (worst-case across all seven)
+ *   - An overall badge (weighted aggregation with overrides)
  *   - A deduplicated list of triggered-rule translation keys
- *
- * HOW TO READ:
- *   Each evaluator is a pure function that takes weather or
- *   air quality data and returns { level, rules }. The main
- *   evaluateRisk() function combines all seven evaluators.
  *
  * Risk scale: None < Low < Moderate < High
  *   None     — no meaningful signal; school can operate normally
@@ -18,12 +13,11 @@
  *   Moderate — notable hazard; consider precautions
  *   High     — significant hazard; action required
  *
+ * Overall School Safety uses a weighted scoring model instead
+ * of worst-case, with override rules for dangerous combinations.
+ *
  * Rules (translation keys) are only pushed for Moderate or High
  * so the "Why This Advice?" section stays signal-free on calm days.
- *
- * HOW TO EXTEND:
- *   Add a new evaluator function, call it inside evaluateRisk(),
- *   and add the result to the spread in the return statement.
  * ========================================================= */
 
 import type { WeatherData, AirQualityData, RiskResult, RiskLevel, TomorrowForecast, PrepLevel } from "@/types";
@@ -32,10 +26,6 @@ import * as T from "./thresholds";
 
 /* ── Utilities ──────────────────────────────────────────── */
 
-/**
- * Return the highest risk level from a list.
- * "None" < "Low" < "Moderate" < "High"
- */
 export function worstCase(levels: RiskLevel[]): RiskLevel {
   if (levels.includes("High"))     return "High";
   if (levels.includes("Moderate")) return "Moderate";
@@ -43,99 +33,120 @@ export function worstCase(levels: RiskLevel[]): RiskLevel {
   return "None";
 }
 
-/** Bump a risk level up by one step (None→Low, Low→Moderate, Moderate→High, High stays High). */
-function bump(level: RiskLevel): RiskLevel {
-  if (level === "None")     return "Low";
-  if (level === "Low")      return "Moderate";
-  if (level === "Moderate") return "High";
-  return "High";
+const LEVEL_VALUE: Record<RiskLevel, number> = {
+  None: 0, Low: 1, Moderate: 2, High: 3,
+};
+
+function scoreToLevel(score: number): RiskLevel {
+  if (score >= T.OVERALL_HIGH_MIN)     return "High";
+  if (score >= T.OVERALL_MODERATE_MIN) return "Moderate";
+  if (score >= T.OVERALL_LOW_MIN)      return "Low";
+  return "None";
 }
 
 type Evaluation = { level: RiskLevel; rules: TranslationKeys[] };
 
 /* ── Per-risk evaluators ────────────────────────────────── */
 
-/** 1. Heat Risk — temperature and apparent temperature */
 function evaluateHeat(w: WeatherData): Evaluation {
   const rules: TranslationKeys[] = [];
-  let level: RiskLevel = "None";
+  let tempLevel: RiskLevel = "None";
+  let feelsLevel: RiskLevel = "None";
 
   if (w.temperature >= T.HEAT_TEMP_HIGH) {
-    level = "High";
-    rules.push("ruleHighTemp");
+    tempLevel = "High";
   } else if (w.temperature >= T.HEAT_TEMP_MODERATE) {
-    level = "Moderate";
-    rules.push("ruleHighTemp");
+    tempLevel = "Moderate";
   } else if (w.temperature >= T.HEAT_TEMP_LOW) {
-    level = "Low";
-    /* No rule pushed for Low — "Why This Advice?" only shows Moderate+ */
+    tempLevel = "Low";
   }
 
-  if (w.apparentTemperature >= T.HEAT_APPARENT_TEMP_HIGH) {
-    level = "High";
-    if (!rules.includes("ruleHighApparentTemp")) rules.push("ruleHighApparentTemp");
+  if (w.apparentTemperature >= T.HEAT_FEELS_HIGH) {
+    feelsLevel = "High";
+  } else if (w.apparentTemperature >= T.HEAT_FEELS_MODERATE) {
+    feelsLevel = "Moderate";
+  } else if (w.apparentTemperature >= T.HEAT_FEELS_LOW) {
+    feelsLevel = "Low";
   }
 
-  if (w.humidity >= T.HEAT_HUMIDITY_BOOSTER && w.temperature >= T.HEAT_TEMP_MODERATE) {
-    level = worstCase([level, "Moderate"]);
-    rules.push("ruleHighHumidity");
+  const level = worstCase([tempLevel, feelsLevel]);
+
+  if (level === "Moderate" || level === "High") {
+    if (tempLevel === level || LEVEL_VALUE[tempLevel] >= 2) rules.push("ruleHighTemp");
+    if (feelsLevel === level || LEVEL_VALUE[feelsLevel] >= 2) {
+      if (!rules.includes("ruleHighApparentTemp")) rules.push("ruleHighApparentTemp");
+    }
   }
 
   return { level, rules };
 }
 
-/** 2. Rain Risk — precipitation probability and rain amount */
 function evaluateRain(w: WeatherData): Evaluation {
   const rules: TranslationKeys[] = [];
-  let level: RiskLevel = "None";
+  let probLevel: RiskLevel = "None";
+  let amountLevel: RiskLevel = "None";
 
-  if (w.precipitationProbability >= T.RAIN_PRECIP_PROB_HIGH) {
-    level = "High";
-    rules.push("ruleHighPrecipProb");
-  } else if (w.precipitationProbability >= T.RAIN_PRECIP_PROB_MODERATE) {
-    level = "Moderate";
-    rules.push("ruleHighPrecipProb");
-  } else if (w.precipitationProbability >= T.RAIN_PRECIP_PROB_LOW) {
-    level = "Low";
+  if (w.precipitationProbability >= T.RAIN_PROB_HIGH) {
+    probLevel = "High";
+  } else if (w.precipitationProbability >= T.RAIN_PROB_MODERATE) {
+    probLevel = "Moderate";
+  } else if (w.precipitationProbability >= T.RAIN_PROB_LOW) {
+    probLevel = "Low";
   }
 
-  if (w.rain >= T.RAIN_AMOUNT_MODERATE) {
-    level = worstCase([level, "Moderate"]);
-    if (!rules.includes("ruleNotableRain")) rules.push("ruleNotableRain");
+  if (w.rain24h >= T.RAIN_24H_HIGH) {
+    amountLevel = "High";
+  } else if (w.rain24h >= T.RAIN_24H_MODERATE) {
+    amountLevel = "Moderate";
+  } else if (w.rain24h >= T.RAIN_24H_LOW) {
+    amountLevel = "Low";
+  }
+
+  const level = worstCase([probLevel, amountLevel]);
+
+  if (level === "Moderate" || level === "High") {
+    if (LEVEL_VALUE[probLevel] >= 2) rules.push("ruleHighPrecipProb");
+    if (LEVEL_VALUE[amountLevel] >= 2) {
+      if (!rules.includes("ruleNotableRain")) rules.push("ruleNotableRain");
+    }
   }
 
   return { level, rules };
 }
 
-/** 3. Air Quality Risk — PM2.5 and PM10 (worst of the two) */
 function evaluateAirQuality(aq: AirQualityData): Evaluation {
   const rules: TranslationKeys[] = [];
-  let level: RiskLevel = "None";
+  let pm25Level: RiskLevel = "None";
+  let pm10Level: RiskLevel = "None";
 
   if (aq.pm25 >= T.AQ_PM25_HIGH) {
-    level = "High";
-    rules.push("ruleHighPM25");
+    pm25Level = "High";
   } else if (aq.pm25 >= T.AQ_PM25_MODERATE) {
-    level = worstCase([level, "Moderate"]);
-    rules.push("ruleHighPM25");
+    pm25Level = "Moderate";
   } else if (aq.pm25 >= T.AQ_PM25_LOW) {
-    level = worstCase([level, "Low"]);
+    pm25Level = "Low";
   }
 
   if (aq.pm10 >= T.AQ_PM10_HIGH) {
-    level = "High";
-    if (!rules.includes("ruleHighPM10")) rules.push("ruleHighPM10");
+    pm10Level = "High";
   } else if (aq.pm10 >= T.AQ_PM10_MODERATE) {
-    level = worstCase([level, "Moderate"]);
-    if (!rules.includes("ruleHighPM10")) rules.push("ruleHighPM10");
+    pm10Level = "Moderate";
   } else if (aq.pm10 >= T.AQ_PM10_LOW) {
-    level = worstCase([level, "Low"]);
+    pm10Level = "Low";
+  }
+
+  const level = worstCase([pm25Level, pm10Level]);
+
+  if (level === "Moderate" || level === "High") {
+    if (LEVEL_VALUE[pm25Level] >= 2) rules.push("ruleHighPM25");
+    if (LEVEL_VALUE[pm10Level] >= 2) {
+      if (!rules.includes("ruleHighPM10")) rules.push("ruleHighPM10");
+    }
   }
 
   return { level, rules };
 }
 
-/** 4. Cold Risk — low temperature, with a wind-speed booster */
 function evaluateCold(w: WeatherData): Evaluation {
   const rules: TranslationKeys[] = [];
   let level: RiskLevel = "None";
@@ -150,58 +161,69 @@ function evaluateCold(w: WeatherData): Evaluation {
     level = "Low";
   }
 
-  /* Strong wind makes cold feel significantly worse — bump level up.
-   * Only applies at Moderate or High (newly added Low band is not escalated
-   * so existing Moderate/High boundaries are preserved exactly). */
-  if ((level === "Moderate" || level === "High") && w.windSpeed >= T.COLD_WIND_BOOSTER) {
-    level = bump(level);
-    rules.push("ruleColdWind");
-  }
-
   return { level, rules };
 }
 
-/** 5. Heavy Rain Risk — high precipitation probability AND notable 3-hour rain accumulation */
 function evaluateHeavyRain(w: WeatherData): Evaluation {
   const rules: TranslationKeys[] = [];
-  let level: RiskLevel = "None";
+  let level24h: RiskLevel = "None";
+  let level3h: RiskLevel = "None";
 
-  if (w.precipitationProbability >= T.HEAVY_RAIN_PRECIP_PROB) {
-    if (w.rain3h >= T.HEAVY_RAIN_AMOUNT_HIGH) {
-      level = "High";
-      rules.push("ruleHeavyRain");
-    } else if (w.rain3h >= T.HEAVY_RAIN_AMOUNT_MODERATE) {
-      level = "Moderate";
-      rules.push("ruleHeavyRain");
-    } else if (w.rain3h >= T.HEAVY_RAIN_AMOUNT_LOW) {
-      level = "Low";
-    }
+  if (w.rain24h >= T.HEAVY_RAIN_24H_HIGH) {
+    level24h = "High";
+  } else if (w.rain24h >= T.HEAVY_RAIN_24H_MODERATE) {
+    level24h = "Moderate";
+  } else if (w.rain24h >= T.HEAVY_RAIN_24H_LOW) {
+    level24h = "Low";
+  }
+
+  if (w.rain3h >= T.HEAVY_RAIN_3H_HIGH) {
+    level3h = "High";
+  } else if (w.rain3h >= T.HEAVY_RAIN_3H_MODERATE) {
+    level3h = "Moderate";
+  } else if (w.rain3h >= T.HEAVY_RAIN_3H_LOW) {
+    level3h = "Low";
+  }
+
+  const level = worstCase([level24h, level3h]);
+
+  if (level === "Moderate" || level === "High") {
+    rules.push("ruleHeavyRain");
   }
 
   return { level, rules };
 }
 
-/** 6. Flood Risk — sustained high precipitation probability with 6-hour rain accumulation */
 function evaluateFlood(w: WeatherData): Evaluation {
   const rules: TranslationKeys[] = [];
-  let level: RiskLevel = "None";
+  let level6h: RiskLevel = "None";
+  let level24h: RiskLevel = "None";
 
-  if (w.precipitationProbability >= T.FLOOD_PRECIP_PROB) {
-    if (w.rain6h >= T.FLOOD_RAIN_AMOUNT_HIGH) {
-      level = "High";
-      rules.push("ruleFloodRisk");
-    } else if (w.rain6h >= T.FLOOD_RAIN_AMOUNT_MODERATE) {
-      level = "Moderate";
-      rules.push("ruleFloodRisk");
-    } else if (w.rain6h >= T.FLOOD_RAIN_AMOUNT_LOW) {
-      level = "Low";
-    }
+  if (w.rain6h >= T.FLOOD_6H_HIGH) {
+    level6h = "High";
+  } else if (w.rain6h >= T.FLOOD_6H_MODERATE) {
+    level6h = "Moderate";
+  } else if (w.rain6h >= T.FLOOD_6H_LOW) {
+    level6h = "Low";
+  }
+
+  if (w.rain24h >= T.FLOOD_24H_HIGH) {
+    level24h = "High";
+  } else if (w.rain24h >= T.FLOOD_24H_MODERATE) {
+    level24h = "Moderate";
+  } else if (w.rain24h >= T.FLOOD_24H_LOW) {
+    level24h = "Low";
+  }
+
+  const level = worstCase([level6h, level24h]);
+
+  if (level === "Moderate" || level === "High") {
+    rules.push("ruleFloodRisk");
   }
 
   return { level, rules };
 }
 
-/** 7. Storm / Cyclone Risk — wind speed thresholds */
 function evaluateStorm(w: WeatherData): Evaluation {
   const rules: TranslationKeys[] = [];
   let level: RiskLevel = "None";
@@ -219,16 +241,64 @@ function evaluateStorm(w: WeatherData): Evaluation {
   return { level, rules };
 }
 
+/* ── Weighted overall aggregation ──────────────────────── */
+
+interface RiskLevels {
+  heat: RiskLevel;
+  rain: RiskLevel;
+  airQuality: RiskLevel;
+  cold: RiskLevel;
+  heavyRain: RiskLevel;
+  flood: RiskLevel;
+  storm: RiskLevel;
+}
+
+function computeWeightedOverall(levels: RiskLevels): RiskLevel {
+  const allNone = Object.values(levels).every(l => l === "None");
+  if (allNone) return "None";
+
+  if (levels.flood === "High" || levels.storm === "High") return "High";
+
+  const highCount = Object.values(levels).filter(l => l === "High").length;
+  if (highCount >= 2) return "High";
+
+  if (highCount === 1) {
+    const hasModerateOrHighOther = Object.values(levels).filter(
+      l => l === "Moderate" || l === "High"
+    ).length >= 2;
+    if (hasModerateOrHighOther) return "High";
+  }
+
+  const score =
+    LEVEL_VALUE[levels.airQuality] * T.WEIGHT_AIR_QUALITY +
+    LEVEL_VALUE[levels.rain]       * T.WEIGHT_RAIN +
+    LEVEL_VALUE[levels.heat]       * T.WEIGHT_HEAT +
+    LEVEL_VALUE[levels.cold]       * T.WEIGHT_COLD +
+    LEVEL_VALUE[levels.heavyRain]  * T.WEIGHT_HEAVY_RAIN +
+    LEVEL_VALUE[levels.flood]      * T.WEIGHT_FLOOD +
+    LEVEL_VALUE[levels.storm]      * T.WEIGHT_STORM;
+
+  let overall = scoreToLevel(score);
+
+  const nonNoneRisks = Object.entries(levels).filter(([, l]) => l !== "None");
+  if (
+    overall === "Moderate" &&
+    nonNoneRisks.length === 1
+  ) {
+    const [onlyRisk] = nonNoneRisks[0];
+    if (
+      (onlyRisk === "airQuality" || onlyRisk === "rain") &&
+      levels[onlyRisk as keyof RiskLevels] === "Moderate"
+    ) {
+      overall = "Low";
+    }
+  }
+
+  return overall;
+}
+
 /* ── Main export ────────────────────────────────────────── */
 
-/**
- * Evaluate all seven environmental risk rules for a location's
- * current weather and air quality readings.
- *
- * Returns per-risk levels, an overall badge, and a deduplicated
- * list of triggered-rule translation keys for the "Why this
- * advice?" section.
- */
 export function evaluateRisk(
   weather: WeatherData,
   airQuality: AirQualityData,
@@ -241,14 +311,18 @@ export function evaluateRisk(
   const flood     = evaluateFlood(weather);
   const storm     = evaluateStorm(weather);
 
-  const overall = worstCase([
-    heat.level, rain.level, aq.level, cold.level,
-    heavyRain.level, flood.level, storm.level,
-  ]);
+  const levels: RiskLevels = {
+    heat:       heat.level,
+    rain:       rain.level,
+    airQuality: aq.level,
+    cold:       cold.level,
+    heavyRain:  heavyRain.level,
+    flood:      flood.level,
+    storm:      storm.level,
+  };
 
-  /* Merge triggered rules in order, deduplicating.
-     Only Moderate/High evaluators push rules, so this list is
-     naturally empty on None/Low days. */
+  const overall = computeWeightedOverall(levels);
+
   const seen = new Set<string>();
   const triggeredRules: string[] = [];
   for (const rule of [
@@ -262,13 +336,7 @@ export function evaluateRisk(
   }
 
   return {
-    heat:       heat.level,
-    rain:       rain.level,
-    airQuality: aq.level,
-    cold:       cold.level,
-    heavyRain:  heavyRain.level,
-    flood:      flood.level,
-    storm:      storm.level,
+    ...levels,
     overall,
     triggeredRules,
   };
@@ -276,45 +344,32 @@ export function evaluateRisk(
 
 /* ── Tomorrow prep-level assessment ─────────────────────── */
 
-/**
- * Assess next-day preparation need from a TomorrowForecast object.
- * Uses the same threshold constants as the live risk engine.
- *
- * Returns:
- *   "High"     — at least one critical threshold exceeded
- *   "Moderate" — at least one moderate threshold exceeded
- *   "Low"      — mild signal detected; light awareness only
- *   "None"     — no notable thresholds exceeded; calm day
- */
 export function assessTomorrowPrep(f: TomorrowForecast): PrepLevel {
-  /* ── High prep conditions ─── */
   if (
-    f.tempMax     >= T.HEAT_TEMP_HIGH            ||
-    f.tempMin     <= T.COLD_TEMP_HIGH            ||
-    f.windMax     >= T.STORM_WIND_HIGH           ||
-    f.rainProbMax >= T.RAIN_PRECIP_PROB_HIGH     ||
+    f.tempMax     >= T.HEAT_TEMP_HIGH     ||
+    f.tempMin     <= T.COLD_TEMP_HIGH     ||
+    f.windMax     >= T.STORM_WIND_HIGH    ||
+    f.rainProbMax >= T.RAIN_PROB_HIGH     ||
     f.pm25Avg     >= T.AQ_PM25_HIGH
   ) {
     return "High";
   }
 
-  /* ── Moderate prep conditions ─── */
   if (
-    f.tempMax     >= T.HEAT_TEMP_MODERATE        ||
-    f.tempMin     <= T.COLD_TEMP_MODERATE        ||
-    f.windMax     >= T.STORM_WIND_MODERATE       ||
-    f.rainProbMax >= T.RAIN_PRECIP_PROB_MODERATE ||
+    f.tempMax     >= T.HEAT_TEMP_MODERATE     ||
+    f.tempMin     <= T.COLD_TEMP_MODERATE     ||
+    f.windMax     >= T.STORM_WIND_MODERATE    ||
+    f.rainProbMax >= T.RAIN_PROB_MODERATE     ||
     f.pm25Avg     >= T.AQ_PM25_MODERATE
   ) {
     return "Moderate";
   }
 
-  /* ── Low prep conditions ─── */
   if (
-    f.tempMax     >= T.HEAT_TEMP_LOW             ||
-    f.tempMin     <= T.COLD_TEMP_LOW             ||
-    f.windMax     >= T.STORM_WIND_LOW            ||
-    f.rainProbMax >= T.RAIN_PRECIP_PROB_LOW      ||
+    f.tempMax     >= T.HEAT_TEMP_LOW     ||
+    f.tempMin     <= T.COLD_TEMP_LOW     ||
+    f.windMax     >= T.STORM_WIND_LOW    ||
+    f.rainProbMax >= T.RAIN_PROB_LOW     ||
     f.pm25Avg     >= T.AQ_PM25_LOW
   ) {
     return "Low";

@@ -118,7 +118,7 @@ export default function TomorrowOutlook({ forecast, prepLevel }: Props) {
   if (forecast.tempMax >= T.HEAT_TEMP_MODERATE) tips.push(t("tomorrowTipHeat"));
 
   /* Priority 2 — Rain */
-  if (forecast.rainProbMax >= T.RAIN_PRECIP_PROB_MODERATE) tips.push(t("tomorrowTipRain"));
+  if (forecast.rainProbMax >= T.RAIN_PROB_MODERATE) tips.push(t("tomorrowTipRain"));
 
   /* Priority 3 — Wind */
   if (forecast.windMax >= T.STORM_WIND_MODERATE) tips.push(t("tomorrowTipWind"));

@@ -1,138 +1,95 @@
 /* =========================================================
  * SchoolSafe BD — Risk Thresholds
  *
- * HOW TO EDIT:
- *   All numeric risk thresholds are defined here as named
- *   constants with explanatory comments. Change these values
- *   to adjust when risks are triggered (e.g., if you want to
- *   lower the heat threshold for a cooler region, change
- *   HEAT_TEMP_MODERATE from 32 to 30).
+ * Bangladesh-calibrated per-risk thresholds for the 4-level
+ * risk scale (None / Low / Moderate / High).
  *
- *   The risk engine (logic/riskEngine.ts) reads these
- *   constants — no other file needs changing when you
- *   adjust a threshold value.
+ * The risk engine (logic/riskEngine.ts) reads these constants.
+ * To adjust when risks trigger, change values here — no other
+ * file needs changing.
  * ========================================================= */
 
-/* ── Heat Risk Thresholds ──────────────────────────────── */
+/* ── Heat Risk Thresholds ──────────────────────────────── *
+ * Uses the worse of actual temperature and feels-like       *
+ * temperature. Each dimension has its own band boundaries.  */
 
-/** Temperature (°C) at or above which heat risk becomes Low */
-export const HEAT_TEMP_LOW = 30;
+export const HEAT_TEMP_LOW = 35.0;
+export const HEAT_TEMP_MODERATE = 36.0;
+export const HEAT_TEMP_HIGH = 38.0;
 
-/** Temperature (°C) at or above which heat risk becomes Moderate */
-export const HEAT_TEMP_MODERATE = 32;
+export const HEAT_FEELS_LOW = 38.0;
+export const HEAT_FEELS_MODERATE = 41.0;
+export const HEAT_FEELS_HIGH = 44.0;
 
-/** Temperature (°C) at or above which heat risk becomes High */
-export const HEAT_TEMP_HIGH = 35;
+/* ── Rain Risk Thresholds ──────────────────────────────── *
+ * Uses precipitation probability (%) and 24-hour rain (mm). */
 
-/** Apparent/feels-like temperature (°C) at or above which heat risk becomes High */
-export const HEAT_APPARENT_TEMP_HIGH = 38;
+export const RAIN_PROB_LOW = 40;
+export const RAIN_PROB_MODERATE = 60;
+export const RAIN_PROB_HIGH = 80;
 
-/** Humidity (%) that raises heat risk when combined with high temperature */
-export const HEAT_HUMIDITY_BOOSTER = 80;
+export const RAIN_24H_LOW = 10;
+export const RAIN_24H_MODERATE = 20;
+export const RAIN_24H_HIGH = 44;
 
-/* ── Rain Risk Thresholds ──────────────────────────────── */
+/* ── Air Quality Thresholds (Bangladesh-calibrated) ─────── *
+ * PM2.5 and PM10 (µg/m³). Uses worst-of-two dimensions.    */
 
-/** Precipitation probability (%) at or above which rain risk becomes Low */
-export const RAIN_PRECIP_PROB_LOW = 20;
+export const AQ_PM25_LOW = 25;
+export const AQ_PM25_MODERATE = 55;
+export const AQ_PM25_HIGH = 90;
 
-/** Precipitation probability (%) at or above which rain risk becomes Moderate */
-export const RAIN_PRECIP_PROB_MODERATE = 40;
-
-/** Precipitation probability (%) at or above which rain risk becomes High */
-export const RAIN_PRECIP_PROB_HIGH = 60;
-
-/** Rain amount (mm) at or above which rain risk becomes at least Moderate */
-export const RAIN_AMOUNT_MODERATE = 1.0;
-
-/* ── Air Quality Thresholds (Bangladesh-calibrated) ─────────
- *
- * WHO 2021 annual guideline values (5 µg/m³ PM2.5, 15 µg/m³ PM10)
- * are far below Bangladesh's typical ambient baseline. Using WHO
- * strict limits as High triggers "High Risk" on routine school days
- * and erodes trust in the tool.
- *
- * Thresholds below are calibrated to Bangladesh's national 24-hour
- * standards and WHO Interim Targets so that:
- *   Low      = mild, awareness-only signal
- *   Moderate = noticeable; school caution warranted
- *   High     = genuinely severe; clear action required
- * ─────────────────────────────────────────────────────────── */
-
-/** PM2.5 (µg/m³) at or above which AQ risk becomes Low
- *  (slight elevation above clean-air baseline) */
-export const AQ_PM25_LOW = 10;
-
-/** PM2.5 (µg/m³) at or above which AQ risk becomes Moderate
- *  (≈ WHO IT-1 interim target; noticeably elevated) */
-export const AQ_PM25_MODERATE = 25;
-
-/** PM2.5 (µg/m³) at or above which AQ risk becomes High
- *  (above Bangladesh national 24h standard of 65 µg/m³;
- *   genuinely severe for school operations) */
-export const AQ_PM25_HIGH = 75;
-
-/** PM10 (µg/m³) at or above which AQ risk becomes Low */
-export const AQ_PM10_LOW = 25;
-
-/** PM10 (µg/m³) at or above which AQ risk becomes Moderate */
-export const AQ_PM10_MODERATE = 50;
-
-/** PM10 (µg/m³) at or above which AQ risk becomes High
- *  (≈ Bangladesh national PM10 24h standard of 150 µg/m³) */
+export const AQ_PM10_LOW = 50;
+export const AQ_PM10_MODERATE = 100;
 export const AQ_PM10_HIGH = 150;
 
-/* ── Cold Risk Thresholds ──────────────────────────────── */
+/* ── Cold Risk Thresholds ──────────────────────────────── *
+ * Based on minimum temperature (°C).                        */
 
-/** Temperature (°C) at or below which cold risk becomes Low */
-export const COLD_TEMP_LOW = 18;
+export const COLD_TEMP_LOW = 10;
+export const COLD_TEMP_MODERATE = 8;
+export const COLD_TEMP_HIGH = 6;
 
-/** Temperature (°C) at or below which cold risk becomes Moderate */
-export const COLD_TEMP_MODERATE = 15;
+/* ── Heavy Rain Risk Thresholds ─────────────────────────── *
+ * Uses 24-hour rain (mm) and 3-hour rain (mm).              */
 
-/** Temperature (°C) at or below which cold risk becomes High */
-export const COLD_TEMP_HIGH = 10;
+export const HEAVY_RAIN_24H_LOW = 20;
+export const HEAVY_RAIN_24H_MODERATE = 44;
+export const HEAVY_RAIN_24H_HIGH = 89;
 
-/** Wind speed (km/h) that raises cold risk when combined with low temperature */
-export const COLD_WIND_BOOSTER = 20;
+export const HEAVY_RAIN_3H_LOW = 15;
+export const HEAVY_RAIN_3H_MODERATE = 30;
+export const HEAVY_RAIN_3H_HIGH = 44;
 
-/* ── Heavy Rain Risk Thresholds ─────────────────────────── */
+/* ── Flood Risk Thresholds ───────────────────────────────── *
+ * Uses 6-hour rain (mm) and 24-hour rain (mm).              */
 
-/** Precipitation probability (%) required together with notable rain for Heavy Rain risk */
-export const HEAVY_RAIN_PRECIP_PROB = 60;
+export const FLOOD_6H_LOW = 30;
+export const FLOOD_6H_MODERATE = 50;
+export const FLOOD_6H_HIGH = 80;
 
-/** 3-hour rain accumulation (mm) at or above which Heavy Rain risk becomes Low */
-export const HEAVY_RAIN_AMOUNT_LOW = 5;
+export const FLOOD_24H_LOW = 50;
+export const FLOOD_24H_MODERATE = 80;
+export const FLOOD_24H_HIGH = 120;
 
-/** 3-hour rain accumulation (mm) at or above which Heavy Rain risk becomes Moderate
- *  (equivalent to a sustained ~5 mm/h rate over 3 hours) */
-export const HEAVY_RAIN_AMOUNT_MODERATE = 15;
+/* ── Storm / Cyclone Risk Thresholds ────────────────────── *
+ * Uses wind speed (km/h).                                    */
 
-/** 3-hour rain accumulation (mm) at or above which Heavy Rain risk becomes High
- *  (equivalent to a sustained ~15 mm/h rate over 3 hours) */
-export const HEAVY_RAIN_AMOUNT_HIGH = 45;
-
-/* ── Flood Risk Thresholds ───────────────────────────────── */
-
-/** Precipitation probability (%) required for flood risk assessment */
-export const FLOOD_PRECIP_PROB = 70;
-
-/** 6-hour rain accumulation (mm) at or above which Flood risk becomes Low */
-export const FLOOD_RAIN_AMOUNT_LOW = 10;
-
-/** 6-hour rain accumulation (mm) at or above which Flood risk becomes Moderate
- *  (indicating potential waterlogging conditions) */
-export const FLOOD_RAIN_AMOUNT_MODERATE = 20;
-
-/** 6-hour rain accumulation (mm) at or above which Flood risk becomes High */
-export const FLOOD_RAIN_AMOUNT_HIGH = 40;
-
-/* ── Storm / Cyclone Risk Thresholds ────────────────────── */
-
-/** Wind speed (km/h) at or above which Storm risk becomes Low */
-export const STORM_WIND_LOW = 20;
-
-/** Wind speed (km/h) at or above which Storm risk becomes Moderate */
+export const STORM_WIND_LOW = 30;
 export const STORM_WIND_MODERATE = 40;
+export const STORM_WIND_HIGH = 60;
 
-/** Wind speed (km/h) at or above which Storm risk becomes High (near gale/storm force) */
-export const STORM_WIND_HIGH = 65;
+/* ── Weighted Overall Aggregation ───────────────────────── *
+ * Per-risk weights and score-to-level band boundaries.       */
+
+export const WEIGHT_AIR_QUALITY = 0.75;
+export const WEIGHT_RAIN = 0.75;
+export const WEIGHT_HEAT = 1.0;
+export const WEIGHT_COLD = 1.0;
+export const WEIGHT_HEAVY_RAIN = 1.25;
+export const WEIGHT_FLOOD = 1.5;
+export const WEIGHT_STORM = 1.5;
+
+export const OVERALL_LOW_MIN = 0.75;
+export const OVERALL_MODERATE_MIN = 2.0;
+export const OVERALL_HIGH_MIN = 4.25;

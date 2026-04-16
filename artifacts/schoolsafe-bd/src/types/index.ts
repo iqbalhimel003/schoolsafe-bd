@@ -52,6 +52,7 @@ export interface WeatherData {
   rain: number;                /* mm — current hour */
   rain3h: number;              /* mm — 3-hour rolling accumulation (current + 2 preceding hours) */
   rain6h: number;              /* mm — 6-hour rolling accumulation (current + 5 preceding hours) */
+  rain24h: number;             /* mm — 24-hour rolling accumulation (current + 23 preceding hours) */
   windSpeed: number;           /* km/h */
   uvIndex: number;
   visibility: number;          /* m */
