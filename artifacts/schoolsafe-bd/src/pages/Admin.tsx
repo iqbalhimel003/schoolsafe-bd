@@ -2,7 +2,7 @@
  * SchoolSafe BD — Admin Panel
  *
  * Password-protected page at /admin for editing site content.
- * Editable sections: Hero, Intro Cards, Footer.
+ * Editable sections: Hero, Intro Cards, Footer, Contact.
  * Content is stored in the database; homepage reads from it.
  * ========================================================= */
 
@@ -23,11 +23,13 @@ type FieldDef = {
 type Section = {
   title: string;
   fields: FieldDef[];
+  bilingual?: boolean;
 };
 
 const SECTIONS: Section[] = [
   {
     title: "Hero",
+    bilingual: true,
     fields: [
       { key: "siteName", label: "Site Name" },
       { key: "siteTagline", label: "Tagline" },
@@ -37,6 +39,7 @@ const SECTIONS: Section[] = [
   },
   {
     title: "Intro Cards",
+    bilingual: true,
     fields: [
       { key: "introWhatTitle", label: '"What this website does" — Title' },
       { key: "introWhatText", label: '"What this website does" — Text', multiline: true },
@@ -46,12 +49,24 @@ const SECTIONS: Section[] = [
   },
   {
     title: "Footer",
+    bilingual: true,
     fields: [
       { key: "footerPurpose", label: "Purpose", multiline: true },
       { key: "footerDataSource", label: "Data Source" },
       { key: "footerDisclaimer", label: "Disclaimer" },
       { key: "footerCreditBefore", label: "Credit (before link)", multiline: true },
       { key: "footerCreditAfter", label: "Credit (after link)" },
+    ],
+  },
+  {
+    title: "Contact",
+    bilingual: false,
+    fields: [
+      { key: "contact_email", label: "Email Address" },
+      { key: "contact_phone", label: "Phone / Mobile" },
+      { key: "contact_facebook", label: "Facebook URL (leave blank to hide)" },
+      { key: "contact_telegram", label: "Telegram URL (leave blank to hide)" },
+      { key: "contact_x", label: "X (Twitter) URL (leave blank to hide)" },
     ],
   },
 ];
@@ -136,7 +151,7 @@ function LoginForm({
   );
 }
 
-/* ── Field Row ────────────────────────────────────────── */
+/* ── Bilingual Field Row ───────────────────────────────── */
 
 function FieldRow({
   fieldKey,
@@ -208,6 +223,41 @@ function FieldRow({
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ── Single-value Field Row (for non-bilingual fields) ── */
+
+function SingleFieldRow({
+  fieldKey,
+  label,
+  value,
+  onChange,
+}: {
+  fieldKey: string;
+  label: string;
+  value: string;
+  onChange: (val: string) => void;
+}) {
+  const inputClass =
+    "w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary";
+
+  return (
+    <div className="space-y-1">
+      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+        {label}
+        <span className="ml-2 font-normal text-xs text-muted-foreground/60 normal-case">
+          ({fieldKey})
+        </span>
+      </p>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className={inputClass}
+        placeholder="Leave blank to hide"
+      />
     </div>
   );
 }
@@ -302,20 +352,39 @@ function Editor({
             <h2 className="text-lg font-bold text-foreground mb-4 pb-2 border-b border-border">
               {section.title}
             </h2>
-            <div className="space-y-6">
-              {section.fields.map((field) => (
-                <FieldRow
-                  key={field.key}
-                  fieldKey={field.key}
-                  label={field.label}
-                  multiline={field.multiline}
-                  enValue={getValue(field.key, "en")}
-                  bnValue={getValue(field.key, "bn")}
-                  onChangeEn={(val) => setValue(field.key, "en", val)}
-                  onChangeBn={(val) => setValue(field.key, "bn", val)}
-                />
-              ))}
-            </div>
+            {section.bilingual === false ? (
+              <div className="space-y-6">
+                <p className="text-xs text-muted-foreground">
+                  These values are the same in both English and Bangla.
+                </p>
+                {section.fields.map((field) => (
+                  <SingleFieldRow
+                    key={field.key}
+                    fieldKey={field.key}
+                    label={field.label}
+                    value={draft[field.key] ?? ""}
+                    onChange={(val) =>
+                      setDraft((prev) => ({ ...prev, [field.key]: val }))
+                    }
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {section.fields.map((field) => (
+                  <FieldRow
+                    key={field.key}
+                    fieldKey={field.key}
+                    label={field.label}
+                    multiline={field.multiline}
+                    enValue={getValue(field.key, "en")}
+                    bnValue={getValue(field.key, "bn")}
+                    onChangeEn={(val) => setValue(field.key, "en", val)}
+                    onChangeBn={(val) => setValue(field.key, "bn", val)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         ))}
 

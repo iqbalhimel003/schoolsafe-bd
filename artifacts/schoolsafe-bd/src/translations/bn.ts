@@ -294,6 +294,14 @@ const bn = {
     "এই সার্ভিসটি/প্রজেক্টটি Zilla Smarani Girls\u2019 High School, Kishoreganj-এর ছাত্রীদের দ্বারা তৈরি এবং সার্বিক তত্ত্বাবধানে\u00a0",
   footerCreditAfter: "।",
 
+  /* ── যোগাযোগ ─────────────────────────────────────────── */
+  footerContactTitle: "যোগাযোগ",
+  footerContactEmail: "ইমেইল",
+  footerContactPhone: "মোবাইল",
+  footerContactFacebook: "ফেসবুক",
+  footerContactTelegram: "টেলিগ্রাম",
+  footerContactX: "X (টুইটার)",
+
   /* ── আগামীকালের পূর্বাভাস ────────────────────────── */
   tomorrowSectionTitle: "আগামীকালের সম্ভাব্য আবহাওয়া",
   tomorrowMaxTemp: "সর্বোচ্চ তাপমাত্রা",

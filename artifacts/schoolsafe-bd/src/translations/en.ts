@@ -290,6 +290,14 @@ const en = {
     "This service/project was developed by the students of Zilla Smarani Girls\u2019 High School, Kishoreganj, under the overall supervision of\u00a0",
   footerCreditAfter: ".",
 
+  /* ── Contact ─────────────────────────────────────────── */
+  footerContactTitle: "Contact",
+  footerContactEmail: "Email",
+  footerContactPhone: "Phone",
+  footerContactFacebook: "Facebook",
+  footerContactTelegram: "Telegram",
+  footerContactX: "X (Twitter)",
+
   /* ── Tomorrow's Forecast ─────────────────────────── */
   tomorrowSectionTitle: "Tomorrow's Forecast",
   tomorrowMaxTemp: "Max Temp",
