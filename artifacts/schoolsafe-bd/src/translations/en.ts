@@ -17,9 +17,11 @@
 const en = {
   /* ── Branding ─────────────────────────────────────────── */
   siteName: "SafeSchool",
-  siteTagline: "Environmental School Safety — Bangladesh",
+  siteTagline: "A bilingual environmental safety, preparedness, and school guidance platform for Bangladesh",
   siteDescription:
-    "A bilingual environmental safety tool for schools across Bangladesh. Search your district and upazila to see live weather, air quality, and safety recommendations.",
+    "SafeSchool helps school authorities, teachers, students, and guardians understand both current and upcoming environmental conditions in their area. " +
+    "By combining live weather data, air-quality information, rainfall outlook, and school-focused risk analysis, it provides practical safety recommendations, " +
+    "preparedness advice, and situation-based precautions for safer school planning and daily decision-making.",
 
   /* ── Navigation / Header ─────────────────────────────── */
   langToggleLabel: "বাংলা",
@@ -28,11 +30,14 @@ const en = {
   /* ── Intro Cards ─────────────────────────────────────── */
   introWhatTitle: "What this website does",
   introWhatText:
-    "This website helps schools understand environmental safety conditions using live data such as weather and air quality. " +
-    "It provides simple safety guidance for school authorities, students, and guardians regarding heat, rain, air quality, cold, flood, and storm-related risks.",
+    "SafeSchool is a school-focused environmental safety platform designed to turn complex weather and environmental information into practical guidance for everyday school use. " +
+    "It analyses current conditions, short-term rain trends, air-quality levels, and forecast-based risks to help users understand whether school activities can continue normally " +
+    "or whether extra caution and preparation are needed. The platform also provides situation-based guidance for school authorities, teachers, students, guardians, " +
+    "and sensitive or vulnerable groups whenever environmental risks become active.",
   introHowTitle: "How to use",
   introHowText:
-    "Select a district, then select an upazila, and view the live conditions, risk levels, and school safety recommendations for the selected location.",
+    "Select a district first, then choose an upazila. SafeSchool will display the current environmental conditions, risk breakdown, overall school safety status, " +
+    "practical recommendations, and forecast-based preparedness guidance for the selected location.",
 
   /* ── Prototype Notice ────────────────────────────────── */
   prototypeNotice:
