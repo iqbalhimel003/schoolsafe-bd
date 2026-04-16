@@ -1,0 +1,65 @@
+Please redesign the Admin Panel layout so it uses a clean side-menu navigation instead of showing all content sections at once.
+
+Current problem:
+The admin panel currently shows all option groups in one long page, which makes it difficult to navigate and manage content.
+
+Goal:
+Create a left-side menu / sidebar for the admin panel.
+When the user clicks a menu item, only that selected section should be shown in the main content area, while the other sections remain hidden.
+
+Required behavior:
+1. Add a left sidebar navigation for the admin panel
+2. Each major content group should appear as a separate menu item
+3. Clicking a menu item should show that section in the main panel
+4. Other sections should stay hidden until selected
+5. Keep the overall design clean, professional, and easy to use
+6. Preserve all existing form fields and save functionality
+7. Do not remove any existing admin features
+
+Suggested sidebar sections:
+- Hero
+- Intro Cards
+- Footer
+- Contact
+- Methodology
+- Limitations & Disclaimer
+- Any other existing major content group in the panel
+
+Layout requirements:
+- Sidebar on the left
+- Main editing form area on the right
+- Sidebar should stay visible while editing
+- Active menu item should be clearly highlighted
+- Smooth and simple switching between sections
+- Keep it responsive for smaller screens too if feasible
+
+Functional requirements:
+- Existing values and save logic must continue to work
+- “Save All Changes” should still work for the whole form/data
+- Do not break the current admin panel editing behavior
+- If needed, use section state/tab state to control visibility
+- If useful, scroll to top of the selected section when switching
+
+Optional improvements:
+- Add small section icons in the sidebar
+- Add a compact/collapsible sidebar on smaller screens
+- Keep the current admin panel note or helper text if appropriate
+
+Implementation guidance:
+- Refactor the admin layout only
+- Preserve current content fields and database/save behavior
+- Do not redesign unrelated public pages
+- Focus only on improving admin usability and navigation
+
+Goal:
+The admin panel should feel organized and easy to manage:
+- click a section in the side menu
+- edit only that section
+- no need to scroll through the entire long admin page
+
+When this update is complete:
+summarize what was changed
+list files changed
+explain how the side menu navigation works
+Please make the first sidebar item open by default when the admin page loads.
+Also keep the currently selected section highlighted until another menu item is clicked.
