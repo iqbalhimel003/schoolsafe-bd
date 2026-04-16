@@ -5,8 +5,9 @@
  *   - 6 metric tiles (max temp, min temp, rain prob, rain
  *     amount, max wind, avg PM2.5)
  *   - A PrepLevel badge (Low / Moderate / High preparation need)
- *   - Context-sensitive preparedness tips (only tips relevant
- *     to the actual forecast values are shown)
+ *   - 2–4 context-sensitive preparedness tips, priority-ordered
+ *     and capped at 4. Tips are selected by threshold relevance;
+ *     "authorities" tip is always included to ensure minimum 2.
  *
  * All text is bilingual via useLanguage().
  * ========================================================= */
@@ -85,26 +86,38 @@ export default function TomorrowOutlook({ forecast, prepLevel }: Props) {
       ? t("tomorrowPrepModerate")
       : t("tomorrowPrepLow");
 
-  /* ── Context-sensitive tips ─────────────────────────── */
-  const tips: string[] = [];
+  /* ── Context-sensitive tips — priority-ordered, capped at 4 ─
+   *
+   * Steps:
+   *  1. Collect relevant condition tips in priority order.
+   *  2. The "school authorities" tip is always appended last —
+   *     it ensures a minimum of 2 tips when ≥ 1 condition fires,
+   *     and guarantees the list is never empty.
+   *  3. The list is capped at MAX_TIPS (4) by keeping the first
+   *     (MAX_TIPS − 1) condition tips and always keeping the
+   *     authorities tip.
+   *
+   * Thresholds match those used in assessTomorrowPrep():
+   *   Heat:  tempMax  ≥ HEAT_TEMP_MODERATE (32°C)
+   *   Rain:  rainProbMax ≥ RAIN_PRECIP_PROB_MODERATE (40%)
+   *   Wind:  windMax  ≥ STORM_WIND_MODERATE (40 km/h)
+   *   Cold:  tempMin  ≤ COLD_TEMP_MODERATE (15°C)
+   *   Air:   pm25Avg  ≥ AQ_PM25_MODERATE (15 µg/m³)
+   * ─────────────────────────────────────────────────────── */
+  const MAX_TIPS = 4;
 
-  /* Heat tip — max temp at or above moderate heat threshold (32°C) */
-  if (forecast.tempMax >= 32) tips.push(t("tomorrowTipHeat"));
+  /* Ordered condition tips */
+  const conditionTips: string[] = [];
+  if (forecast.tempMax    >= 32) conditionTips.push(t("tomorrowTipHeat"));
+  if (forecast.rainProbMax >= 40) conditionTips.push(t("tomorrowTipRain"));
+  if (forecast.windMax    >= 40) conditionTips.push(t("tomorrowTipWind"));
+  if (forecast.tempMin    <= 15) conditionTips.push(t("tomorrowTipCold"));
+  if (forecast.pm25Avg    >= 15) conditionTips.push(t("tomorrowTipAir"));
 
-  /* Cold tip — min temp at or below moderate cold threshold (15°C) */
-  if (forecast.tempMin <= 15) tips.push(t("tomorrowTipCold"));
-
-  /* Rain tip — rain probability at or above 40% */
-  if (forecast.rainProbMax >= 40) tips.push(t("tomorrowTipRain"));
-
-  /* Wind tip — max wind at or above moderate storm threshold (40 km/h) */
-  if (forecast.windMax >= 40) tips.push(t("tomorrowTipWind"));
-
-  /* Air quality tip — avg PM2.5 at or above moderate AQ threshold (15 µg/m³) */
-  if (forecast.pm25Avg >= 15) tips.push(t("tomorrowTipAir"));
-
-  /* School-authorities tip — shown whenever prep level is High */
-  if (prepLevel === "High") tips.push(t("tomorrowTipAuthorities"));
+  /* Keep at most (MAX_TIPS − 1) condition tips to leave room for the
+   * authorities tip which is always appended as the final entry. */
+  const visibleConditionTips = conditionTips.slice(0, MAX_TIPS - 1);
+  const tips = [...visibleConditionTips, t("tomorrowTipAuthorities")];
 
   return (
     <section className="space-y-4">
@@ -169,30 +182,28 @@ export default function TomorrowOutlook({ forecast, prepLevel }: Props) {
         />
       </div>
 
-      {/* Preparedness tips — only shown when at least one tip is relevant */}
-      {tips.length > 0 && (
-        <div className="bg-card border border-border rounded-lg p-4 shadow-sm">
-          <h4 className="text-sm font-semibold text-foreground mb-2">
-            {t("tomorrowPrepTipsTitle")}
-          </h4>
-          <ul className="space-y-2">
-            {tips.map((tip, i) => (
-              <li
-                key={i}
-                className="flex items-start gap-2 text-sm text-foreground"
+      {/* Preparedness tips — always 2–4 tips */}
+      <div className="bg-card border border-border rounded-lg p-4 shadow-sm">
+        <h4 className="text-sm font-semibold text-foreground mb-2">
+          {t("tomorrowPrepTipsTitle")}
+        </h4>
+        <ul className="space-y-2">
+          {tips.map((tip, i) => (
+            <li
+              key={i}
+              className="flex items-start gap-2 text-sm text-foreground"
+            >
+              <span
+                className="text-primary shrink-0 mt-0.5"
+                aria-hidden="true"
               >
-                <span
-                  className="text-primary shrink-0 mt-0.5"
-                  aria-hidden="true"
-                >
-                  ▸
-                </span>
-                <span className="leading-snug">{tip}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+                ▸
+              </span>
+              <span className="leading-snug">{tip}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   );
 }

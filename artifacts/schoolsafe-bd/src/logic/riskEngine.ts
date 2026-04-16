@@ -256,22 +256,22 @@ export function evaluateRisk(
 export function assessTomorrowPrep(f: TomorrowForecast): PrepLevel {
   /* ── High prep conditions ─── */
   if (
-    f.tempMax   >= T.HEAT_TEMP_HIGH       ||
-    f.tempMin   <= T.COLD_TEMP_HIGH       ||
-    f.windMax   >= T.STORM_WIND_HIGH      ||
-    f.rainProbMax >= 80                   ||
-    f.pm25Avg   >= T.AQ_PM25_HIGH
+    f.tempMax     >= T.HEAT_TEMP_HIGH          ||
+    f.tempMin     <= T.COLD_TEMP_HIGH          ||
+    f.windMax     >= T.STORM_WIND_HIGH         ||
+    f.rainProbMax >= T.RAIN_PRECIP_PROB_HIGH   ||
+    f.pm25Avg     >= T.AQ_PM25_HIGH
   ) {
     return "High";
   }
 
   /* ── Moderate prep conditions ─── */
   if (
-    f.tempMax   >= T.HEAT_TEMP_MODERATE   ||
-    f.tempMin   <= T.COLD_TEMP_MODERATE   ||
-    f.windMax   >= T.STORM_WIND_MODERATE  ||
+    f.tempMax     >= T.HEAT_TEMP_MODERATE      ||
+    f.tempMin     <= T.COLD_TEMP_MODERATE      ||
+    f.windMax     >= T.STORM_WIND_MODERATE     ||
     f.rainProbMax >= T.RAIN_PRECIP_PROB_MODERATE ||
-    f.pm25Avg   >= T.AQ_PM25_MODERATE
+    f.pm25Avg     >= T.AQ_PM25_MODERATE
   ) {
     return "Moderate";
   }
