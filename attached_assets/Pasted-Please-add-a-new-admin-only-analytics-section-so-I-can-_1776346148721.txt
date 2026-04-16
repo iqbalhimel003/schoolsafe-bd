@@ -1,0 +1,84 @@
+Please add a new admin-only analytics section so I can monitor website traffic and visitor activity in a detailed but privacy-conscious way.
+
+Goal:
+Create a “Visitor Analytics” or “Website Access Logs” section inside the Admin Panel.
+
+Important:
+This is for website traffic analytics, not for identifying real people by name.
+Track visitor activity in a useful and privacy-conscious way.
+
+Required features:
+
+1. Add a new admin menu item:
+- Visitor Analytics
+or
+- Website Access Logs
+
+2. Track and store useful visit data such as:
+- visit timestamp
+- visited page / route
+- IP address (prefer masked or privacy-conscious storage/display if appropriate)
+- country / city / region if available from IP lookup
+- browser
+- operating system
+- device type (mobile / desktop / tablet)
+- referrer source
+- session ID or anonymous visitor ID if feasible
+- selected district and upazila if the visitor uses those features
+- language selected if feasible
+
+3. Admin dashboard summary cards:
+- total visits
+- unique visitors
+- today’s visits
+- last 7 days visits
+- last 30 days visits
+- currently active visitors if feasible
+
+4. Admin analytics views:
+- recent visits table
+- top visited pages
+- top selected districts
+- top selected upazilas
+- traffic by device type
+- traffic by country/region
+- daily visits chart
+
+5. Filtering and usability:
+- filter by date range
+- filter by page
+- filter by district/upazila if tracked
+- search recent visits
+- keep the UI clean and easy to use
+
+6. Privacy-conscious behavior:
+- do not try to identify real people by name
+- if full IP display is too sensitive, mask part of it in the admin UI
+- keep this section admin-only
+- add a small note that analytics are for traffic monitoring and site improvement
+
+7. Technical guidance:
+- implement server-side visit/event logging
+- create a database table or equivalent storage for analytics
+- avoid breaking existing site functionality
+- preserve all current working features
+- do not redesign unrelated public pages
+
+Optional improvements:
+- live visitor count
+- export analytics as CSV
+- event tracking for:
+  - district selection
+  - upazila selection
+  - language switch
+  - tomorrow forecast viewed
+
+Goal:
+I want to be able to open the admin panel and clearly see how many visitors are coming, what they are viewing, which locations they select, and general traffic patterns.
+
+When this update is complete:
+1. stop immediately
+2. summarize what analytics were added
+3. list files changed
+4. explain what data is tracked
+5. explain how privacy is handled
