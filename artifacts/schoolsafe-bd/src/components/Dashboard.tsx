@@ -14,6 +14,7 @@
  * ========================================================= */
 
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fetchWeather, fetchAirQuality } from "@/utils/api";
 import { evaluateRisk } from "@/logic/riskEngine";
@@ -297,6 +298,45 @@ function DashboardPanel({
     return t("safetyLow");
   }
 
+  /* Share handler — native share sheet on mobile, clipboard fallback on desktop */
+  async function handleShare() {
+    const overall = levelLabel(risk.overall);
+    const shareTitle = `SchoolSafe BD — ${locationName}`;
+    const shareText =
+      `SchoolSafe BD | ${locationName}\n` +
+      `${t("overallSafetyTitle")}: ${overall}\n` +
+      `${t("temperature")}: ${weather.temperature.toFixed(1)}°C  ` +
+      `${t("humidity")}: ${Math.round(weather.humidity)}%\n` +
+      `${t("windSpeed")}: ${weather.windSpeed.toFixed(1)} km/h  ` +
+      `${t("rain")}: ${weather.rain.toFixed(1)} mm\n` +
+      window.location.href;
+    const shareUrl = window.location.href;
+
+    if (typeof navigator.share === "function") {
+      try {
+        await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
+      } catch (err) {
+        /* User cancelled → AbortError — ignore silently.
+           Any other failure falls through to clipboard copy. */
+        if (err instanceof Error && err.name !== "AbortError") {
+          try {
+            await navigator.clipboard.writeText(shareUrl);
+            toast.success(t("shareToastCopied"));
+          } catch {
+            toast.error(t("shareToastFailed"));
+          }
+        }
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success(t("shareToastCopied"));
+      } catch {
+        toast.error(t("shareToastFailed"));
+      }
+    }
+  }
+
   /* Contextual recommendations to show */
   const activeRecs = RECOMMENDATIONS.filter((rec) => rec.show(risk));
 
@@ -361,6 +401,14 @@ function DashboardPanel({
           >
             <span aria-hidden="true">🖨️</span>
             {t("printButton")}
+          </button>
+          <button
+            onClick={handleShare}
+            className="no-print shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-green-400/50 bg-green-50 hover:bg-green-100 active:bg-green-200 text-green-700 text-xs font-semibold transition-colors"
+            aria-label={t("shareButton")}
+          >
+            <span aria-hidden="true">📤</span>
+            {t("shareButton")}
           </button>
         </div>
       </div>

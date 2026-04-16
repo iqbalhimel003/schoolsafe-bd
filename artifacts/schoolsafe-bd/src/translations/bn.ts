@@ -216,6 +216,11 @@ const bn = {
   printButton: "প্রিন্ট / শেয়ার রিপোর্ট",
   printReportTitle: "দৈনিক বিদ্যালয় নিরাপত্তা রিপোর্ট",
   printGeneratedOn: "তৈরির তারিখ",
+
+  /* ── শেয়ার বোতাম ────────────────────────────────── */
+  shareButton: "Share / শেয়ার",
+  shareToastCopied: "লিংক ক্লিপবোর্ডে কপি হয়েছে!",
+  shareToastFailed: "শেয়ার করা যায়নি। লিংকটি নিজে কপি করুন।",
 };
 
 export default bn satisfies typeof en;

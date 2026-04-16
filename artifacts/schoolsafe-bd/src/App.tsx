@@ -6,6 +6,7 @@
 
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "@/components/ui/sonner";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -49,6 +50,7 @@ export default function App() {
               <Router />
             </div>
             <Footer />
+            <Toaster position="bottom-center" richColors />
           </div>
         </WouterRouter>
       </LanguageProvider>

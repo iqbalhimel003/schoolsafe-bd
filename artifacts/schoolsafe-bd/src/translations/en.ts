@@ -212,6 +212,11 @@ const en = {
   printButton: "Print / Share Report",
   printReportTitle: "Daily School Safety Report",
   printGeneratedOn: "Generated on",
+
+  /* ── Share Button ────────────────────────────────── */
+  shareButton: "Share / শেয়ার",
+  shareToastCopied: "Link copied to clipboard!",
+  shareToastFailed: "Could not share. Please copy the link manually.",
 };
 
 export default en;
