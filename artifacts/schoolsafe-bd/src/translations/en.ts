@@ -41,7 +41,7 @@ const en = {
 
   /* ── Prototype Notice ────────────────────────────────── */
   prototypeNotice:
-    "Prototype: currently demonstrates selected pilot upazilas in Kishoreganj district.",
+    "Prototype: this version currently demonstrates selected pilot upazilas from Kishoreganj together with a few representative climate-risk locations from different regions of Bangladesh.",
 
   /* ── Location Selector ───────────────────────────────── */
   selectDistrict: "Select District",
@@ -291,11 +291,12 @@ const en = {
   /* ── Limitations ─────────────────────────────────────── */
   limitationsTitle: "Limitations & Disclaimer",
   limitationsText:
-    "This tool is a student science fair prototype and does not replace official government warnings, " +
-    "emergency alerts, or medical advice. Flood and cyclone guidance does not replace advisories from the " +
-    "Bangladesh Meteorological Department or Bangladesh Water Development Board. " +
-    "Cold wave guidance does not replace official cold wave alerts. " +
-    "Always follow your school's official safety procedures.",
+    "SafeSchool is an educational and decision-support prototype designed for school safety awareness and preparedness. " +
+    "It provides guidance based on live environmental data, forecast information, and rule-based risk analysis. " +
+    "The platform does not replace official government warnings, emergency alerts, medical advice, or local administrative instructions. " +
+    "Flood, storm, cyclone, cold-wave, and other hazard-related guidance should always be verified with relevant official sources such as " +
+    "the Bangladesh Meteorological Department, Bangladesh Water Development Board, and local authorities. " +
+    "In urgent situations, users should follow official instructions and professional advice.",
 
   /* ── Footer ─────────────────────────────────────────── */
   footerPurpose: "SafeSchool — A science fair project for environmental school safety awareness in Bangladesh.",
