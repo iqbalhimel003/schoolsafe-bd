@@ -1,0 +1,40 @@
+Please improve the prototype notice text and the Limitations & Disclaimer section so they better reflect the current scope of the website and sound more polished, professional, and accurate.
+
+Goals:
+- Update the prototype notice so it no longer mentions only Kishoreganj, because the site now includes selected representative climate-risk locations from other parts of Bangladesh
+- Improve the Limitations & Disclaimer wording so it sounds clearer, more professional, and more appropriate for a school-safety platform
+- Preserve bilingual support
+- Do not redesign unrelated parts
+
+Please replace the current prototype notice with this improved text:
+
+English:
+Prototype: this version currently demonstrates selected pilot upazilas from Kishoreganj together with a few representative climate-risk locations from different regions of Bangladesh.
+
+Bangla:
+প্রোটোটাইপ: এই সংস্করণে বর্তমানে কিশোরগঞ্জের নির্বাচিত পাইলট উপজেলা এবং বাংলাদেশের বিভিন্ন অঞ্চলের কয়েকটি প্রতিনিধি জলবায়ু-ঝুঁকিপ্রবণ এলাকার ডেমো প্রদর্শন করা হচ্ছে।
+
+Please replace the current Limitations & Disclaimer text with this improved version:
+
+English heading:
+Limitations & Disclaimer
+
+English body:
+SafeSchool is an educational and decision-support prototype designed for school safety awareness and preparedness. It provides guidance based on live environmental data, forecast information, and rule-based risk analysis. The platform does not replace official government warnings, emergency alerts, medical advice, or local administrative instructions. Flood, storm, cyclone, cold-wave, and other hazard-related guidance should always be verified with relevant official sources such as the Bangladesh Meteorological Department, Bangladesh Water Development Board, and local authorities. In urgent situations, users should follow official instructions and professional advice.
+
+Bangla heading:
+সীমাবদ্ধতা ও দায়স্বীকার
+
+Bangla body:
+সেফস্কুল একটি শিক্ষামূলক ও সিদ্ধান্ত-সহায়ক প্রোটোটাইপ, যা বিদ্যালয় নিরাপত্তা সচেতনতা ও প্রস্তুতিমূলক পরিকল্পনায় সহায়তার জন্য তৈরি করা হয়েছে। এটি লাইভ পরিবেশগত তথ্য, পূর্বাভাসভিত্তিক উপাত্ত এবং নিয়মভিত্তিক ঝুঁকি বিশ্লেষণের মাধ্যমে নির্দেশনা প্রদান করে। তবে এটি সরকারি সতর্কবার্তা, জরুরি নির্দেশনা, চিকিৎসকের পরামর্শ, বা স্থানীয় প্রশাসনিক সিদ্ধান্তের বিকল্প নয়। বন্যা, ঝড়, ঘূর্ণিঝড়, শৈত্যপ্রবাহসহ অন্যান্য ঝুঁকি-সংক্রান্ত নির্দেশনা অবশ্যই বাংলাদেশ আবহাওয়া অধিদপ্তর, বাংলাদেশ পানি উন্নয়ন বোর্ড এবং সংশ্লিষ্ট স্থানীয় কর্তৃপক্ষের আনুষ্ঠানিক তথ্যের সঙ্গে মিলিয়ে দেখতে হবে। জরুরি পরিস্থিতিতে অবশ্যই সরকারি নির্দেশনা ও পেশাগত পরামর্শ অনুসরণ করতে হবে।
+
+Important:
+- Keep the text readable and visually balanced
+- Preserve the current layout as much as possible
+- Only update the visible text content unless very small spacing adjustments are needed
+- Stop after completing this wording improvement
+
+When complete:
+1. summarize what text was updated
+2. list files changed
+3. wait for my instruction
