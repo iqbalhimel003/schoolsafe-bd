@@ -15,8 +15,13 @@ export default function Header() {
   return (
     <header className="no-print bg-primary text-primary-foreground shadow-md">
       <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
-        {/* Branding */}
-        <div>
+        {/* Branding — clickable, scrolls to top */}
+        <button
+          type="button"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          aria-label={t("siteName")}
+          className="text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/60 rounded"
+        >
           <div className="flex items-center gap-2">
             {/* Leaf icon — represents environmental safety */}
             <span className="text-2xl" aria-hidden="true">🌿</span>
@@ -27,7 +32,7 @@ export default function Header() {
           <p className="text-sm opacity-85 mt-0.5 ml-9">
             {t("siteTagline")}
           </p>
-        </div>
+        </button>
 
         {/* Language Toggle */}
         <button
