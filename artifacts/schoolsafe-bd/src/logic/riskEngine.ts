@@ -46,6 +46,28 @@ function scoreToLevel(score: number): RiskLevel {
 
 type Evaluation = { level: RiskLevel; rules: TranslationKeys[] };
 
+/* ── WMO weather code rain classifier ───────────────────── */
+
+type RainCodeCategory = "none" | "light" | "continuous" | "thunderstorm";
+
+function classifyRainCode(code: number): RainCodeCategory {
+  if (code === 95 || code === 96 || code === 97 || code === 99) return "thunderstorm";
+  if (code === 53 || code === 55 || code === 56 || code === 57 || code === 63 || code === 65 || code === 66 || code === 67 || code === 81 || code === 82) return "continuous";
+  if (code === 51 || code === 61 || code === 80) return "light";
+  return "none";
+}
+
+function rainCodeToLevel(category: RainCodeCategory): RiskLevel {
+  if (category === "thunderstorm") return "High";
+  if (category === "continuous")   return "Moderate";
+  if (category === "light")        return "Low";
+  return "None";
+}
+
+export function isThunderstormCode(code: number): boolean {
+  return code === 95 || code === 96 || code === 97 || code === 99;
+}
+
 /* ── Per-risk evaluators ────────────────────────────────── */
 
 function evaluateHeat(w: WeatherData): Evaluation {
@@ -83,30 +105,52 @@ function evaluateHeat(w: WeatherData): Evaluation {
 
 function evaluateRain(w: WeatherData): Evaluation {
   const rules: TranslationKeys[] = [];
-  let probLevel: RiskLevel = "None";
-  let amountLevel: RiskLevel = "None";
 
+  let currentProbLevel: RiskLevel = "None";
   if (w.precipitationProbability >= T.RAIN_PROB_HIGH) {
-    probLevel = "High";
+    currentProbLevel = "High";
   } else if (w.precipitationProbability >= T.RAIN_PROB_MODERATE) {
-    probLevel = "Moderate";
+    currentProbLevel = "Moderate";
   } else if (w.precipitationProbability >= T.RAIN_PROB_LOW) {
-    probLevel = "Low";
+    currentProbLevel = "Low";
   }
 
-  if (w.rain24h >= T.RAIN_24H_HIGH) {
-    amountLevel = "High";
-  } else if (w.rain24h >= T.RAIN_24H_MODERATE) {
-    amountLevel = "Moderate";
-  } else if (w.rain24h >= T.RAIN_24H_LOW) {
-    amountLevel = "Low";
+  let next3hProbLevel: RiskLevel = "None";
+  if (w.precipProbNext3hMax >= T.RAIN_PROB_HIGH) {
+    next3hProbLevel = "High";
+  } else if (w.precipProbNext3hMax >= T.RAIN_PROB_MODERATE) {
+    next3hProbLevel = "Moderate";
+  } else if (w.precipProbNext3hMax >= T.RAIN_PROB_LOW) {
+    next3hProbLevel = "Low";
   }
 
-  const level = worstCase([probLevel, amountLevel]);
+  let rain3hLevel: RiskLevel = "None";
+  if (w.rain3h >= T.RAIN_3H_HIGH) {
+    rain3hLevel = "High";
+  } else if (w.rain3h >= T.RAIN_3H_MODERATE) {
+    rain3hLevel = "Moderate";
+  } else if (w.rain3h >= T.RAIN_3H_LOW) {
+    rain3hLevel = "Low";
+  }
+
+  let next6hLevel: RiskLevel = "None";
+  if (w.rainNext6h >= T.RAIN_NEXT6H_HIGH) {
+    next6hLevel = "High";
+  } else if (w.rainNext6h >= T.RAIN_NEXT6H_MODERATE) {
+    next6hLevel = "Moderate";
+  } else if (w.rainNext6h >= T.RAIN_NEXT6H_LOW) {
+    next6hLevel = "Low";
+  }
+
+  const codeLevel = rainCodeToLevel(classifyRainCode(w.weatherCode));
+
+  const level = worstCase([currentProbLevel, next3hProbLevel, rain3hLevel, next6hLevel, codeLevel]);
 
   if (level === "Moderate" || level === "High") {
-    if (LEVEL_VALUE[probLevel] >= 2) rules.push("ruleHighPrecipProb");
-    if (LEVEL_VALUE[amountLevel] >= 2) {
+    if (LEVEL_VALUE[currentProbLevel] >= 2 || LEVEL_VALUE[next3hProbLevel] >= 2) {
+      rules.push("ruleHighPrecipProb");
+    }
+    if (LEVEL_VALUE[rain3hLevel] >= 2 || LEVEL_VALUE[next6hLevel] >= 2) {
       if (!rules.includes("ruleNotableRain")) rules.push("ruleNotableRain");
     }
   }
@@ -346,30 +390,34 @@ export function evaluateRisk(
 
 export function assessTomorrowPrep(f: TomorrowForecast): PrepLevel {
   if (
-    f.tempMax     >= T.HEAT_TEMP_HIGH     ||
-    f.tempMin     <= T.COLD_TEMP_HIGH     ||
-    f.windMax     >= T.STORM_WIND_HIGH    ||
-    f.rainProbMax >= T.RAIN_PROB_HIGH     ||
+    f.tempMax     >= T.HEAT_TEMP_HIGH              ||
+    f.tempMin     <= T.COLD_TEMP_HIGH              ||
+    f.windMax     >= T.STORM_WIND_HIGH             ||
+    f.rainProbMax >= T.TOMORROW_RAIN_PROB_HIGH     ||
+    f.rainSum     >= T.TOMORROW_RAIN_AMT_HIGH      ||
+    isThunderstormCode(f.weatherCode)               ||
     f.pm25Avg     >= T.AQ_PM25_HIGH
   ) {
     return "High";
   }
 
   if (
-    f.tempMax     >= T.HEAT_TEMP_MODERATE     ||
-    f.tempMin     <= T.COLD_TEMP_MODERATE     ||
-    f.windMax     >= T.STORM_WIND_MODERATE    ||
-    f.rainProbMax >= T.RAIN_PROB_MODERATE     ||
+    f.tempMax     >= T.HEAT_TEMP_MODERATE              ||
+    f.tempMin     <= T.COLD_TEMP_MODERATE              ||
+    f.windMax     >= T.STORM_WIND_MODERATE             ||
+    f.rainProbMax >= T.TOMORROW_RAIN_PROB_MODERATE     ||
+    f.rainSum     >= T.TOMORROW_RAIN_AMT_MODERATE      ||
     f.pm25Avg     >= T.AQ_PM25_MODERATE
   ) {
     return "Moderate";
   }
 
   if (
-    f.tempMax     >= T.HEAT_TEMP_LOW     ||
-    f.tempMin     <= T.COLD_TEMP_LOW     ||
-    f.windMax     >= T.STORM_WIND_LOW    ||
-    f.rainProbMax >= T.RAIN_PROB_LOW     ||
+    f.tempMax     >= T.HEAT_TEMP_LOW              ||
+    f.tempMin     <= T.COLD_TEMP_LOW              ||
+    f.windMax     >= T.STORM_WIND_LOW             ||
+    f.rainProbMax >= T.TOMORROW_RAIN_PROB_LOW     ||
+    f.rainSum     >= T.TOMORROW_RAIN_AMT_LOW      ||
     f.pm25Avg     >= T.AQ_PM25_LOW
   ) {
     return "Low";

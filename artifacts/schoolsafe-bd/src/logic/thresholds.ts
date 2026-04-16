@@ -22,15 +22,35 @@ export const HEAT_FEELS_MODERATE = 41.0;
 export const HEAT_FEELS_HIGH = 44.0;
 
 /* ── Rain Risk Thresholds ──────────────────────────────── *
- * Uses precipitation probability (%) and 24-hour rain (mm). */
+ * 5-input model: current prob, next-3h max prob, recent 3h *
+ * rain, next 6h rain, and WMO weather code.                 */
 
 export const RAIN_PROB_LOW = 40;
 export const RAIN_PROB_MODERATE = 60;
 export const RAIN_PROB_HIGH = 80;
 
-export const RAIN_24H_LOW = 10;
-export const RAIN_24H_MODERATE = 20;
-export const RAIN_24H_HIGH = 44;
+export const RAIN_3H_LOW = 1;
+export const RAIN_3H_MODERATE = 5;
+export const RAIN_3H_HIGH = 15;
+
+export const RAIN_NEXT6H_LOW = 2;
+export const RAIN_NEXT6H_MODERATE = 10;
+export const RAIN_NEXT6H_HIGH = 25;
+
+/* ── Tomorrow Rain Prep Thresholds ─────────────────────── */
+
+export const TOMORROW_RAIN_PROB_LOW = 40;
+export const TOMORROW_RAIN_PROB_MODERATE = 60;
+export const TOMORROW_RAIN_PROB_HIGH = 75;
+
+export const TOMORROW_RAIN_AMT_LOW = 2;
+export const TOMORROW_RAIN_AMT_MODERATE = 5;
+export const TOMORROW_RAIN_AMT_HIGH = 10;
+
+export const TOMORROW_UMBRELLA_PROB = 50;
+export const TOMORROW_UMBRELLA_RAIN = 3;
+export const TOMORROW_UMBRELLA_STRONG_PROB = 75;
+export const TOMORROW_UMBRELLA_STRONG_RAIN = 10;
 
 /* ── Air Quality Thresholds (Bangladesh-calibrated) ─────── *
  * PM2.5 and PM10 (µg/m³). Uses worst-of-two dimensions.    */

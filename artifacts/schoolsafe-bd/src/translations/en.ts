@@ -307,6 +307,7 @@ const en = {
   tomorrowTipHeat: "High heat expected tomorrow — ensure students carry water and wear light clothing. Limit outdoor activities during the hottest hours.",
   tomorrowTipCold: "Cold conditions expected tomorrow — remind students to wear warm clothing and cover extremities. Avoid prolonged early-morning outdoor exposure.",
   tomorrowTipRain: "Rain is likely tomorrow — students should carry an umbrella or rain protection. School may consider sheltered assembly arrangements.",
+  tomorrowTipRainStrong: "Heavy rain or thunderstorms are expected tomorrow — ensure students carry strong rain protection. School should prepare sheltered assembly and consider adjusting outdoor activities. Avoid low-lying or waterlogged areas.",
   tomorrowTipWind: "Strong wind is expected tomorrow — secure loose outdoor items and restrict exposed outdoor activities.",
   tomorrowTipAir: "Poor air quality is forecast for tomorrow — keep windows closed and limit prolonged outdoor time.",
   tomorrowTipAuthorities: "School authorities should consider adjusting outdoor assembly, morning exercises, or outdoor activities in advance given tomorrow's elevated conditions.",

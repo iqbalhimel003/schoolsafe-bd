@@ -89,6 +89,19 @@ export async function fetchWeather(
     rain24h += h.rain[i] ?? 0;
   }
 
+  /* Max precipitation probability in the next 3 hours (forward-looking) */
+  const totalHours = (h.time as string[]).length;
+  let precipProbNext3hMax = 0;
+  for (let i = idx + 1; i <= Math.min(idx + 3, totalHours - 1); i++) {
+    precipProbNext3hMax = Math.max(precipProbNext3hMax, h.precipitation_probability[i] ?? 0);
+  }
+
+  /* Sum of forecast rain for the next 6 hours (forward-looking) */
+  let rainNext6h = 0;
+  for (let i = idx + 1; i <= Math.min(idx + 6, totalHours - 1); i++) {
+    rainNext6h += h.rain[i] ?? 0;
+  }
+
   return {
     temperature:              h.temperature_2m[idx]            ?? 0,
     humidity:                 h.relativehumidity_2m[idx]       ?? 0,
@@ -98,6 +111,8 @@ export async function fetchWeather(
     rain3h,
     rain6h,
     rain24h,
+    precipProbNext3hMax,
+    rainNext6h,
     windSpeed:                h.windspeed_10m[idx]             ?? 0,
     uvIndex:                  h.uv_index[idx]                  ?? 0,
     visibility:               h.visibility[idx]                ?? 10000,

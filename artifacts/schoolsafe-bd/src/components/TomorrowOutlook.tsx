@@ -21,6 +21,7 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { TomorrowForecast, PrepLevel } from "@/types";
 import * as T from "@/logic/thresholds";
+import { isThunderstormCode } from "@/logic/riskEngine";
 
 /* ── Helpers ────────────────────────────────────────────── */
 
@@ -117,8 +118,20 @@ export default function TomorrowOutlook({ forecast, prepLevel }: Props) {
   /* Priority 1 — Heat */
   if (forecast.tempMax >= T.HEAT_TEMP_MODERATE) tips.push(t("tomorrowTipHeat"));
 
-  /* Priority 2 — Rain */
-  if (forecast.rainProbMax >= T.RAIN_PROB_MODERATE) tips.push(t("tomorrowTipRain"));
+  /* Priority 2 — Rain (two-tier umbrella advice) */
+  const strongRain =
+    forecast.rainProbMax >= T.TOMORROW_UMBRELLA_STRONG_PROB ||
+    forecast.rainSum >= T.TOMORROW_UMBRELLA_STRONG_RAIN ||
+    isThunderstormCode(forecast.weatherCode);
+  const basicRain =
+    forecast.rainProbMax >= T.TOMORROW_UMBRELLA_PROB ||
+    forecast.rainSum >= T.TOMORROW_UMBRELLA_RAIN;
+
+  if (strongRain) {
+    tips.push(t("tomorrowTipRainStrong"));
+  } else if (basicRain) {
+    tips.push(t("tomorrowTipRain"));
+  }
 
   /* Priority 3 — Wind */
   if (forecast.windMax >= T.STORM_WIND_MODERATE) tips.push(t("tomorrowTipWind"));
