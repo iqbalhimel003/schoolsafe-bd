@@ -5,15 +5,22 @@
  *   - 6 metric tiles (max temp, min temp, rain prob, rain
  *     amount, max wind, avg PM2.5)
  *   - A PrepLevel badge (Low / Moderate / High preparation need)
- *   - 2–4 context-sensitive preparedness tips, priority-ordered
- *     and capped at 4. Tips are selected by threshold relevance;
- *     "authorities" tip is always included to ensure minimum 2.
+ *   - 2–4 context-sensitive preparedness tips
+ *
+ * Tips selection strategy (always 2–4):
+ *   1. Collect relevant condition tips in priority order using
+ *      shared threshold constants from logic/thresholds.ts.
+ *   2. Add "school authorities" tip when prepLevel === "High".
+ *   3. If total tips < 2, append fallback tips (low-risk general
+ *      + monitor) until minimum 2 is met.
+ *   4. Cap at 4.
  *
  * All text is bilingual via useLanguage().
  * ========================================================= */
 
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { TomorrowForecast, PrepLevel } from "@/types";
+import * as T from "@/logic/thresholds";
 
 /* ── Helpers ────────────────────────────────────────────── */
 
@@ -76,6 +83,9 @@ interface Props {
   prepLevel: PrepLevel;
 }
 
+const MIN_TIPS = 2;
+const MAX_TIPS = 4;
+
 export default function TomorrowOutlook({ forecast, prepLevel }: Props) {
   const { t, lang } = useLanguage();
 
@@ -86,38 +96,48 @@ export default function TomorrowOutlook({ forecast, prepLevel }: Props) {
       ? t("tomorrowPrepModerate")
       : t("tomorrowPrepLow");
 
-  /* ── Context-sensitive tips — priority-ordered, capped at 4 ─
+  /* ── Build tips list ─────────────────────────────────────
    *
-   * Steps:
-   *  1. Collect relevant condition tips in priority order.
-   *  2. The "school authorities" tip is always appended last —
-   *     it ensures a minimum of 2 tips when ≥ 1 condition fires,
-   *     and guarantees the list is never empty.
-   *  3. The list is capped at MAX_TIPS (4) by keeping the first
-   *     (MAX_TIPS − 1) condition tips and always keeping the
-   *     authorities tip.
+   * Step 1: Condition tips — priority-ordered, threshold-gated.
+   *   Uses the same threshold constants as assessTomorrowPrep()
+   *   and evaluateRisk() so behaviour is always consistent.
    *
-   * Thresholds match those used in assessTomorrowPrep():
-   *   Heat:  tempMax  ≥ HEAT_TEMP_MODERATE (32°C)
-   *   Rain:  rainProbMax ≥ RAIN_PRECIP_PROB_MODERATE (40%)
-   *   Wind:  windMax  ≥ STORM_WIND_MODERATE (40 km/h)
-   *   Cold:  tempMin  ≤ COLD_TEMP_MODERATE (15°C)
-   *   Air:   pm25Avg  ≥ AQ_PM25_MODERATE (15 µg/m³)
+   * Step 2: Authorities tip — only when prepLevel === "High".
+   *
+   * Step 3: Fallback tips — appended when total tips < MIN_TIPS
+   *   to satisfy the 2–4 floor on low-risk days.
+   *
+   * Step 4: Slice to MAX_TIPS (4).
    * ─────────────────────────────────────────────────────── */
-  const MAX_TIPS = 4;
+  const tips: string[] = [];
 
-  /* Ordered condition tips */
-  const conditionTips: string[] = [];
-  if (forecast.tempMax    >= 32) conditionTips.push(t("tomorrowTipHeat"));
-  if (forecast.rainProbMax >= 40) conditionTips.push(t("tomorrowTipRain"));
-  if (forecast.windMax    >= 40) conditionTips.push(t("tomorrowTipWind"));
-  if (forecast.tempMin    <= 15) conditionTips.push(t("tomorrowTipCold"));
-  if (forecast.pm25Avg    >= 15) conditionTips.push(t("tomorrowTipAir"));
+  /* Priority 1 — Heat */
+  if (forecast.tempMax >= T.HEAT_TEMP_MODERATE) tips.push(t("tomorrowTipHeat"));
 
-  /* Keep at most (MAX_TIPS − 1) condition tips to leave room for the
-   * authorities tip which is always appended as the final entry. */
-  const visibleConditionTips = conditionTips.slice(0, MAX_TIPS - 1);
-  const tips = [...visibleConditionTips, t("tomorrowTipAuthorities")];
+  /* Priority 2 — Rain */
+  if (forecast.rainProbMax >= T.RAIN_PRECIP_PROB_MODERATE) tips.push(t("tomorrowTipRain"));
+
+  /* Priority 3 — Wind */
+  if (forecast.windMax >= T.STORM_WIND_MODERATE) tips.push(t("tomorrowTipWind"));
+
+  /* Priority 4 — Cold */
+  if (forecast.tempMin <= T.COLD_TEMP_MODERATE) tips.push(t("tomorrowTipCold"));
+
+  /* Priority 5 — Air quality */
+  if (forecast.pm25Avg >= T.AQ_PM25_MODERATE) tips.push(t("tomorrowTipAir"));
+
+  /* Step 2: School authorities tip — High prep days only */
+  if (prepLevel === "High") tips.push(t("tomorrowTipAuthorities"));
+
+  /* Step 3: Fallbacks — ensures minimum MIN_TIPS on calm days */
+  const fallbacks = [t("tomorrowTipLowRiskGeneral"), t("tomorrowTipMonitor")];
+  for (const fb of fallbacks) {
+    if (tips.length >= MIN_TIPS) break;
+    tips.push(fb);
+  }
+
+  /* Step 4: Cap at MAX_TIPS */
+  const visibleTips = tips.slice(0, MAX_TIPS);
 
   return (
     <section className="space-y-4">
@@ -182,13 +202,13 @@ export default function TomorrowOutlook({ forecast, prepLevel }: Props) {
         />
       </div>
 
-      {/* Preparedness tips — always 2–4 tips */}
+      {/* Preparedness tips — always 2–4 */}
       <div className="bg-card border border-border rounded-lg p-4 shadow-sm">
         <h4 className="text-sm font-semibold text-foreground mb-2">
           {t("tomorrowPrepTipsTitle")}
         </h4>
         <ul className="space-y-2">
-          {tips.map((tip, i) => (
+          {visibleTips.map((tip, i) => (
             <li
               key={i}
               className="flex items-start gap-2 text-sm text-foreground"

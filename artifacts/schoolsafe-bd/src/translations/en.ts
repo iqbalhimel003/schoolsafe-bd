@@ -311,6 +311,8 @@ const en = {
   tomorrowTipAuthorities: "School authorities should consider adjusting outdoor assembly, morning exercises, or outdoor activities in advance given tomorrow's elevated conditions.",
   tomorrowNoData: "Tomorrow's forecast is unavailable for this location.",
   tomorrowLoadingLabel: "Loading tomorrow's forecast…",
+  tomorrowTipLowRiskGeneral: "Conditions tomorrow are within normal ranges. Standard school activities can proceed — students should carry water and dress appropriately for the season.",
+  tomorrowTipMonitor: "Keep monitoring conditions as tomorrow approaches. Situations may change in the hours ahead. Follow any updates from school authorities or official weather advisories.",
 
   /* ── Print / Share Report ────────────────────────── */
   printButton: "Print / Share Report",
