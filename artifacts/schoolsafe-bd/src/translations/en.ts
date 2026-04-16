@@ -180,8 +180,8 @@ const en = {
     "Temp ≤ 15°C → Moderate; ≤ 10°C → High (Cold Wave conditions). " +
     "Wind speed ≥ 20 km/h during cold conditions bumps risk up one level.",
   methodologyHeavyRainRule:
-    "Precipitation probability ≥ 60% AND hourly rain ≥ 5 mm → Moderate; ≥ 15 mm → High. " +
-    "Indicates risk to outdoor school activities.",
+    "Precipitation probability ≥ 60% AND 3-hour rain accumulation ≥ 15 mm → Moderate; ≥ 45 mm → High. " +
+    "Using a 3-hour rolling total captures sustained intense rainfall that poses risk to outdoor school activities.",
   methodologyFloodRule:
     "Precipitation probability ≥ 70% AND 6-hour rainfall accumulation ≥ 20 mm → Moderate; ≥ 40 mm → High. " +
     "Using a 6-hour rolling total captures sustained rain events that cause waterlogging at school access areas.",

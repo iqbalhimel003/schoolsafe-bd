@@ -68,11 +68,13 @@ export const COLD_WIND_BOOSTER = 20;
 /** Precipitation probability (%) required together with notable rain for Heavy Rain risk */
 export const HEAVY_RAIN_PRECIP_PROB = 60;
 
-/** Rain amount (mm/h) at or above which Heavy Rain risk becomes Moderate */
-export const HEAVY_RAIN_AMOUNT_MODERATE = 5;
+/** 3-hour rain accumulation (mm) at or above which Heavy Rain risk becomes Moderate
+ *  (equivalent to a sustained ~5 mm/h rate over 3 hours) */
+export const HEAVY_RAIN_AMOUNT_MODERATE = 15;
 
-/** Rain amount (mm/h) at or above which Heavy Rain risk becomes High */
-export const HEAVY_RAIN_AMOUNT_HIGH = 15;
+/** 3-hour rain accumulation (mm) at or above which Heavy Rain risk becomes High
+ *  (equivalent to a sustained ~15 mm/h rate over 3 hours) */
+export const HEAVY_RAIN_AMOUNT_HIGH = 45;
 
 /* ── Flood Risk Thresholds ───────────────────────────────── */
 

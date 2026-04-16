@@ -137,16 +137,16 @@ function evaluateCold(w: WeatherData): Evaluation {
   return { level, rules };
 }
 
-/** 5. Heavy Rain Risk — high precipitation probability AND notable rain rate */
+/** 5. Heavy Rain Risk — high precipitation probability AND notable 3-hour rain accumulation */
 function evaluateHeavyRain(w: WeatherData): Evaluation {
   const rules: TranslationKeys[] = [];
   let level: RiskLevel = "Low";
 
   if (w.precipitationProbability >= T.HEAVY_RAIN_PRECIP_PROB) {
-    if (w.rain >= T.HEAVY_RAIN_AMOUNT_HIGH) {
+    if (w.rain3h >= T.HEAVY_RAIN_AMOUNT_HIGH) {
       level = "High";
       rules.push("ruleHeavyRain");
-    } else if (w.rain >= T.HEAVY_RAIN_AMOUNT_MODERATE) {
+    } else if (w.rain3h >= T.HEAVY_RAIN_AMOUNT_MODERATE) {
       level = "Moderate";
       rules.push("ruleHeavyRain");
     }

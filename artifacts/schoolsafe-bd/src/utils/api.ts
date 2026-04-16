@@ -67,6 +67,13 @@ export async function fetchWeather(
   const h = data.hourly;
   const idx = findCurrentHourIndex(h.time as string[]);
 
+  /* Sum rain over the current hour and up to 2 preceding hours (3-hour window) */
+  let rain3h = 0;
+  const start3hIdx = Math.max(0, idx - 2);
+  for (let i = start3hIdx; i <= idx; i++) {
+    rain3h += h.rain[i] ?? 0;
+  }
+
   /* Sum rain over the current hour and up to 5 preceding hours (6-hour window) */
   let rain6h = 0;
   const startIdx = Math.max(0, idx - 5);
@@ -80,6 +87,7 @@ export async function fetchWeather(
     apparentTemperature:      h.apparent_temperature[idx]      ?? 0,
     precipitationProbability: h.precipitation_probability[idx] ?? 0,
     rain:                     h.rain[idx]                      ?? 0,
+    rain3h,
     rain6h,
     windSpeed:                h.windspeed_10m[idx]             ?? 0,
     uvIndex:                  h.uv_index[idx]                  ?? 0,
