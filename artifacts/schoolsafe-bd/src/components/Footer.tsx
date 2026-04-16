@@ -52,7 +52,8 @@ export default function Footer() {
                   href={`mailto:${email}`}
                   className="text-xs text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
                 >
-                  ✉ {email}
+                  <span className="font-medium">{t("footerContactEmail")}:</span>{" "}
+                  {email}
                 </a>
               )}
               {phone && (
@@ -60,7 +61,8 @@ export default function Footer() {
                   href={`tel:${phone}`}
                   className="text-xs text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
                 >
-                  📞 {phone}
+                  <span className="font-medium">{t("footerContactPhone")}:</span>{" "}
+                  {phone}
                 </a>
               )}
               {facebook && (
