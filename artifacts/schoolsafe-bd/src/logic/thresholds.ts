@@ -13,6 +13,7 @@
  * Uses the worse of actual temperature and feels-like       *
  * temperature. Each dimension has its own band boundaries.  */
 
+export const HEAT_TEMP_ADVISORY = 30.0;
 export const HEAT_TEMP_LOW = 35.0;
 export const HEAT_TEMP_MODERATE = 36.0;
 export const HEAT_TEMP_HIGH = 38.0;

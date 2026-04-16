@@ -115,8 +115,12 @@ export default function TomorrowOutlook({ forecast, prepLevel }: Props) {
    * ─────────────────────────────────────────────────────── */
   const tips: string[] = [];
 
-  /* Priority 1 — Heat */
-  if (forecast.tempMax >= T.HEAT_TEMP_MODERATE) tips.push(t("tomorrowTipHeat"));
+  /* Priority 1 — Heat (two-tier) */
+  if (forecast.tempMax >= T.HEAT_TEMP_MODERATE) {
+    tips.push(t("tomorrowTipHeat"));
+  } else if (forecast.tempMax > T.HEAT_TEMP_ADVISORY) {
+    tips.push(t("tomorrowTipHeatBasic"));
+  }
 
   /* Priority 2 — Rain (two-tier umbrella advice) */
   const strongRain =
