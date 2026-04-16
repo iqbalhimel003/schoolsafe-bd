@@ -7,7 +7,7 @@
  * triggers data fetching in the parent (Home.tsx).
  * ========================================================= */
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { DISTRICTS } from "@/data/locations";
 import type { District, Upazila, Language } from "@/types";
@@ -30,6 +30,40 @@ export default function LocationSelector({ onUpazilaSelect }: Props) {
   const [selectedDistrict, setSelectedDistrict] = useState<District | null>(null);
   const [upazilaSearch, setUpazilaSearch] = useState("");
   const [selectedUpazila, setSelectedUpazila] = useState<Upazila | null>(null);
+  const [districtOpen, setDistrictOpen] = useState(false);
+  const [upazilaOpen, setUpazilaOpen] = useState(false);
+
+  const districtRef = useRef<HTMLDivElement>(null);
+  const upazilaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (districtRef.current && !districtRef.current.contains(e.target as Node)) {
+        setDistrictOpen(false);
+      }
+      if (upazilaRef.current && !upazilaRef.current.contains(e.target as Node)) {
+        setUpazilaOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  function handleDistrictBlur() {
+    setTimeout(() => {
+      if (districtRef.current && !districtRef.current.contains(document.activeElement)) {
+        setDistrictOpen(false);
+      }
+    }, 150);
+  }
+
+  function handleUpazilaBlur() {
+    setTimeout(() => {
+      if (upazilaRef.current && !upazilaRef.current.contains(document.activeElement)) {
+        setUpazilaOpen(false);
+      }
+    }, 150);
+  }
 
   /* Filter districts by search */
   const filteredDistricts = DISTRICTS.filter((d) =>
@@ -44,6 +78,7 @@ export default function LocationSelector({ onUpazilaSelect }: Props) {
 
   function handleDistrictSelect(district: District) {
     setSelectedDistrict(district);
+    setDistrictOpen(false);
     setSelectedUpazila(null);
     setUpazilaSearch("");
     onUpazilaSelect(null);
@@ -51,6 +86,7 @@ export default function LocationSelector({ onUpazilaSelect }: Props) {
 
   function handleUpazilaSelect(upazila: Upazila) {
     setSelectedUpazila(upazila);
+    setUpazilaOpen(false);
     onUpazilaSelect(upazila);
   }
 
@@ -58,92 +94,99 @@ export default function LocationSelector({ onUpazilaSelect }: Props) {
     <section className="max-w-5xl mx-auto px-4 py-6">
       <div className="grid sm:grid-cols-2 gap-4">
         {/* District Selector */}
-        <div>
+        <div ref={districtRef} className="relative">
           <label className="block text-sm font-semibold text-foreground mb-1.5">
             {t("districtLabel")}
           </label>
-          <div className="relative border border-border rounded-lg bg-card shadow-sm overflow-hidden">
-            <input
-              type="search"
-              placeholder={t("searchDistrict")}
-              value={districtSearch}
-              onChange={(e) => setDistrictSearch(e.target.value)}
-              className="w-full px-3 py-2.5 text-sm border-b border-border bg-muted/40 outline-none placeholder:text-muted-foreground"
-            />
-            <ul className="max-h-44 overflow-y-auto divide-y divide-border/60">
-              {filteredDistricts.length === 0 ? (
-                <li className="px-3 py-2.5 text-sm text-muted-foreground">{t("noResults")}</li>
-              ) : (
-                filteredDistricts.map((d) => (
-                  <li key={d.id}>
-                    <button
-                      onClick={() => handleDistrictSelect(d)}
-                      className={`w-full text-left px-3 py-2.5 text-sm hover:bg-muted transition-colors ${
-                        selectedDistrict?.id === d.id
-                          ? "bg-primary/10 text-primary font-semibold"
-                          : "text-foreground"
-                      }`}
-                    >
-                      {getDistrictName(d, lang)}
-                    </button>
-                  </li>
-                ))
-              )}
-            </ul>
-          </div>
+          <input
+            type="search"
+            placeholder={t("searchDistrict")}
+            value={districtSearch}
+            onChange={(e) => setDistrictSearch(e.target.value)}
+            onFocus={() => setDistrictOpen(true)}
+            onBlur={handleDistrictBlur}
+            className="w-full px-3 py-2.5 text-sm border border-border rounded-lg bg-card shadow-sm outline-none placeholder:text-muted-foreground"
+          />
+          {districtOpen && (
+            <div className="absolute z-20 top-full mt-1 w-full border border-border rounded-lg bg-card shadow-md overflow-hidden">
+              <ul className="max-h-44 overflow-y-auto divide-y divide-border/60">
+                {filteredDistricts.length === 0 ? (
+                  <li className="px-3 py-2.5 text-sm text-muted-foreground">{t("noResults")}</li>
+                ) : (
+                  filteredDistricts.map((d) => (
+                    <li key={d.id}>
+                      <button
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => handleDistrictSelect(d)}
+                        className={`w-full text-left px-3 py-2.5 text-sm hover:bg-muted transition-colors ${
+                          selectedDistrict?.id === d.id
+                            ? "bg-primary/10 text-primary font-semibold"
+                            : "text-foreground"
+                        }`}
+                      >
+                        {getDistrictName(d, lang)}
+                      </button>
+                    </li>
+                  ))
+                )}
+              </ul>
+            </div>
+          )}
         </div>
 
         {/* Upazila Selector */}
-        <div>
+        <div
+          ref={upazilaRef}
+          className={`relative ${!selectedDistrict ? "opacity-50 pointer-events-none" : ""}`}
+        >
           <label className="block text-sm font-semibold text-foreground mb-1.5">
             {t("upazilaLabel")}
           </label>
-          <div
-            className={`relative border border-border rounded-lg bg-card shadow-sm overflow-hidden ${
-              !selectedDistrict ? "opacity-50 pointer-events-none" : ""
-            }`}
-          >
-            <input
-              type="search"
-              placeholder={t("searchUpazila")}
-              value={upazilaSearch}
-              onChange={(e) => setUpazilaSearch(e.target.value)}
-              disabled={!selectedDistrict}
-              className="w-full px-3 py-2.5 text-sm border-b border-border bg-muted/40 outline-none placeholder:text-muted-foreground"
-            />
-            <ul className="max-h-44 overflow-y-auto divide-y divide-border/60">
-              {!selectedDistrict ? (
-                <li className="px-3 py-2.5 text-sm text-muted-foreground">{t("selectDistrict")}</li>
-              ) : filteredUpazilas.length === 0 ? (
-                <li className="px-3 py-2.5 text-sm text-muted-foreground">{t("noResults")}</li>
-              ) : (
-                filteredUpazilas.map((u) => (
-                  <li key={u.id}>
-                    <button
-                      onClick={() => handleUpazilaSelect(u)}
-                      className={`w-full text-left px-3 py-2.5 text-sm hover:bg-muted transition-colors flex items-center justify-between gap-2 ${
-                        selectedUpazila?.id === u.id
-                          ? "bg-primary/10 text-primary font-semibold"
-                          : "text-foreground"
-                      }`}
-                    >
-                      <span>{getUpazilaName(u, lang)}</span>
-                      {u.isPilot && (
-                        <span className="text-xs bg-primary/15 text-primary px-1.5 py-0.5 rounded font-medium shrink-0">
-                          {t("pilotBadge")}
-                        </span>
-                      )}
-                      {u.hotspotLabel && (
-                        <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-medium shrink-0">
-                          {t("hotspotBadge")}
-                        </span>
-                      )}
-                    </button>
-                  </li>
-                ))
-              )}
-            </ul>
-          </div>
+          <input
+            type="search"
+            placeholder={t("searchUpazila")}
+            value={upazilaSearch}
+            onChange={(e) => setUpazilaSearch(e.target.value)}
+            onFocus={() => setUpazilaOpen(true)}
+            onBlur={handleUpazilaBlur}
+            disabled={!selectedDistrict}
+            className="w-full px-3 py-2.5 text-sm border border-border rounded-lg bg-card shadow-sm outline-none placeholder:text-muted-foreground"
+          />
+          {upazilaOpen && selectedDistrict && (
+            <div className="absolute z-20 top-full mt-1 w-full border border-border rounded-lg bg-card shadow-md overflow-hidden">
+              <ul className="max-h-44 overflow-y-auto divide-y divide-border/60">
+                {filteredUpazilas.length === 0 ? (
+                  <li className="px-3 py-2.5 text-sm text-muted-foreground">{t("noResults")}</li>
+                ) : (
+                  filteredUpazilas.map((u) => (
+                    <li key={u.id}>
+                      <button
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => handleUpazilaSelect(u)}
+                        className={`w-full text-left px-3 py-2.5 text-sm hover:bg-muted transition-colors flex items-center justify-between gap-2 ${
+                          selectedUpazila?.id === u.id
+                            ? "bg-primary/10 text-primary font-semibold"
+                            : "text-foreground"
+                        }`}
+                      >
+                        <span>{getUpazilaName(u, lang)}</span>
+                        {u.isPilot && (
+                          <span className="text-xs bg-primary/15 text-primary px-1.5 py-0.5 rounded font-medium shrink-0">
+                            {t("pilotBadge")}
+                          </span>
+                        )}
+                        {u.hotspotLabel && (
+                          <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-medium shrink-0">
+                            {t("hotspotBadge")}
+                          </span>
+                        )}
+                      </button>
+                    </li>
+                  ))
+                )}
+              </ul>
+            </div>
+          )}
         </div>
       </div>
 
