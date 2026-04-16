@@ -184,3 +184,74 @@
 .font-bangla {
   font-family: 'Noto Sans Bengali', 'Kalpurush', 'SolaimanLipi', sans-serif;
 }
+
+/* ── Print utilities ────────────────────────────────────
+ * .no-print  — hidden when printing, visible on screen
+ * .print-only — visible only when printing
+ * ────────────────────────────────────────────────────── */
+.print-only {
+  display: none;
+}
+
+@media print {
+  /* Hide everything marked as no-print */
+  .no-print {
+    display: none !important;
+  }
+
+  /* Show print-only elements */
+  .print-only {
+    display: block !important;
+  }
+
+  /* Clean page setup */
+  @page {
+    margin: 1.5cm;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 11pt;
+  }
+
+  /* Remove shadows and decorative backgrounds for B&W readability */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Keep risk badge colors for clarity — force color printing */
+  .risk-low,
+  .risk-moderate,
+  .risk-high {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* Keep overall safety badge backgrounds */
+  .bg-red-50,
+  .bg-amber-50,
+  .bg-green-50 {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* Ensure grid layouts work on paper */
+  .grid {
+    display: grid !important;
+  }
+
+  /* Avoid page breaks inside cards */
+  .rounded-lg,
+  .rounded-xl {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Section headings start on same page as their content */
+  h2, h3 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+}

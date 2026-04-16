@@ -209,6 +209,11 @@ const bn = {
   footerPurpose: "স্কুলসেফ বিডি — বাংলাদেশের স্কুলগুলোতে পরিবেশগত নিরাপত্তা সচেতনতার জন্য একটি বিজ্ঞান মেলার প্রকল্প।",
   footerDataSource: "আবহাওয়া ও বায়ু মানের তথ্য: Open-Meteo (open-meteo.com)",
   footerDisclaimer: "এই প্রোটোটাইপটি শুধুমাত্র শিক্ষামূলক উদ্দেশ্যে।",
+
+  /* ── প্রিন্ট / শেয়ার রিপোর্ট ─────────────────────── */
+  printButton: "প্রিন্ট / শেয়ার রিপোর্ট",
+  printReportTitle: "দৈনিক বিদ্যালয় নিরাপত্তা রিপোর্ট",
+  printGeneratedOn: "তৈরির তারিখ",
 };
 
 export default bn satisfies typeof en;

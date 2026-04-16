@@ -205,6 +205,11 @@ const en = {
   footerPurpose: "SchoolSafe BD — A science fair project for environmental school safety awareness in Bangladesh.",
   footerDataSource: "Weather & Air Quality Data: Open-Meteo (open-meteo.com)",
   footerDisclaimer: "This prototype is for educational purposes only.",
+
+  /* ── Print / Share Report ────────────────────────── */
+  printButton: "Print / Share Report",
+  printReportTitle: "Daily School Safety Report",
+  printGeneratedOn: "Generated on",
 };
 
 export default en;

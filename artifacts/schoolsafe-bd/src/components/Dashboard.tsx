@@ -292,18 +292,46 @@ function DashboardPanel({
   /* Contextual recommendations to show */
   const activeRecs = RECOMMENDATIONS.filter((rec) => rec.show(risk));
 
+  const today = new Date().toLocaleDateString(lang === "bn" ? "bn-BD" : "en-GB", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
   return (
     <div className="space-y-6">
 
-      {/* Header: title + last updated */}
+      {/* Print-only report header — hidden on screen, visible when printing */}
+      <div className="print-only border-b-2 border-black pb-4 mb-2">
+        <div className="flex items-center gap-2 mb-1">
+          <span aria-hidden="true">🌿</span>
+          <span className="text-lg font-bold">SchoolSafe BD</span>
+        </div>
+        <h1 className="text-2xl font-bold">{t("printReportTitle")}</h1>
+        <p className="text-base font-semibold mt-1">{locationName}</p>
+        <p className="text-sm mt-0.5">{t("printGeneratedOn")}: {today} — {t("lastUpdated")}: {formatTime(weather.fetchedAt)}</p>
+      </div>
+
+      {/* Header: title + last updated + Print button */}
       <div className="flex items-start justify-between flex-wrap gap-2">
         <div>
           <h2 className="text-xl font-bold text-foreground">{t("dashboardTitle")}</h2>
           <p className="text-sm text-muted-foreground mt-0.5">{locationName}</p>
         </div>
-        <div className="text-right text-xs text-muted-foreground">
-          <p>{t("lastUpdated")}: {formatTime(weather.fetchedAt)}</p>
-          <p className="mt-0.5">{t("dataSource")}</p>
+        <div className="flex items-start gap-3 flex-wrap justify-end">
+          <div className="text-right text-xs text-muted-foreground">
+            <p>{t("lastUpdated")}: {formatTime(weather.fetchedAt)}</p>
+            <p className="mt-0.5">{t("dataSource")}</p>
+          </div>
+          <button
+            onClick={() => window.print()}
+            className="no-print shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary/40 bg-primary/10 hover:bg-primary/20 active:bg-primary/30 text-primary text-xs font-semibold transition-colors"
+            aria-label={t("printButton")}
+          >
+            <span aria-hidden="true">🖨️</span>
+            {t("printButton")}
+          </button>
         </div>
       </div>
 

@@ -13,7 +13,7 @@ export default function Header() {
   }
 
   return (
-    <header className="bg-primary text-primary-foreground shadow-md">
+    <header className="no-print bg-primary text-primary-foreground shadow-md">
       <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
         {/* Branding */}
         <div>

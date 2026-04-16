@@ -28,7 +28,9 @@ export default function Home() {
 
   return (
     <main>
-      <Hero />
+      <div className="no-print">
+        <Hero />
+      </div>
 
       {/* Introduction — two info cards explaining purpose and usage */}
       <section className="max-w-5xl mx-auto px-4 pt-6 pb-2">
@@ -62,10 +64,12 @@ export default function Home() {
       </section>
 
       {/* Location Search */}
-      <LocationSelector onUpazilaSelect={setSelectedUpazila} />
+      <div className="no-print">
+        <LocationSelector onUpazilaSelect={setSelectedUpazila} />
+      </div>
 
       {/* Divider */}
-      <div className="max-w-5xl mx-auto px-4">
+      <div className="no-print max-w-5xl mx-auto px-4">
         <hr className="border-border" />
       </div>
 
@@ -73,7 +77,7 @@ export default function Home() {
       {selectedUpazila ? (
         <Dashboard selectedUpazila={selectedUpazila} />
       ) : (
-        <section className="max-w-5xl mx-auto px-4 py-8">
+        <section className="no-print max-w-5xl mx-auto px-4 py-8">
           <div className="bg-card border border-border rounded-xl p-10 text-center shadow-sm">
             <div className="text-5xl mb-4" aria-hidden="true">🌤</div>
             <h2 className="text-xl font-semibold text-foreground mb-2">
@@ -88,27 +92,35 @@ export default function Home() {
 
       {/* 24-Hour Forecast Chart — shown when a location is selected */}
       {selectedUpazila && (
-        <ForecastChart selectedUpazila={selectedUpazila} />
+        <div className="no-print">
+          <ForecastChart selectedUpazila={selectedUpazila} />
+        </div>
       )}
 
       {/* Divider */}
-      <div className="max-w-5xl mx-auto px-4">
+      <div className="no-print max-w-5xl mx-auto px-4">
         <hr className="border-border" />
       </div>
 
       {/* Pilot Upazila Comparison — live data for all 3 upazilas */}
-      <ComparisonSection />
+      <div className="no-print">
+        <ComparisonSection />
+      </div>
 
       {/* Divider */}
-      <div className="max-w-5xl mx-auto px-4">
+      <div className="no-print max-w-5xl mx-auto px-4">
         <hr className="border-border" />
       </div>
 
       {/* Methodology — all 7 risk rules with thresholds */}
-      <MethodologySection />
+      <div className="no-print">
+        <MethodologySection />
+      </div>
 
       {/* Limitations & Disclaimer */}
-      <LimitationsSection />
+      <div className="no-print">
+        <LimitationsSection />
+      </div>
     </main>
   );
 }
