@@ -357,6 +357,8 @@ const bn = {
   weekPrepHigh: "উচ্চ",
   weekNoData: "এই স্থানের জন্য সাপ্তাহিক পূর্বাভাস পাওয়া যাচ্ছে না।",
   weekToday: "আজ",
+  weekHeatSevere: "তাপ",
+  weekHeatWarm: "গরম",
 
   /* ── প্রিন্ট / শেয়ার রিপোর্ট ─────────────────────── */
   printButton: "প্রিন্ট / শেয়ার রিপোর্ট",

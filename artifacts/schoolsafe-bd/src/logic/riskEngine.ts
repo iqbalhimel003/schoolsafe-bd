@@ -423,5 +423,10 @@ export function assessTomorrowPrep(f: TomorrowForecast): PrepLevel {
     return "Low";
   }
 
+  /* Advisory: warm day (>30°C) — lowest caution tier */
+  if (f.tempMax > T.HEAT_TEMP_ADVISORY) {
+    return "Low";
+  }
+
   return "None";
 }

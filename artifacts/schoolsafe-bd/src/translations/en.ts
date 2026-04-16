@@ -354,6 +354,8 @@ const en = {
   weekPrepHigh: "High",
   weekNoData: "Weekly forecast is unavailable for this location.",
   weekToday: "Today",
+  weekHeatSevere: "Heat",
+  weekHeatWarm: "Warm",
 
   /* ── Print / Share Report ────────────────────────── */
   printButton: "Print / Share Report",

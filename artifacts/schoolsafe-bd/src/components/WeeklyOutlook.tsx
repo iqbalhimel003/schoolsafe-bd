@@ -12,6 +12,7 @@
 
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { WeeklyForecastDay, PrepLevel } from "@/types";
+import { HEAT_TEMP_ADVISORY, HEAT_TEMP_MODERATE } from "@/logic/thresholds";
 
 /* ── Helpers ────────────────────────────────────────────── */
 
@@ -132,11 +133,30 @@ export default function WeeklyOutlook({ days }: Props) {
                     {weatherIcon(day.weatherCode)}
                   </td>
 
-                  {/* Max / Min temp */}
+                  {/* Max / Min temp — with two-tier heat indicator */}
                   <td className="px-3 py-2.5 text-right whitespace-nowrap text-foreground tabular-nums">
-                    <span className="text-red-500 dark:text-red-400">{day.tempMax.toFixed(0)}°C</span>
-                    {" / "}
-                    <span className="text-blue-500 dark:text-blue-400">{day.tempMin.toFixed(0)}°C</span>
+                    <span className="inline-flex items-center justify-end gap-1">
+                      {day.tempMax >= HEAT_TEMP_MODERATE ? (
+                        <span
+                          className="text-[10px] font-bold px-1 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"
+                          title={`Severe heat ≥${HEAT_TEMP_MODERATE}°C`}
+                        >
+                          🌡️ {t("weekHeatSevere")}
+                        </span>
+                      ) : day.tempMax > HEAT_TEMP_ADVISORY ? (
+                        <span
+                          className="text-[10px] font-bold px-1 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
+                          title={`Warm day >${HEAT_TEMP_ADVISORY}°C`}
+                        >
+                          ☀️ {t("weekHeatWarm")}
+                        </span>
+                      ) : null}
+                      <span>
+                        <span className="text-red-500 dark:text-red-400">{day.tempMax.toFixed(0)}°C</span>
+                        {" / "}
+                        <span className="text-blue-500 dark:text-blue-400">{day.tempMin.toFixed(0)}°C</span>
+                      </span>
+                    </span>
                   </td>
 
                   {/* Rain probability */}
