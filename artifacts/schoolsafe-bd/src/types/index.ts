@@ -7,6 +7,20 @@ export type Language = "en" | "bn";
 
 export type RiskLevel = "Low" | "Moderate" | "High";
 
+export type RiskType =
+  | "heat"
+  | "rain"
+  | "airQuality"
+  | "cold"
+  | "heavyRain"
+  | "flood"
+  | "storm";
+
+/** All seven risk types — used to tag bullets that are relevant to any active risk */
+export const ALL_RISK_TYPES: RiskType[] = [
+  "heat", "rain", "airQuality", "cold", "heavyRain", "flood", "storm",
+];
+
 /* A single district with its upazilas */
 export interface District {
   id: string;

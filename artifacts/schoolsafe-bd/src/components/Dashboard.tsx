@@ -18,7 +18,8 @@ import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fetchWeather, fetchAirQuality } from "@/utils/api";
 import { evaluateRisk } from "@/logic/riskEngine";
-import type { Upazila, RiskLevel, WeatherData, AirQualityData, RiskResult } from "@/types";
+import type { Upazila, RiskLevel, RiskType, WeatherData, AirQualityData, RiskResult } from "@/types";
+import { ALL_RISK_TYPES } from "@/types";
 import type { TranslationKeys } from "@/translations/en";
 
 /* ── Types ──────────────────────────────────────────────── */
@@ -117,15 +118,37 @@ function RiskCard({
 
 /* ── Guidance section ───────────────────────────────────── */
 
-function GuidanceSection({ title, items }: { title: string; items: string[] }) {
+/** A guidance bullet tagged with the risk types it applies to */
+interface GuidanceBullet {
+  key: TranslationKeys;
+  /** Active risk types that make this bullet relevant */
+  risks: RiskType[];
+}
+
+/**
+ * Renders a guidance card whose bullets are filtered by the active risk set.
+ * If no bullets survive the filter, the entire card is hidden (returns null).
+ */
+function FilteredGuidanceSection({
+  title,
+  bullets,
+  activeRisks,
+}: {
+  title: string;
+  bullets: GuidanceBullet[];
+  activeRisks: Set<RiskType>;
+}) {
+  const { t } = useLanguage();
+  const visible = bullets.filter((b) => b.risks.some((r) => activeRisks.has(r)));
+  if (visible.length === 0) return null;
   return (
     <div className="bg-card border border-border rounded-lg p-4 shadow-sm">
       <h4 className="text-sm font-semibold text-foreground mb-2">{title}</h4>
       <ul className="space-y-1.5">
-        {items.map((item, i) => (
-          <li key={i} className="flex items-start gap-2 text-sm text-foreground">
+        {visible.map((b) => (
+          <li key={b.key} className="flex items-start gap-2 text-sm text-foreground">
             <span className="text-primary shrink-0 mt-0.5" aria-hidden="true">▸</span>
-            <span className="leading-snug">{item}</span>
+            <span className="leading-snug">{t(b.key)}</span>
           </li>
         ))}
       </ul>
@@ -310,6 +333,58 @@ function DashboardPanel({
   const risk = evaluateRisk(weather, airQuality);
   const locationName = lang === "bn" ? upazila.nameBn : upazila.nameEn;
 
+  /* Set of risk types that are currently above Low */
+  const activeRisks = new Set<RiskType>(
+    (["heat", "rain", "airQuality", "cold", "heavyRain", "flood", "storm"] as RiskType[])
+      .filter((k) => risk[k] !== "Low")
+  );
+
+  /* ── Tagged bullet arrays ─────────────────────────────── */
+
+  const authoritiesBullets: GuidanceBullet[] = [
+    { key: "guidanceAuthorities1", risks: ["heat", "cold", "heavyRain", "storm"] },
+    { key: "guidanceAuthorities2", risks: ALL_RISK_TYPES },
+    { key: "guidanceAuthorities3", risks: ALL_RISK_TYPES },
+    { key: "guidanceAuthorities4", risks: ["heat", "cold", "airQuality", "heavyRain", "flood", "storm"] },
+    { key: "guidanceAuthorities5", risks: ["rain", "heavyRain", "flood", "storm"] },
+  ];
+
+  const teachersBullets: GuidanceBullet[] = [
+    { key: "guidanceTeachers1", risks: ["heat", "cold", "airQuality", "rain", "heavyRain"] },
+    { key: "guidanceTeachers2", risks: ALL_RISK_TYPES },
+    { key: "guidanceTeachers3", risks: ["heat", "cold", "airQuality", "heavyRain", "flood", "storm"] },
+    { key: "guidanceTeachers4", risks: ["heat", "cold", "rain", "airQuality", "heavyRain", "storm"] },
+    { key: "guidanceTeachers5", risks: ["heavyRain", "flood", "storm"] },
+  ];
+
+  const guardiansBullets: GuidanceBullet[] = [
+    { key: "guidanceGuardians1", risks: ["heat", "cold", "rain", "airQuality", "heavyRain", "storm"] },
+    { key: "guidanceGuardians2", risks: ["rain", "heavyRain", "flood", "storm"] },
+    { key: "guidanceGuardians3", risks: ["heat", "cold", "airQuality", "heavyRain", "flood", "storm"] },
+    { key: "guidanceGuardians4", risks: ALL_RISK_TYPES },
+  ];
+
+  const studentsBullets: GuidanceBullet[] = [
+    { key: "guidanceStudents1", risks: ["heat"] },
+    { key: "guidanceStudents2", risks: ["cold"] },
+    { key: "guidanceStudents3", risks: ["rain", "heavyRain", "flood", "storm"] },
+    { key: "guidanceStudents4", risks: ["airQuality", "storm", "heavyRain", "flood"] },
+    { key: "guidanceStudents5", risks: ALL_RISK_TYPES },
+  ];
+
+  const vulnStudentsBullets: GuidanceBullet[] = [
+    { key: "guidanceVulnStudents1", risks: ["heat", "cold", "airQuality", "heavyRain", "flood", "storm"] },
+    { key: "guidanceVulnStudents2", risks: ALL_RISK_TYPES },
+    { key: "guidanceVulnStudents3", risks: ["heat", "cold", "airQuality", "heavyRain", "flood", "storm"] },
+    { key: "guidanceVulnStudents4", risks: ["heat", "cold", "airQuality", "heavyRain", "flood", "storm"] },
+  ];
+
+  const vulnTeachersBullets: GuidanceBullet[] = [
+    { key: "guidanceVulnTeachers1", risks: ["heat", "cold", "airQuality", "heavyRain", "flood", "storm"] },
+    { key: "guidanceVulnTeachers2", risks: ["heavyRain", "flood", "storm"] },
+    { key: "guidanceVulnTeachers3", risks: ["heat", "cold", "airQuality", "heavyRain", "flood", "storm"] },
+  ];
+
   /* Translation helpers for risk levels */
   function levelLabel(level: RiskLevel): string {
     if (level === "High") return t("safetyHigh");
@@ -359,13 +434,13 @@ function DashboardPanel({
   /* Contextual recommendations to show */
   const activeRecs = RECOMMENDATIONS.filter((rec) => rec.show(risk));
 
-  /* Risk presence flags for conditional guidance sections */
-  const anyRisk       = risk.overall !== "Low";
-  const hasAirRisk    = risk.airQuality !== "Low";
-  const hasColdRisk   = risk.cold !== "Low";
-  const hasHeatRisk   = risk.heat !== "Low";
-  const hasRainRisk   = risk.rain !== "Low" || risk.heavyRain !== "Low" || risk.flood !== "Low" || risk.storm !== "Low";
-  const hasAllergyRisk = risk.heat !== "Low" || risk.cold !== "Low" || risk.airQuality !== "Low";
+  /* Risk presence flags for condition-based section guards */
+  const anyRisk        = activeRisks.size > 0;
+  const hasAirRisk     = activeRisks.has("airQuality");
+  const hasColdRisk    = activeRisks.has("cold");
+  const hasHeatRisk    = activeRisks.has("heat");
+  const hasRainRisk    = activeRisks.has("rain") || activeRisks.has("heavyRain") || activeRisks.has("flood") || activeRisks.has("storm");
+  const hasAllergyRisk = activeRisks.has("heat") || activeRisks.has("cold") || activeRisks.has("airQuality");
 
   const today = new Date().toLocaleDateString(lang === "bn" ? "bn-BD" : "en-GB", {
     weekday: "long",
@@ -551,50 +626,31 @@ function DashboardPanel({
       {/* ── Role-based & condition-based guidance (only when any risk is active) ── */}
       {anyRisk && (
         <>
-          {/* Section 1: Role-based guidance */}
+          {/* Section 1: Role-based guidance — bullets filtered by active risks */}
           <div>
             <h3 className="text-base font-semibold text-foreground mb-3">
               {lang === "bn" ? "ভূমিকা-ভিত্তিক নির্দেশনা" : "Guidance by Role"}
             </h3>
             <div className="grid sm:grid-cols-2 gap-3">
-              <GuidanceSection
+              <FilteredGuidanceSection
                 title={t("guidanceAuthoritiesTitle")}
-                items={[
-                  t("guidanceAuthorities1"),
-                  t("guidanceAuthorities2"),
-                  t("guidanceAuthorities3"),
-                  t("guidanceAuthorities4"),
-                  t("guidanceAuthorities5"),
-                ]}
+                bullets={authoritiesBullets}
+                activeRisks={activeRisks}
               />
-              <GuidanceSection
+              <FilteredGuidanceSection
                 title={t("guidanceTeachersTitle")}
-                items={[
-                  t("guidanceTeachers1"),
-                  t("guidanceTeachers2"),
-                  t("guidanceTeachers3"),
-                  t("guidanceTeachers4"),
-                  t("guidanceTeachers5"),
-                ]}
+                bullets={teachersBullets}
+                activeRisks={activeRisks}
               />
-              <GuidanceSection
+              <FilteredGuidanceSection
                 title={t("guidanceGuardiansTitle")}
-                items={[
-                  t("guidanceGuardians1"),
-                  t("guidanceGuardians2"),
-                  t("guidanceGuardians3"),
-                  t("guidanceGuardians4"),
-                ]}
+                bullets={guardiansBullets}
+                activeRisks={activeRisks}
               />
-              <GuidanceSection
+              <FilteredGuidanceSection
                 title={t("guidanceStudentsTitle")}
-                items={[
-                  t("guidanceStudents1"),
-                  t("guidanceStudents2"),
-                  t("guidanceStudents3"),
-                  t("guidanceStudents4"),
-                  t("guidanceStudents5"),
-                ]}
+                bullets={studentsBullets}
+                activeRisks={activeRisks}
               />
             </div>
           </div>
@@ -607,74 +663,72 @@ function DashboardPanel({
               </h3>
               <div className="grid sm:grid-cols-2 gap-3">
                 {hasAirRisk && (
-                  <GuidanceSection
+                  <FilteredGuidanceSection
                     title={t("guidanceLungTitle")}
-                    items={[
-                      t("guidanceLung1"),
-                      t("guidanceLung2"),
-                      t("guidanceLung3"),
-                      t("guidanceLung4"),
+                    bullets={[
+                      { key: "guidanceLung1", risks: ["airQuality"] },
+                      { key: "guidanceLung2", risks: ["airQuality"] },
+                      { key: "guidanceLung3", risks: ["airQuality"] },
+                      { key: "guidanceLung4", risks: ["airQuality"] },
                     ]}
+                    activeRisks={activeRisks}
                   />
                 )}
                 {hasColdRisk && (
-                  <GuidanceSection
+                  <FilteredGuidanceSection
                     title={t("guidanceColdSensitiveTitle")}
-                    items={[
-                      t("guidanceColdSensitive1"),
-                      t("guidanceColdSensitive2"),
-                      t("guidanceColdSensitive3"),
+                    bullets={[
+                      { key: "guidanceColdSensitive1", risks: ["cold"] },
+                      { key: "guidanceColdSensitive2", risks: ["cold"] },
+                      { key: "guidanceColdSensitive3", risks: ["cold"] },
                     ]}
+                    activeRisks={activeRisks}
                   />
                 )}
                 {hasHeatRisk && (
-                  <GuidanceSection
+                  <FilteredGuidanceSection
                     title={t("guidanceHeatSensitiveTitle")}
-                    items={[
-                      t("guidanceHeatSensitive1"),
-                      t("guidanceHeatSensitive2"),
-                      t("guidanceHeatSensitive3"),
+                    bullets={[
+                      { key: "guidanceHeatSensitive1", risks: ["heat"] },
+                      { key: "guidanceHeatSensitive2", risks: ["heat"] },
+                      { key: "guidanceHeatSensitive3", risks: ["heat"] },
                     ]}
+                    activeRisks={activeRisks}
                   />
                 )}
                 {hasRainRisk && (
-                  <GuidanceSection
+                  <FilteredGuidanceSection
                     title={t("guidanceRainSensitiveTitle")}
-                    items={[
-                      t("guidanceRainSensitive1"),
-                      t("guidanceRainSensitive2"),
-                      t("guidanceRainSensitive3"),
-                      t("guidanceRainSensitive4"),
+                    bullets={[
+                      { key: "guidanceRainSensitive1", risks: ["rain", "heavyRain", "flood", "storm"] },
+                      { key: "guidanceRainSensitive2", risks: ["rain", "heavyRain", "flood", "storm"] },
+                      { key: "guidanceRainSensitive3", risks: ["rain", "heavyRain", "flood", "storm"] },
+                      { key: "guidanceRainSensitive4", risks: ["rain", "heavyRain", "flood", "storm"] },
                     ]}
+                    activeRisks={activeRisks}
                   />
                 )}
                 {hasAllergyRisk && (
-                  <GuidanceSection
+                  <FilteredGuidanceSection
                     title={t("guidanceAllergyTitle")}
-                    items={[
-                      t("guidanceAllergy1"),
-                      t("guidanceAllergy2"),
-                      t("guidanceAllergy3"),
-                      t("guidanceAllergy4"),
+                    bullets={[
+                      { key: "guidanceAllergy1", risks: ["heat", "cold", "airQuality"] },
+                      { key: "guidanceAllergy2", risks: ["heat", "cold", "airQuality"] },
+                      { key: "guidanceAllergy3", risks: ["heat", "cold", "airQuality"] },
+                      { key: "guidanceAllergy4", risks: ["heat", "cold", "airQuality"] },
                     ]}
+                    activeRisks={activeRisks}
                   />
                 )}
-                <GuidanceSection
+                <FilteredGuidanceSection
                   title={t("guidanceVulnStudentsTitle")}
-                  items={[
-                    t("guidanceVulnStudents1"),
-                    t("guidanceVulnStudents2"),
-                    t("guidanceVulnStudents3"),
-                    t("guidanceVulnStudents4"),
-                  ]}
+                  bullets={vulnStudentsBullets}
+                  activeRisks={activeRisks}
                 />
-                <GuidanceSection
+                <FilteredGuidanceSection
                   title={t("guidanceVulnTeachersTitle")}
-                  items={[
-                    t("guidanceVulnTeachers1"),
-                    t("guidanceVulnTeachers2"),
-                    t("guidanceVulnTeachers3"),
-                  ]}
+                  bullets={vulnTeachersBullets}
+                  activeRisks={activeRisks}
                 />
               </div>
             </div>
