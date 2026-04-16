@@ -1,0 +1,199 @@
+Please refine the website’s safety guidance system further.
+
+I want the website to display more specific, condition-based precautionary guidance for different user groups, while still keeping the project school-appropriate, science-fair-friendly, and non-diagnostic.
+
+Important safety boundary:
+- Do not provide medical diagnosis
+- Do not provide treatment instructions
+- Do not claim to replace a doctor, hospital, or official emergency guidance
+- Show only general environmental precautionary guidance based on current weather and active risk factors
+- Include a clear disclaimer that people with serious symptoms or worsening conditions should seek professional medical advice and follow official instructions
+
+New requirement:
+The website should show separate safety guidance for:
+1. School authorities
+2. Teachers
+3. Guardians / Parents
+4. Students
+
+In addition, add more specific precautionary guidance for sensitive or vulnerable people, especially:
+1. People with lung-related problems
+2. People who are sensitive to cold weather
+3. People who are sensitive to heat
+4. People who are sensitive to rain or damp weather
+5. People who have allergy problems related to heat, cold, or dust
+6. Sick or physically vulnerable students
+7. Sick or physically vulnerable teachers
+
+Important display behavior:
+- Do NOT show all guidance sections all the time
+- Show only the guidance that is relevant to the currently active weather and risk conditions
+- Keep the interface clean and focused
+- Avoid clutter
+- Use conditional rendering so unnecessary guidance is hidden when the related risk is inactive
+
+Display logic:
+Always show:
+- overall school safety status
+- core general recommendation
+
+Conditionally show:
+- guidance for School Authorities, Teachers, Guardians, and Students when relevant to the active risks
+- lung-related guidance when air quality, dust, PM2.5, or poor-air conditions are active
+- cold-sensitive guidance when cold risk is active
+- heat-sensitive guidance when heat risk is active
+- rain/damp-sensitive guidance when rain, heavy rain, flood, or storm-related risk is active
+- allergy-related guidance when heat, cold, dust, or poor-air conditions are active
+- sick or vulnerable student guidance when any significant environmental risk is active
+- sick or vulnerable teacher guidance when any significant environmental risk is active
+
+Optional UI behavior:
+- If needed, add a compact “Show more precautions” / “আরও সতর্কতা দেখুন” expandable section for extra relevant guidance
+- Keep this optional section neat and not overwhelming
+
+These guidance sections should respond to active environmental risks such as:
+- heat
+- rain
+- air quality
+- cold
+- heavy rain
+- flood
+- storm / cyclone
+
+Please extend the recommendation system so that the website can show concise, role-based and condition-based safety instructions.
+
+Examples of the type of precautionary guidance expected:
+
+Role-based guidance:
+
+For school authorities:
+- consider delaying or adjusting morning assembly during severe heat, cold, heavy rain, or storm conditions
+- reduce or suspend outdoor activities when environmental risk is high
+- communicate safety alerts clearly to teachers and families
+- arrange extra monitoring for vulnerable students
+- keep school entry, exit, and movement areas safer during rain or flood-prone conditions
+
+For teachers:
+- monitor students for visible discomfort during extreme heat, cold, poor air quality, or rain
+- reduce outdoor class activity when needed
+- keep vulnerable or unwell students indoors when conditions are poor
+- remind students about water, warm clothing, rain protection, or mask use where appropriate
+- follow school safety instructions during severe weather
+
+For guardians / parents:
+- send children with water, warm clothing, rain protection, or masks as needed
+- be careful about travel during heavy rain, flood-prone, or stormy conditions
+- avoid unnecessary exposure for children who are unwell or environmentally sensitive
+- follow school notices and weather-related safety updates
+
+For students:
+- carry water during hot conditions
+- wear warm clothing during cold conditions
+- use umbrella or rain protection during rain
+- reduce outdoor exposure during poor air quality, storm, or severe weather
+- follow teacher and school instructions carefully
+
+Specific condition-based precautionary guidance:
+
+For people with lung-related problems:
+- reduce outdoor exposure during poor air quality, dust, or smoke-like conditions
+- avoid strenuous outdoor activity when air quality risk is high
+- keep necessary personal protective items or prescribed medical support if already advised by a doctor
+- seek professional medical advice if breathing difficulty worsens
+
+For people sensitive to cold:
+- avoid prolonged exposure during cold mornings or cold-wave-like conditions
+- wear sufficient warm clothing
+- reduce early morning outdoor activity when cold risk is high
+
+For people sensitive to heat:
+- avoid prolonged exposure during hot periods
+- reduce strenuous activity during high heat risk
+- maintain hydration and stay in shaded or cooler places when possible
+
+For people sensitive to rain or damp weather:
+- avoid staying in wet clothes
+- use rain protection
+- be careful on slippery or waterlogged paths
+- reduce unnecessary outdoor movement during heavy rain
+
+For people with allergy problems related to heat, cold, or dust:
+- reduce exposure to triggering conditions when risk is active
+- avoid unnecessary outdoor exposure during dust or poor air quality
+- use appropriate protective measures already recommended to them personally
+- seek medical advice if symptoms become severe
+
+For sick or vulnerable students:
+- avoid prolonged outdoor exposure during high heat, cold, poor air quality, heavy rain, flood, or storm conditions
+- remain under closer adult supervision when conditions are poor
+- rest indoors when environmental conditions are unsafe
+- follow professional medical advice if symptoms worsen
+
+For sick or vulnerable teachers:
+- reduce unnecessary outdoor exposure during adverse environmental conditions
+- take added caution during travel and duty in severe weather
+- follow professional medical guidance if symptoms worsen
+
+Implementation guidance:
+- Keep all advice short, practical, and grouped clearly
+- Use compact cards or grouped sections, not long paragraphs
+- Use conditional rendering so only relevant advice appears when the corresponding risk is active
+- Group recommendations under clear bilingual headings
+- Keep the current recommendation system and extend it cleanly
+- Do not redesign unrelated parts
+- Preserve all existing working features
+
+Translation requirements:
+- Add proper English and Bangla translations for all new role-based and condition-based guidance
+- Use natural, professional Bangla suitable for schools in Bangladesh
+- Keep terminology clear and consistent
+
+Suggested bilingual section titles:
+
+English:
+- Guidance for School Authorities
+- Guidance for Teachers
+- Guidance for Guardians
+- Guidance for Students
+- Extra Precautions for People with Lung Problems
+- Extra Precautions for People Sensitive to Cold
+- Extra Precautions for People Sensitive to Heat
+- Extra Precautions for People Sensitive to Rain or Damp Weather
+- Extra Precautions for People with Heat, Cold, or Dust Allergy
+- Extra Precautions for Sick or Vulnerable Students
+- Extra Precautions for Sick or Vulnerable Teachers
+
+Bangla:
+- স্কুল কর্তৃপক্ষের জন্য নির্দেশনা
+- শিক্ষকদের জন্য নির্দেশনা
+- অভিভাবকদের জন্য নির্দেশনা
+- ছাত্র-ছাত্রীদের জন্য নির্দেশনা
+- ফুসফুসজনিত সমস্যায় আক্রান্তদের জন্য অতিরিক্ত সতর্কতা
+- ঠান্ডায় সংবেদনশীল ব্যক্তিদের জন্য অতিরিক্ত সতর্কতা
+- গরমে সংবেদনশীল ব্যক্তিদের জন্য অতিরিক্ত সতর্কতা
+- বৃষ্টি বা স্যাঁতসেঁতে আবহাওয়ায় সংবেদনশীল ব্যক্তিদের জন্য অতিরিক্ত সতর্কতা
+- গরম, ঠান্ডা বা ধুলোবালিজনিত অ্যালার্জিপ্রবণ ব্যক্তিদের জন্য অতিরিক্ত সতর্কতা
+- অসুস্থ বা ঝুঁকিপূর্ণ ছাত্র-ছাত্রীদের জন্য অতিরিক্ত সতর্কতা
+- অসুস্থ বা ঝুঁকিপূর্ণ শিক্ষকদের জন্য অতিরিক্ত সতর্কতা
+
+Also add or update a disclaimer such as:
+
+English:
+These are general environmental safety precautions only. They do not replace professional medical advice, treatment, or official emergency instructions. People with severe symptoms, breathing difficulty, or worsening health conditions should seek professional medical care and follow official guidance.
+
+Bangla:
+এগুলো কেবল পরিবেশগত ঝুঁকি-ভিত্তিক সাধারণ সতর্কতামূলক নির্দেশনা। এগুলো চিকিৎসকের পরামর্শ, চিকিৎসা, বা সরকারি জরুরি নির্দেশনার বিকল্প নয়। গুরুতর উপসর্গ, শ্বাসকষ্ট, বা শারীরিক অবস্থার অবনতি হলে অবশ্যই চিকিৎসকের পরামর্শ ও সরকারি নির্দেশনা অনুসরণ করতে হবে।
+
+Important scope control:
+- Do only this guidance enhancement
+- Do not redesign unrelated sections
+- Do not remove current recommendation logic
+- Extend the current recommendation system cleanly
+- Preserve all existing working features
+
+When this update is complete:
+1. stop immediately
+2. summarize what was added
+3. list files changed
+4. explain how the role-based and condition-based guidance is triggered
+5. wait for my instruction
