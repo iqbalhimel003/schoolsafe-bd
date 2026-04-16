@@ -46,7 +46,7 @@ function maskIp(ip: string | undefined): string {
   if (v4plain) return v4plain[1] + ".x";
   if (ip.includes(":")) {
     const parts = ip.split(":");
-    return parts.slice(0, 3).join(":") + ":x:x:x:x:x";
+    return parts.slice(0, 4).join(":") + ":x:x:x:x";
   }
   return "unknown";
 }
@@ -59,11 +59,10 @@ function extractIp(req: Request): string {
   return req.ip ?? req.socket.remoteAddress ?? "";
 }
 
-function classifyDevice(uaResult: ReturnType<UAParser["getResult"]>): string {
+function classifyDevice(uaResult: ReturnType<UAParser["getResult"]>): "mobile" | "tablet" | "desktop" {
   const dt = uaResult.device.type;
   if (dt === "mobile") return "mobile";
   if (dt === "tablet") return "tablet";
-  if (dt === "smarttv" || dt === "console" || dt === "wearable") return dt;
   return "desktop";
 }
 
