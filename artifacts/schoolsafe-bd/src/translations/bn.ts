@@ -61,6 +61,7 @@ const bn = {
   apparentTemperature: "অনুভূত তাপমাত্রা",
   precipitationProbability: "বৃষ্টির সম্ভাবনা",
   rain: "বৃষ্টিপাত",
+  rain6hLabel: "৬ঘণ্টার বৃষ্টি",
   windSpeed: "বায়ুর গতি",
   uvIndex: "UV সূচক",
   visibility: "দৃশ্যমানতা",

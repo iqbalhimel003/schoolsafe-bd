@@ -83,11 +83,13 @@ function RiskCard({
   label,
   level,
   levelLabel,
+  subValue,
 }: {
   icon: string;
   label: string;
   level: RiskLevel;
   levelLabel: string;
+  subValue?: string;
 }) {
   return (
     <div className={`bg-card border rounded-lg p-4 shadow-sm transition-colors ${
@@ -100,6 +102,9 @@ function RiskCard({
       <span className={`inline-block text-xs px-2.5 py-1 rounded-full ${riskClass(level)}`}>
         {levelLabel}
       </span>
+      {subValue && (
+        <p className="text-xs text-muted-foreground mt-1.5">{subValue}</p>
+      )}
     </div>
   );
 }
@@ -362,7 +367,7 @@ function DashboardPanel({
           <RiskCard icon="🌫️" label={t("airQualityRisk")} level={risk.airQuality} levelLabel={levelLabel(risk.airQuality)} />
           <RiskCard icon="🧥" label={t("coldRisk")}       level={risk.cold}       levelLabel={levelLabel(risk.cold)} />
           <RiskCard icon="⛈️" label={t("heavyRainRisk")}  level={risk.heavyRain}  levelLabel={levelLabel(risk.heavyRain)} />
-          <RiskCard icon="🌊" label={t("floodRisk")}      level={risk.flood}      levelLabel={levelLabel(risk.flood)} />
+          <RiskCard icon="🌊" label={t("floodRisk")}      level={risk.flood}      levelLabel={levelLabel(risk.flood)} subValue={`${t("rain6hLabel")}: ${weather.rain6h.toFixed(1)} mm`} />
           <RiskCard icon="🌀" label={t("stormRisk")}      level={risk.storm}      levelLabel={levelLabel(risk.storm)} />
         </div>
       </div>

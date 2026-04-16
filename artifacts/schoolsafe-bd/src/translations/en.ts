@@ -56,6 +56,7 @@ const en = {
   apparentTemperature: "Feels Like",
   precipitationProbability: "Precipitation Probability",
   rain: "Rain",
+  rain6hLabel: "6h Rain",
   windSpeed: "Wind Speed",
   uvIndex: "UV Index",
   visibility: "Visibility",
