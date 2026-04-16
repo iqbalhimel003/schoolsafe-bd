@@ -285,6 +285,9 @@ const en = {
   footerPurpose: "SchoolSafe BD — A science fair project for environmental school safety awareness in Bangladesh.",
   footerDataSource: "Weather & Air Quality Data: Open-Meteo (open-meteo.com)",
   footerDisclaimer: "This prototype is for educational purposes only.",
+  footerCreditBefore:
+    "This service/project was developed by the students of Zilla Smarani Girls\u2019 High School, Kishoreganj, under the overall supervision of\u00a0",
+  footerCreditAfter: ".",
 
   /* ── Print / Share Report ────────────────────────── */
   printButton: "Print / Share Report",

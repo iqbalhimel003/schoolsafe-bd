@@ -289,6 +289,9 @@ const bn = {
   footerPurpose: "স্কুলসেফ বিডি — বাংলাদেশের স্কুলগুলোতে পরিবেশগত নিরাপত্তা সচেতনতার জন্য একটি বিজ্ঞান মেলার প্রকল্প।",
   footerDataSource: "আবহাওয়া ও বায়ু মানের তথ্য: Open-Meteo (open-meteo.com)",
   footerDisclaimer: "এই প্রোটোটাইপটি শুধুমাত্র শিক্ষামূলক উদ্দেশ্যে।",
+  footerCreditBefore:
+    "এই সার্ভিসটি/প্রজেক্টটি Zilla Smarani Girls\u2019 High School, Kishoreganj-এর ছাত্রীদের দ্বারা তৈরি এবং সার্বিক তত্ত্বাবধানে\u00a0",
+  footerCreditAfter: "।",
 
   /* ── প্রিন্ট / শেয়ার রিপোর্ট ─────────────────────── */
   printButton: "প্রিন্ট / শেয়ার রিপোর্ট",
