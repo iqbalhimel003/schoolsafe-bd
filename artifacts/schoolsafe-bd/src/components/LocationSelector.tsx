@@ -36,31 +36,51 @@ export default function LocationSelector({ onUpazilaSelect }: Props) {
   const districtRef = useRef<HTMLDivElement>(null);
   const upazilaRef = useRef<HTMLDivElement>(null);
 
+  /* Update displayed names when language changes */
+  useEffect(() => {
+    if (selectedDistrict) setDistrictSearch(getDistrictName(selectedDistrict, lang));
+    if (selectedUpazila) setUpazilaSearch(getUpazilaName(selectedUpazila, lang));
+  }, [lang]); // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (districtRef.current && !districtRef.current.contains(e.target as Node)) {
         setDistrictOpen(false);
+        if (selectedDistrict) setDistrictSearch(getDistrictName(selectedDistrict, lang));
       }
       if (upazilaRef.current && !upazilaRef.current.contains(e.target as Node)) {
         setUpazilaOpen(false);
+        if (selectedUpazila) setUpazilaSearch(getUpazilaName(selectedUpazila, lang));
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [selectedDistrict, selectedUpazila, lang]);
+
+  function handleDistrictFocus() {
+    if (selectedDistrict) setDistrictSearch("");
+    setDistrictOpen(true);
+  }
 
   function handleDistrictBlur() {
     setTimeout(() => {
       if (districtRef.current && !districtRef.current.contains(document.activeElement)) {
         setDistrictOpen(false);
+        if (selectedDistrict) setDistrictSearch(getDistrictName(selectedDistrict, lang));
       }
     }, 150);
+  }
+
+  function handleUpazilaFocus() {
+    if (selectedUpazila) setUpazilaSearch("");
+    setUpazilaOpen(true);
   }
 
   function handleUpazilaBlur() {
     setTimeout(() => {
       if (upazilaRef.current && !upazilaRef.current.contains(document.activeElement)) {
         setUpazilaOpen(false);
+        if (selectedUpazila) setUpazilaSearch(getUpazilaName(selectedUpazila, lang));
       }
     }, 150);
   }
@@ -78,6 +98,7 @@ export default function LocationSelector({ onUpazilaSelect }: Props) {
 
   function handleDistrictSelect(district: District) {
     setSelectedDistrict(district);
+    setDistrictSearch(getDistrictName(district, lang));
     setDistrictOpen(false);
     setSelectedUpazila(null);
     setUpazilaSearch("");
@@ -86,6 +107,7 @@ export default function LocationSelector({ onUpazilaSelect }: Props) {
 
   function handleUpazilaSelect(upazila: Upazila) {
     setSelectedUpazila(upazila);
+    setUpazilaSearch(getUpazilaName(upazila, lang));
     setUpazilaOpen(false);
     onUpazilaSelect(upazila);
   }
@@ -103,7 +125,7 @@ export default function LocationSelector({ onUpazilaSelect }: Props) {
             placeholder={t("searchDistrict")}
             value={districtSearch}
             onChange={(e) => setDistrictSearch(e.target.value)}
-            onFocus={() => setDistrictOpen(true)}
+            onFocus={handleDistrictFocus}
             onBlur={handleDistrictBlur}
             className="w-full px-3 py-2.5 text-sm border border-border rounded-lg bg-card shadow-sm outline-none placeholder:text-muted-foreground"
           />
@@ -147,7 +169,7 @@ export default function LocationSelector({ onUpazilaSelect }: Props) {
             placeholder={t("searchUpazila")}
             value={upazilaSearch}
             onChange={(e) => setUpazilaSearch(e.target.value)}
-            onFocus={() => setUpazilaOpen(true)}
+            onFocus={handleUpazilaFocus}
             onBlur={handleUpazilaBlur}
             disabled={!selectedDistrict}
             className="w-full px-3 py-2.5 text-sm border border-border rounded-lg bg-card shadow-sm outline-none placeholder:text-muted-foreground"
