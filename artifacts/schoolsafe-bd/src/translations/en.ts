@@ -244,34 +244,44 @@ const en = {
   /* ── Methodology ─────────────────────────────────────── */
   methodologyTitle: "Methodology",
   methodologyText:
-    "SafeSchool uses a transparent rule-based system to assess environmental risks. " +
+    "SchoolSafe BD uses a transparent rule-based system to assess environmental risks on a 4-level scale: No Risk, Low, Moderate, and High. " +
     "Data is fetched from Open-Meteo's free weather and air quality APIs. " +
-    "All thresholds are based on publicly available environmental health guidance and are fully editable in the project source code.",
+    "All thresholds are Bangladesh-calibrated and fully editable in the project source code.",
   methodologyRulesTitle: "Risk Rule Summary",
   methodologyHeatRule:
-    "Temp ≥ 32°C → Moderate; ≥ 35°C or feels-like ≥ 38°C → High. " +
-    "Humidity above 80% combined with high temperature raises risk further.",
+    "Uses the worse of actual temperature and feels-like temperature. " +
+    "Temp: Low ≥ 35°C, Moderate ≥ 36°C, High ≥ 38°C. " +
+    "Feels-like: Low ≥ 38°C, Moderate ≥ 41°C, High ≥ 44°C.",
   methodologyRainRule:
-    "Precipitation probability ≥ 40% → Moderate; ≥ 60% → High. " +
-    "Notable rainfall forecast also raises rain risk.",
+    "5-input model — current precipitation probability, next-3h max probability, recent 3h accumulation, next-6h forecast, and WMO weather code. " +
+    "The worst level across all five inputs is used. " +
+    "Probability: Low ≥ 40%, Moderate ≥ 60%, High ≥ 80%. " +
+    "3h rain: Low ≥ 1 mm, Moderate ≥ 5 mm, High ≥ 15 mm. " +
+    "Next-6h rain: Low ≥ 2 mm, Moderate ≥ 10 mm, High ≥ 25 mm. " +
+    "WMO code: light rain → Low, continuous rain → Moderate, thunderstorm → High.",
   methodologyAQRule:
-    "PM2.5 ≥ 15 µg/m³ → Moderate; ≥ 35 µg/m³ → High. " +
-    "PM10 ≥ 45 µg/m³ → Moderate; ≥ 100 µg/m³ → High. Worst of the two is used.",
+    "PM2.5 (Bangladesh-calibrated): Low ≥ 25 µg/m³, Moderate ≥ 55 µg/m³, High ≥ 90 µg/m³. " +
+    "PM10: Low ≥ 50 µg/m³, Moderate ≥ 100 µg/m³, High ≥ 150 µg/m³. " +
+    "Worst of the two pollutants is used.",
   methodologyColdRule:
-    "Temp ≤ 15°C → Moderate; ≤ 10°C → High (Cold Wave conditions). " +
-    "Wind speed ≥ 20 km/h during cold conditions bumps risk up one level.",
+    "Based on actual temperature only. " +
+    "Low ≤ 10°C, Moderate ≤ 8°C, High ≤ 6°C.",
   methodologyHeavyRainRule:
-    "Precipitation probability ≥ 60% AND 3-hour rain accumulation ≥ 15 mm → Moderate; ≥ 45 mm → High. " +
-    "Using a 3-hour rolling total captures sustained intense rainfall that poses risk to outdoor school activities.",
+    "Dual-input model — 24h accumulation and 3h rolling total. " +
+    "24h: Low ≥ 20 mm, Moderate ≥ 44 mm, High ≥ 89 mm. " +
+    "3h: Low ≥ 15 mm, Moderate ≥ 30 mm, High ≥ 44 mm. " +
+    "Worst of the two inputs is used.",
   methodologyFloodRule:
-    "Precipitation probability ≥ 70% AND 6-hour rainfall accumulation ≥ 20 mm → Moderate; ≥ 40 mm → High. " +
-    "Using a 6-hour rolling total captures sustained rain events that cause waterlogging at school access areas.",
+    "Dual-input model — 6h accumulation and 24h total. " +
+    "6h: Low ≥ 30 mm, Moderate ≥ 50 mm, High ≥ 80 mm. " +
+    "24h: Low ≥ 50 mm, Moderate ≥ 80 mm, High ≥ 120 mm. " +
+    "Worst of the two inputs is used.",
   methodologyStormRule:
-    "Wind speed ≥ 40 km/h → Moderate; ≥ 65 km/h → High. " +
-    "Indicates risk from strong wind or cyclone conditions.",
+    "Based on wind speed. Low ≥ 30 km/h, Moderate ≥ 40 km/h, High ≥ 60 km/h.",
   methodologyOverallBadge:
-    "The Overall School Safety badge reflects the worst-case risk across all seven types. " +
-    "If any single risk is High, the overall badge shows High.",
+    "Uses a weighted scoring model across all seven risk types. " +
+    "Override rules: Flood or Storm at High → overall High; two or more individual Highs → overall High; one High combined with any other Moderate-or-above → overall High. " +
+    "Otherwise a weighted score determines the level: Low ≥ 0.75, Moderate ≥ 2.0, High ≥ 4.25.",
 
   /* ── Limitations ─────────────────────────────────────── */
   limitationsTitle: "Limitations & Disclaimer",
