@@ -9,6 +9,7 @@
 import { useState, useEffect } from "react";
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 import { toast } from "sonner";
+import { Home, LayoutGrid, FileText, Phone } from "lucide-react";
 
 const API_BASE = `${import.meta.env.BASE_URL}api`;
 
@@ -22,6 +23,7 @@ type FieldDef = {
 
 type Section = {
   title: string;
+  icon: React.ReactNode;
   fields: FieldDef[];
   bilingual?: boolean;
 };
@@ -29,6 +31,7 @@ type Section = {
 const SECTIONS: Section[] = [
   {
     title: "Hero",
+    icon: <Home size={15} />,
     bilingual: true,
     fields: [
       { key: "siteName", label: "Site Name" },
@@ -39,6 +42,7 @@ const SECTIONS: Section[] = [
   },
   {
     title: "Intro Cards",
+    icon: <LayoutGrid size={15} />,
     bilingual: true,
     fields: [
       { key: "introWhatTitle", label: '"What this website does" — Title' },
@@ -49,6 +53,7 @@ const SECTIONS: Section[] = [
   },
   {
     title: "Footer",
+    icon: <FileText size={15} />,
     bilingual: true,
     fields: [
       { key: "footerPurpose", label: "Purpose", multiline: true },
@@ -60,6 +65,7 @@ const SECTIONS: Section[] = [
   },
   {
     title: "Contact",
+    icon: <Phone size={15} />,
     bilingual: false,
     fields: [
       { key: "contact_email", label: "Email Address" },
@@ -307,10 +313,15 @@ function Editor({
   const { settings, reload } = useSiteSettings();
   const [draft, setDraft] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
+  const [activeSection, setActiveSection] = useState(0);
 
   useEffect(() => {
     setDraft({ ...settings });
   }, [settings]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [activeSection]);
 
   function setValue(key: string, lang: "en" | "bn", value: string) {
     setDraft((prev) => ({ ...prev, [`${key}_${lang}`]: value }));
@@ -347,10 +358,12 @@ function Editor({
     }
   }
 
+  const section = SECTIONS[activeSection];
+
   return (
-    <div className="min-h-screen bg-background">
-      {/* Top bar */}
-      <div className="sticky top-0 z-10 bg-card border-b border-border px-4 py-3 flex items-center justify-between shadow-sm">
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* ── Top bar ─────────────────────────────────────── */}
+      <div className="sticky top-0 z-20 bg-card border-b border-border px-4 py-3 flex items-center justify-between shadow-sm">
         <div>
           <h1 className="text-base font-bold text-foreground">Admin Panel</h1>
           <p className="text-xs text-muted-foreground">
@@ -374,62 +387,108 @@ function Editor({
         </div>
       </div>
 
-      {/* Content sections */}
-      <div className="max-w-4xl mx-auto px-4 py-8 space-y-10">
-        <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-sm text-amber-800">
-          <strong>Note:</strong> Leaving a field blank uses the built-in default text. Fill in only the fields you want to override. Use the <strong>Reset to default</strong> button on any field to clear your override — the change takes effect when you save.
-        </div>
+      {/* ── Body: sidebar + content ──────────────────────── */}
+      <div className="flex flex-1 overflow-hidden">
 
-        {SECTIONS.map((section) => (
-          <div key={section.title}>
-            <h2 className="text-lg font-bold text-foreground mb-4 pb-2 border-b border-border">
-              {section.title}
-            </h2>
-            {section.bilingual === false ? (
-              <div className="space-y-6">
-                <p className="text-xs text-muted-foreground">
-                  These values are the same in both English and Bangla.
-                </p>
-                {section.fields.map((field) => (
-                  <SingleFieldRow
-                    key={field.key}
-                    fieldKey={field.key}
-                    label={field.label}
-                    value={draft[field.key] ?? ""}
-                    onChange={(val) =>
-                      setDraft((prev) => ({ ...prev, [field.key]: val }))
-                    }
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="space-y-6">
-                {section.fields.map((field) => (
-                  <FieldRow
-                    key={field.key}
-                    fieldKey={field.key}
-                    label={field.label}
-                    multiline={field.multiline}
-                    enValue={getValue(field.key, "en")}
-                    bnValue={getValue(field.key, "bn")}
-                    onChangeEn={(val) => setValue(field.key, "en", val)}
-                    onChangeBn={(val) => setValue(field.key, "bn", val)}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
-
-        <div className="pt-4">
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="bg-primary text-primary-foreground rounded-lg px-6 py-2.5 text-sm font-semibold hover:bg-primary/90 disabled:opacity-50 transition-colors"
+        {/* Mobile section picker (shown below md) */}
+        <div className="md:hidden w-full border-b border-border bg-card px-4 py-2 sticky top-[57px] z-10">
+          <select
+            value={activeSection}
+            onChange={(e) => setActiveSection(Number(e.target.value))}
+            className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
           >
-            {saving ? "Saving…" : "Save All Changes"}
-          </button>
+            {SECTIONS.map((s, i) => (
+              <option key={s.title} value={i}>
+                {s.title}
+              </option>
+            ))}
+          </select>
         </div>
+
+        {/* Desktop sidebar (hidden on mobile) */}
+        <aside className="hidden md:flex flex-col w-52 shrink-0 border-r border-border bg-card sticky top-[57px] h-[calc(100vh-57px)] overflow-y-auto">
+          <nav className="py-3 px-2 space-y-0.5">
+            {SECTIONS.map((s, i) => (
+              <button
+                key={s.title}
+                onClick={() => setActiveSection(i)}
+                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-left ${
+                  activeSection === i
+                    ? "bg-primary/10 text-primary font-semibold"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                <span className={activeSection === i ? "text-primary" : "text-muted-foreground"}>
+                  {s.icon}
+                </span>
+                {s.title}
+              </button>
+            ))}
+          </nav>
+        </aside>
+
+        {/* Main content area */}
+        <main className="flex-1 overflow-y-auto">
+          <div className="max-w-3xl mx-auto px-4 py-8 space-y-8">
+            {/* Info banner */}
+            <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-sm text-amber-800">
+              <strong>Note:</strong> Leaving a field blank uses the built-in default text. Fill in only the fields you want to override. Use the <strong>Reset to default</strong> button on any field to clear your override — the change takes effect when you save.
+            </div>
+
+            {/* Active section */}
+            <div>
+              <h2 className="text-lg font-bold text-foreground mb-4 pb-2 border-b border-border flex items-center gap-2">
+                <span className="text-primary">{section.icon}</span>
+                {section.title}
+              </h2>
+
+              {section.bilingual === false ? (
+                <div className="space-y-6">
+                  <p className="text-xs text-muted-foreground">
+                    These values are the same in both English and Bangla.
+                  </p>
+                  {section.fields.map((field) => (
+                    <SingleFieldRow
+                      key={field.key}
+                      fieldKey={field.key}
+                      label={field.label}
+                      value={draft[field.key] ?? ""}
+                      onChange={(val) =>
+                        setDraft((prev) => ({ ...prev, [field.key]: val }))
+                      }
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {section.fields.map((field) => (
+                    <FieldRow
+                      key={field.key}
+                      fieldKey={field.key}
+                      label={field.label}
+                      multiline={field.multiline}
+                      enValue={getValue(field.key, "en")}
+                      bnValue={getValue(field.key, "bn")}
+                      onChangeEn={(val) => setValue(field.key, "en", val)}
+                      onChangeBn={(val) => setValue(field.key, "bn", val)}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Bottom save button */}
+            <div className="pt-2 pb-4">
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="bg-primary text-primary-foreground rounded-lg px-6 py-2.5 text-sm font-semibold hover:bg-primary/90 disabled:opacity-50 transition-colors"
+              >
+                {saving ? "Saving…" : "Save All Changes"}
+              </button>
+            </div>
+          </div>
+        </main>
       </div>
     </div>
   );
