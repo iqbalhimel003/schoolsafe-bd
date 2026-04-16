@@ -4,9 +4,13 @@
  * HOW TO EDIT:
  *   All numeric risk thresholds are defined here as named
  *   constants with explanatory comments. Change these values
- *   to adjust when risks are triggered.
- *   Phase 3 will implement the full risk engine that reads
- *   these thresholds.
+ *   to adjust when risks are triggered (e.g., if you want to
+ *   lower the heat threshold for a cooler region, change
+ *   HEAT_TEMP_MODERATE from 32 to 30).
+ *
+ *   The risk engine (logic/riskEngine.ts) reads these
+ *   constants — no other file needs changing when you
+ *   adjust a threshold value.
  * ========================================================= */
 
 /* ── Heat Risk Thresholds ──────────────────────────────── */

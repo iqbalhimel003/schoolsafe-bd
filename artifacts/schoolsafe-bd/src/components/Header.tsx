@@ -18,7 +18,7 @@ export default function Header() {
         {/* Branding */}
         <div>
           <div className="flex items-center gap-2">
-            {/* Simple leaf/shield icon using text for Phase 1 */}
+            {/* Leaf icon — represents environmental safety */}
             <span className="text-2xl" aria-hidden="true">🌿</span>
             <h1 className="text-xl font-bold tracking-tight leading-none">
               {t("siteName")}

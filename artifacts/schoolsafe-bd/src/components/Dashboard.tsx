@@ -79,18 +79,25 @@ function MetricCard({
 }
 
 function RiskCard({
+  icon,
   label,
   level,
   levelLabel,
 }: {
+  icon: string;
   label: string;
   level: RiskLevel;
   levelLabel: string;
 }) {
   return (
-    <div className="bg-card border border-border rounded-lg p-4 shadow-sm">
-      <p className="text-xs text-muted-foreground mb-2 leading-tight">{label}</p>
-      <span className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full ${riskClass(level)}`}>
+    <div className={`bg-card border rounded-lg p-4 shadow-sm transition-colors ${
+      level === "High" ? "border-red-300 bg-red-50/40" : "border-border"
+    }`}>
+      <div className="flex items-center gap-1.5 mb-2">
+        <span className="text-base" aria-hidden="true">{icon}</span>
+        <p className="text-xs text-muted-foreground leading-tight">{label}</p>
+      </div>
+      <span className={`inline-block text-xs px-2.5 py-1 rounded-full ${riskClass(level)}`}>
         {levelLabel}
       </span>
     </div>
@@ -101,9 +108,60 @@ function RiskCard({
 
 function LoadingDashboard({ title }: { title: string }) {
   return (
-    <div className="bg-card border border-border rounded-xl p-10 text-center shadow-sm animate-pulse">
-      <div className="text-5xl mb-4">⏳</div>
-      <p className="text-muted-foreground text-sm">{title}</p>
+    <div className="space-y-6 animate-pulse">
+      {/* Header skeleton */}
+      <div className="flex items-start justify-between flex-wrap gap-2">
+        <div className="space-y-2">
+          <div className="h-5 w-48 bg-muted rounded" />
+          <div className="h-3 w-32 bg-muted rounded" />
+        </div>
+        <div className="h-3 w-28 bg-muted rounded" />
+      </div>
+
+      {/* Weather icon + subtitle skeleton */}
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 bg-muted rounded-full" />
+        <div className="h-3 w-40 bg-muted rounded" />
+      </div>
+
+      {/* Metric cards skeleton — 8 cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="bg-card border border-border rounded-lg p-4 shadow-sm space-y-2">
+            <div className="h-6 w-6 bg-muted rounded" />
+            <div className="h-2.5 w-16 bg-muted rounded" />
+            <div className="h-5 w-12 bg-muted rounded" />
+          </div>
+        ))}
+      </div>
+
+      {/* Air quality skeleton */}
+      <div className="grid grid-cols-2 gap-3">
+        {Array.from({ length: 2 }).map((_, i) => (
+          <div key={i} className="bg-card border border-border rounded-lg p-4 shadow-sm space-y-2">
+            <div className="h-6 w-6 bg-muted rounded" />
+            <div className="h-2.5 w-16 bg-muted rounded" />
+            <div className="h-5 w-12 bg-muted rounded" />
+          </div>
+        ))}
+      </div>
+
+      {/* Overall badge skeleton */}
+      <div className="bg-card border border-border rounded-xl p-5 shadow-sm space-y-3">
+        <div className="h-4 w-32 bg-muted rounded" />
+        <div className="h-8 w-24 bg-muted rounded-full" />
+        <p className="text-xs text-muted-foreground">{title}</p>
+      </div>
+
+      {/* Risk cards skeleton — 7 cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {Array.from({ length: 7 }).map((_, i) => (
+          <div key={i} className="bg-card border border-border rounded-lg p-4 shadow-sm space-y-2">
+            <div className="h-2.5 w-20 bg-muted rounded" />
+            <div className="h-5 w-14 bg-muted rounded-full" />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -268,14 +326,29 @@ function DashboardPanel({
         <MetricCard icon="🌐" label={t("pm10Label")} value={airQuality.pm10.toFixed(1)} />
       </div>
 
-      {/* Overall safety badge */}
-      <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
+      {/* Overall safety badge — prominent, color-coded box */}
+      <div className={`border rounded-xl p-5 shadow-sm ${
+        risk.overall === "High"
+          ? "bg-red-50 border-red-300"
+          : risk.overall === "Moderate"
+          ? "bg-amber-50 border-amber-300"
+          : "bg-green-50 border-green-200"
+      }`}>
         <h3 className="text-base font-semibold text-foreground mb-3">
           {t("overallSafetyTitle")}
         </h3>
-        <span className={`inline-block text-sm font-bold px-4 py-2 rounded-full ${riskClass(risk.overall)}`}>
-          {levelLabel(risk.overall)}
-        </span>
+        <div className="flex items-center gap-3">
+          <span
+            className={`inline-block text-base font-bold px-5 py-2 rounded-full ${riskClass(risk.overall)}`}
+          >
+            {levelLabel(risk.overall)}
+          </span>
+          {risk.overall === "High" && (
+            <span className="text-sm text-red-700 font-medium">
+              ⚠ {t("whyThisAdviceTitle")}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Risk breakdown — 7 cards */}
@@ -284,13 +357,13 @@ function DashboardPanel({
           {t("riskBreakdownTitle")}
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <RiskCard label={t("heatRisk")}       level={risk.heat}       levelLabel={levelLabel(risk.heat)} />
-          <RiskCard label={t("rainRisk")}       level={risk.rain}       levelLabel={levelLabel(risk.rain)} />
-          <RiskCard label={t("airQualityRisk")} level={risk.airQuality} levelLabel={levelLabel(risk.airQuality)} />
-          <RiskCard label={t("coldRisk")}       level={risk.cold}       levelLabel={levelLabel(risk.cold)} />
-          <RiskCard label={t("heavyRainRisk")}  level={risk.heavyRain}  levelLabel={levelLabel(risk.heavyRain)} />
-          <RiskCard label={t("floodRisk")}      level={risk.flood}      levelLabel={levelLabel(risk.flood)} />
-          <RiskCard label={t("stormRisk")}      level={risk.storm}      levelLabel={levelLabel(risk.storm)} />
+          <RiskCard icon="🌡️" label={t("heatRisk")}       level={risk.heat}       levelLabel={levelLabel(risk.heat)} />
+          <RiskCard icon="🌧️" label={t("rainRisk")}       level={risk.rain}       levelLabel={levelLabel(risk.rain)} />
+          <RiskCard icon="🌫️" label={t("airQualityRisk")} level={risk.airQuality} levelLabel={levelLabel(risk.airQuality)} />
+          <RiskCard icon="🧥" label={t("coldRisk")}       level={risk.cold}       levelLabel={levelLabel(risk.cold)} />
+          <RiskCard icon="⛈️" label={t("heavyRainRisk")}  level={risk.heavyRain}  levelLabel={levelLabel(risk.heavyRain)} />
+          <RiskCard icon="🌊" label={t("floodRisk")}      level={risk.flood}      levelLabel={levelLabel(risk.flood)} />
+          <RiskCard icon="🌀" label={t("stormRisk")}      level={risk.storm}      levelLabel={levelLabel(risk.storm)} />
         </div>
       </div>
 

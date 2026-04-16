@@ -3,7 +3,8 @@
  *
  * Searchable district and upazila dropdowns.
  * Shows names in English or Bangla based on the current lang.
- * Phase 3 will trigger data fetching on upazila selection.
+ * Calls onUpazilaSelect with the chosen Upazila object, which
+ * triggers data fetching in the parent (Home.tsx).
  * ========================================================= */
 
 import { useState } from "react";
