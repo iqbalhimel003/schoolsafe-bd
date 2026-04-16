@@ -121,7 +121,7 @@ To **change a label, heading, or message**, find the key in `en.ts` and change t
 siteName: "SafeSchool",
 
 // bn.ts
-siteName: "স্কুলসেফ বিডি",
+siteName: "সেফস্কুল",
 ```
 
 > **Type safety**: `bn.ts` uses `satisfies typeof en` at export, so TypeScript will show a compile error if any key is missing or misspelled in the Bangla file.
