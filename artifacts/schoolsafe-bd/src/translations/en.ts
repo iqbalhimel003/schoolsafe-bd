@@ -148,6 +148,7 @@ const en = {
   chartHour: "Hour",
   chartLoading: "Loading forecast chart…",
   chartError: "Could not load forecast data.",
+  chartSubtitle: "Temperature and precipitation probability over the next 24 hours",
 
   /* ── Methodology ─────────────────────────────────────── */
   methodologyTitle: "Methodology",

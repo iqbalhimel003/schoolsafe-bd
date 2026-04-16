@@ -59,7 +59,7 @@ export default function ForecastChart({ selectedUpazila }: Props) {
         {t("chartTitle")}
       </h2>
       <p className="text-sm text-muted-foreground mb-4">
-        {t("dashboardSubtitle")}
+        {t("chartSubtitle")}
       </p>
 
       <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
