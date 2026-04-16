@@ -1,0 +1,49 @@
+Please improve the layout and responsiveness of the hero section and prototype notice so the homepage looks visually balanced on both desktop and mobile.
+
+Current problem:
+- On desktop, the hero text content is taking only about half the screen width and the right side looks too empty
+- On mobile, line breaks and text wrapping look uneven and visually awkward
+- The wording is fine, but the layout, spacing, max-width, and responsive behavior need improvement
+
+Please refine the layout of these parts:
+1. Hero title
+2. Hero introductory paragraph
+3. Prototype notice box
+4. The spacing between hero content and the info cards below
+
+Requirements:
+- Make the hero section feel wider and more balanced on desktop
+- Reduce the large empty space on the right side
+- Improve text wrapping and line length on mobile so lines look cleaner and more natural
+- Keep the design elegant, modern, and readable
+- Preserve the current wording
+- Do not redesign unrelated sections
+
+Responsive layout goals:
+- On desktop, allow the hero content area to use more horizontal space
+- Use a better max-width for the main text block so it does not feel cramped
+- Ensure the prototype notice aligns visually with the hero content width
+- On mobile, improve typography and spacing so the text does not break awkwardly
+- Adjust font size, line-height, and container width if needed
+- Keep the language toggle and branding area visually balanced
+
+Implementation guidance:
+- Improve the hero container width, max-width, padding, and alignment
+- Refine responsive typography for both English and Bangla text
+- If useful, allow the hero section to span more of the available width on larger screens
+- Preserve readability; do not make the lines too long
+- Make the prototype notice look like part of the same content block
+- Keep the overall page structure the same
+
+Goal:
+The hero section should look polished and balanced:
+- fuller and more professional on desktop
+- clean and well-wrapped on mobile
+- no awkward half-screen text block
+- no messy broken lines
+
+When this update is complete:
+1. stop immediately
+2. summarize what layout improvements were made
+3. list files changed
+4. wait for my instruction
