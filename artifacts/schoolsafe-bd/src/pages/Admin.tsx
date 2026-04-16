@@ -6,7 +6,7 @@
  * Content is stored in the database; homepage reads from it.
  * ========================================================= */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 import { toast } from "sonner";
 import { Home, LayoutGrid, FileText, Phone } from "lucide-react";
@@ -314,13 +314,14 @@ function Editor({
   const [draft, setDraft] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [activeSection, setActiveSection] = useState(0);
+  const mainRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     setDraft({ ...settings });
   }, [settings]);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    mainRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   }, [activeSection]);
 
   function setValue(key: string, lang: "en" | "bn", value: string) {
@@ -387,23 +388,23 @@ function Editor({
         </div>
       </div>
 
+      {/* ── Mobile section picker (full-width bar, above content) ─ */}
+      <div className="md:hidden border-b border-border bg-card px-4 py-2 sticky top-[57px] z-10">
+        <select
+          value={activeSection}
+          onChange={(e) => setActiveSection(Number(e.target.value))}
+          className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+        >
+          {SECTIONS.map((s, i) => (
+            <option key={s.title} value={i}>
+              {s.title}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* ── Body: sidebar + content ──────────────────────── */}
       <div className="flex flex-1 overflow-hidden">
-
-        {/* Mobile section picker (shown below md) */}
-        <div className="md:hidden w-full border-b border-border bg-card px-4 py-2 sticky top-[57px] z-10">
-          <select
-            value={activeSection}
-            onChange={(e) => setActiveSection(Number(e.target.value))}
-            className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-          >
-            {SECTIONS.map((s, i) => (
-              <option key={s.title} value={i}>
-                {s.title}
-              </option>
-            ))}
-          </select>
-        </div>
 
         {/* Desktop sidebar (hidden on mobile) */}
         <aside className="hidden md:flex flex-col w-52 shrink-0 border-r border-border bg-card sticky top-[57px] h-[calc(100vh-57px)] overflow-y-auto">
@@ -428,7 +429,7 @@ function Editor({
         </aside>
 
         {/* Main content area */}
-        <main className="flex-1 overflow-y-auto">
+        <main ref={mainRef} className="flex-1 overflow-y-auto">
           <div className="max-w-3xl mx-auto px-4 py-8 space-y-8">
             {/* Info banner */}
             <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-sm text-amber-800">
