@@ -9,7 +9,7 @@
  *   4. Non-pilot upazilas can be added with isPilot: false
  *      and no coordinates — they show as "coming soon."
  *
- * PILOT SCOPE (Phase 1 scaffold):
+ * PILOT SCOPE:
  *   Only Kishoreganj district with 3 pilot upazilas is
  *   included. The structure supports all 64 Bangladesh
  *   districts in the future.

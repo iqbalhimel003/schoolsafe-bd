@@ -2,7 +2,7 @@
  * SchoolSafe BD — Location Selector
  *
  * Searchable district and upazila dropdowns.
- * Phase 2 will populate with full translations.
+ * Shows names in English or Bangla based on the current lang.
  * Phase 3 will trigger data fetching on upazila selection.
  * ========================================================= */
 

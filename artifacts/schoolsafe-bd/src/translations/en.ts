@@ -3,9 +3,15 @@
  *
  * HOW TO EDIT:
  *   All user-facing English text lives here.
- *   Phase 2 will fill every key with complete text.
- *   Phase 1 uses placeholder strings to establish the
- *   translation key structure.
+ *   To add or change any label, button, heading, or message
+ *   shown to English-speaking users, edit the values below.
+ *   The matching Bangla strings live in translations/bn.ts.
+ *
+ * KEY GROUPS:
+ *   Branding, Header, Prototype Notice, Location Selector,
+ *   Dashboard, Weather Metrics, Risk Cards (7 types),
+ *   Overall Safety Badge, Triggered Rules, Recommendations,
+ *   Comparison, Chart, Methodology, Limitations, Footer.
  * ========================================================= */
 
 const en = {
@@ -60,6 +66,9 @@ const en = {
   rainRisk: "Rain Risk",
   airQualityRisk: "Air Quality Risk",
   coldRisk: "Cold Risk",
+  /* Standalone "Cold Wave" term — used in triggered-rule explanations
+   * and winter recommendation cards. Bengali: শৈত্য প্রবাহ */
+  coldWave: "Cold Wave",
   heavyRainRisk: "Heavy Rain Risk",
   floodRisk: "Flood Risk",
   stormRisk: "Storm / Cyclone Risk",
