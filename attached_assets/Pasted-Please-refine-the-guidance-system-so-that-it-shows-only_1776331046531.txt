@@ -1,0 +1,62 @@
+Please refine the guidance system so that it shows only the instructions relevant to the currently active environmental risks after an upazila is selected.
+
+Current issue:
+The dashboard is still showing some role-based guidance that is not relevant to the current situation.
+I want the website to display only the guidance that matches the active weather and risk conditions.
+Irrelevant guidance must remain hidden.
+
+Required behavior:
+1. After a district and upazila are selected, evaluate the current active risks
+2. Show only the guidance items that are directly relevant to those active risks
+3. Do not show unrelated guidance bullets or cards
+4. Keep the interface clean, focused, and situation-specific
+
+Important refinement:
+- Not only whole sections, but also individual guidance bullet points should be filtered by active risk
+- For example, if only air-quality risk is active, then do not show heat-related, cold-related, rain-related, or storm-related bullets
+- If heat and air-quality risks are active together, show only heat-related and air-quality-related guidance
+- If rain/flood/storm risks are active, show only guidance relevant to those conditions
+
+Display logic:
+- Keep overall school safety status visible
+- Keep “Why this advice?” visible
+- Keep the existing recommendation system
+- But refine the role-based and condition-based guidance so it is fully risk-matched
+
+Role-based guidance should be filtered like this:
+- School Authorities: show only the bullets relevant to the active risks
+- Teachers: show only the bullets relevant to the active risks
+- Guardians: show only the bullets relevant to the active risks
+- Students: show only the bullets relevant to the active risks
+
+Condition-based guidance should also be filtered:
+- Lung-related problems: show only when air-quality / dust-related risk is active
+- Cold-sensitive: show only when cold risk is active
+- Heat-sensitive: show only when heat risk is active
+- Rain/damp-sensitive: show only when rain, heavy rain, flood, or storm-related risk is active
+- Allergy-related: show only when heat, cold, or air-quality/dust-related risk is active
+- Sick/vulnerable students: show only when there is a relevant active environmental risk
+- Sick/vulnerable teachers: show only when there is a relevant active environmental risk
+
+Implementation guidance:
+- Refactor the guidance data structure if needed so each bullet point is tagged by risk type
+- Use conditional rendering at the bullet level, not just at the section level
+- If a role card has no relevant bullets for the active risks, hide that whole card
+- If no condition-based guidance is relevant, hide that section entirely
+- Preserve bilingual support
+- Preserve the current design as much as possible
+- Do not redesign unrelated parts
+- Keep the UI compact and situation-specific
+
+Goal:
+After selecting an upazila, the user should see only the guidance that is actually needed for the current environmental condition.
+Nothing extra should be shown.
+
+When this refinement is complete:
+1. stop immediately
+2. summarize what was changed
+3. list files changed
+4. explain how the guidance filtering now works
+5. wait for my instruction
+
+Make the guidance system strict: if a bullet is not directly related to an active risk, do not show it.
