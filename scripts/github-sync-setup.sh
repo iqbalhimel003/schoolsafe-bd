@@ -31,38 +31,46 @@ else
   exit 0
 fi
 
-# 2. Configure SSH for github.com
+# 2. Configure SSH for github.com (no StrictHostKeyChecking — use known_hosts instead)
+mkdir -p "$HOME/.ssh"
 cat > "$HOME/.ssh/config" << 'SSH_CONFIG'
 Host github.com
   HostName github.com
   User git
   IdentityFile ~/.ssh/id_ed25519
-  StrictHostKeyChecking no
 SSH_CONFIG
 chmod 600 "$HOME/.ssh/config"
 echo "✓ SSH config written"
 
-# 3. Ensure 'github' remote exists
+# Ensure github.com fingerprint is in known_hosts so SSH can verify the host
+ssh-keyscan -t ed25519 github.com >> "$HOME/.ssh/known_hosts" 2>/dev/null
+sort -u "$HOME/.ssh/known_hosts" -o "$HOME/.ssh/known_hosts"
+echo "✓ github.com fingerprint added to known_hosts"
+
+# 3. Ensure 'origin' remote points to GitHub
 cd "$REPO_ROOT"
-if git remote get-url github >/dev/null 2>&1; then
-  echo "✓ Remote 'github' already configured: $(git remote get-url github)"
+if git remote get-url origin >/dev/null 2>&1; then
+  CURRENT=$(git remote get-url origin)
+  if [ "$CURRENT" = "$GITHUB_REPO" ]; then
+    echo "✓ Remote 'origin' already configured correctly"
+  else
+    git remote set-url origin "$GITHUB_REPO"
+    echo "✓ Remote 'origin' updated to: $GITHUB_REPO"
+  fi
 else
-  git remote add github "$GITHUB_REPO"
-  echo "✓ Remote 'github' added: $GITHUB_REPO"
+  git remote add origin "$GITHUB_REPO"
+  echo "✓ Remote 'origin' added: $GITHUB_REPO"
 fi
 
-# 4. Install the post-commit hook
+# 4. Install the post-commit hook (delegates to scripts/github-sync.mjs)
 HOOK_PATH="$REPO_ROOT/.git/hooks/post-commit"
 cat > "$HOOK_PATH" << 'POST_COMMIT'
 #!/bin/sh
-# Auto-sync to GitHub after every Replit checkpoint / commit
+# Auto-sync to GitHub after every Replit checkpoint / commit.
+# Delegates all logic (connector check + push) to scripts/github-sync.mjs.
 export HOME=/home/runner
-export GIT_SSH_COMMAND="ssh -i /home/runner/.ssh/id_ed25519 -o StrictHostKeyChecking=no"
-(
-  cd /home/runner/workspace
-  git push github main >> /tmp/github-sync.log 2>&1
-  echo "$(date '+%Y-%m-%d %H:%M:%S') — push exit code $?" >> /tmp/github-sync.log
-) &
+REPO_ROOT=/home/runner/workspace
+node "$REPO_ROOT/scripts/github-sync.mjs" >> /tmp/github-sync.log 2>&1 &
 POST_COMMIT
 chmod +x "$HOOK_PATH"
 echo "✓ Post-commit hook installed"
