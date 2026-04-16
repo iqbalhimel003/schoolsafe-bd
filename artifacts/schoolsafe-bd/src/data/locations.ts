@@ -10,9 +10,9 @@
  *      and no coordinates — they show as "coming soon."
  *
  * PILOT SCOPE:
- *   Only Kishoreganj district with 3 pilot upazilas is
- *   included. The structure supports all 64 Bangladesh
- *   districts in the future.
+ *   Kishoreganj district with all 13 upazilas live.
+ *   The structure supports all 64 Bangladesh districts
+ *   in the future.
  * ========================================================= */
 
 import type { District } from "@/types";
@@ -57,7 +57,7 @@ export const DISTRICTS: District[] = [
         districtId: "kishoreganj",
         lat: 24.465,
         lon: 90.975,
-        isPilot: false,
+        isPilot: true,
       },
       {
         id: "katiadi",
@@ -66,7 +66,7 @@ export const DISTRICTS: District[] = [
         districtId: "kishoreganj",
         lat: 24.453,
         lon: 90.782,
-        isPilot: false,
+        isPilot: true,
       },
       {
         id: "bajitpur",
@@ -75,7 +75,7 @@ export const DISTRICTS: District[] = [
         districtId: "kishoreganj",
         lat: 24.213,
         lon: 90.943,
-        isPilot: false,
+        isPilot: true,
       },
       {
         id: "kuliarchar",
@@ -84,7 +84,7 @@ export const DISTRICTS: District[] = [
         districtId: "kishoreganj",
         lat: 24.197,
         lon: 90.853,
-        isPilot: false,
+        isPilot: true,
       },
       {
         id: "nikli",
@@ -93,7 +93,7 @@ export const DISTRICTS: District[] = [
         districtId: "kishoreganj",
         lat: 24.283,
         lon: 90.977,
-        isPilot: false,
+        isPilot: true,
       },
       {
         id: "mithamain",
@@ -102,7 +102,7 @@ export const DISTRICTS: District[] = [
         districtId: "kishoreganj",
         lat: 24.330,
         lon: 90.921,
-        isPilot: false,
+        isPilot: true,
       },
       {
         id: "austagram",
@@ -111,7 +111,7 @@ export const DISTRICTS: District[] = [
         districtId: "kishoreganj",
         lat: 24.368,
         lon: 90.948,
-        isPilot: false,
+        isPilot: true,
       },
       {
         id: "tarail",
@@ -120,7 +120,7 @@ export const DISTRICTS: District[] = [
         districtId: "kishoreganj",
         lat: 24.361,
         lon: 90.584,
-        isPilot: false,
+        isPilot: true,
       },
       {
         id: "hossainpur",
@@ -129,7 +129,7 @@ export const DISTRICTS: District[] = [
         districtId: "kishoreganj",
         lat: 24.368,
         lon: 90.614,
-        isPilot: false,
+        isPilot: true,
       },
       {
         id: "pakundia",
@@ -138,7 +138,7 @@ export const DISTRICTS: District[] = [
         districtId: "kishoreganj",
         lat: 24.363,
         lon: 90.665,
-        isPilot: false,
+        isPilot: true,
       },
     ],
   },
