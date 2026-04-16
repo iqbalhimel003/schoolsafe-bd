@@ -217,8 +217,11 @@ const en = {
 
   /* ── Comparison Section ──────────────────────────────── */
   comparisonTitle: "Pilot Upazila Comparison",
-  comparisonSubtitle: "Live conditions across all pilot locations in Kishoreganj",
+  comparisonSubtitle: "Pick any two pilot upazilas to compare live conditions side-by-side",
   comparisonLocation: "Location",
+  comparisonMetric: "Metric",
+  comparisonSelectA: "Location A",
+  comparisonSelectB: "Location B",
   comparisonOverall: "Overall Safety",
   comparisonTemp: "Temp",
   comparisonPM25: "PM2.5",

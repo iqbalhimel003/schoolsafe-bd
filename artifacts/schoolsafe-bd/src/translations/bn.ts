@@ -222,8 +222,11 @@ const bn = {
 
   /* ── তুলনা বিভাগ ──────────────────────────────────────── */
   comparisonTitle: "পাইলট উপজেলা তুলনা",
-  comparisonSubtitle: "কিশোরগঞ্জের সকল পাইলট স্থানের লাইভ অবস্থা",
+  comparisonSubtitle: "যেকোনো দুটি পাইলট উপজেলা বেছে পাশাপাশি লাইভ তথ্য তুলনা করুন",
   comparisonLocation: "স্থান",
+  comparisonMetric: "সূচক",
+  comparisonSelectA: "স্থান ক",
+  comparisonSelectB: "স্থান খ",
   comparisonOverall: "সার্বিক নিরাপত্তা",
   comparisonTemp: "তাপমাত্রা",
   comparisonPM25: "PM2.5",
