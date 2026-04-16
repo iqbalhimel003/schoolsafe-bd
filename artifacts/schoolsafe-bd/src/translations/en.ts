@@ -250,38 +250,38 @@ const en = {
   methodologyRulesTitle: "Risk Rule Summary",
   methodologyHeatRule:
     "Uses the worse of actual temperature and feels-like temperature. " +
-    "Temp: Low ≥ 35°C, Moderate ≥ 36°C, High ≥ 38°C. " +
-    "Feels-like: Low ≥ 38°C, Moderate ≥ 41°C, High ≥ 44°C.",
+    "Temp: Low ≥ {tempLow}°C, Moderate ≥ {tempMod}°C, High ≥ {tempHigh}°C. " +
+    "Feels-like: Low ≥ {feelsLow}°C, Moderate ≥ {feelsMod}°C, High ≥ {feelsHigh}°C.",
   methodologyRainRule:
     "5-input model — current precipitation probability, next-3h max probability, recent 3h accumulation, next-6h forecast, and WMO weather code. " +
     "The worst level across all five inputs is used. " +
-    "Probability: Low ≥ 40%, Moderate ≥ 60%, High ≥ 80%. " +
-    "3h rain: Low ≥ 1 mm, Moderate ≥ 5 mm, High ≥ 15 mm. " +
-    "Next-6h rain: Low ≥ 2 mm, Moderate ≥ 10 mm, High ≥ 25 mm. " +
+    "Probability: Low ≥ {probLow}%, Moderate ≥ {probMod}%, High ≥ {probHigh}%. " +
+    "3h rain: Low ≥ {rain3hLow} mm, Moderate ≥ {rain3hMod} mm, High ≥ {rain3hHigh} mm. " +
+    "Next-6h rain: Low ≥ {next6hLow} mm, Moderate ≥ {next6hMod} mm, High ≥ {next6hHigh} mm. " +
     "WMO code: light rain → Low, continuous rain → Moderate, thunderstorm → High.",
   methodologyAQRule:
-    "PM2.5 (Bangladesh-calibrated): Low ≥ 25 µg/m³, Moderate ≥ 55 µg/m³, High ≥ 90 µg/m³. " +
-    "PM10: Low ≥ 50 µg/m³, Moderate ≥ 100 µg/m³, High ≥ 150 µg/m³. " +
+    "PM2.5 (Bangladesh-calibrated): Low ≥ {pm25Low} µg/m³, Moderate ≥ {pm25Mod} µg/m³, High ≥ {pm25High} µg/m³. " +
+    "PM10: Low ≥ {pm10Low} µg/m³, Moderate ≥ {pm10Mod} µg/m³, High ≥ {pm10High} µg/m³. " +
     "Worst of the two pollutants is used.",
   methodologyColdRule:
     "Based on actual temperature only. " +
-    "Low ≤ 10°C, Moderate ≤ 8°C, High ≤ 6°C.",
+    "Low ≤ {tempLow}°C, Moderate ≤ {tempMod}°C, High ≤ {tempHigh}°C.",
   methodologyHeavyRainRule:
     "Dual-input model — 24h accumulation and 3h rolling total. " +
-    "24h: Low ≥ 20 mm, Moderate ≥ 44 mm, High ≥ 89 mm. " +
-    "3h: Low ≥ 15 mm, Moderate ≥ 30 mm, High ≥ 44 mm. " +
+    "24h: Low ≥ {h24Low} mm, Moderate ≥ {h24Mod} mm, High ≥ {h24High} mm. " +
+    "3h: Low ≥ {h3Low} mm, Moderate ≥ {h3Mod} mm, High ≥ {h3High} mm. " +
     "Worst of the two inputs is used.",
   methodologyFloodRule:
     "Dual-input model — 6h accumulation and 24h total. " +
-    "6h: Low ≥ 30 mm, Moderate ≥ 50 mm, High ≥ 80 mm. " +
-    "24h: Low ≥ 50 mm, Moderate ≥ 80 mm, High ≥ 120 mm. " +
+    "6h: Low ≥ {h6Low} mm, Moderate ≥ {h6Mod} mm, High ≥ {h6High} mm. " +
+    "24h: Low ≥ {h24Low} mm, Moderate ≥ {h24Mod} mm, High ≥ {h24High} mm. " +
     "Worst of the two inputs is used.",
   methodologyStormRule:
-    "Based on wind speed. Low ≥ 30 km/h, Moderate ≥ 40 km/h, High ≥ 60 km/h.",
+    "Based on wind speed. Low ≥ {windLow} km/h, Moderate ≥ {windMod} km/h, High ≥ {windHigh} km/h.",
   methodologyOverallBadge:
     "Uses a weighted scoring model across all seven risk types. " +
     "Override rules: Flood or Storm at High → overall High; two or more individual Highs → overall High; one High combined with any other Moderate-or-above → overall High. " +
-    "Otherwise a weighted score determines the level: Low ≥ 0.75, Moderate ≥ 2.0, High ≥ 4.25.",
+    "Otherwise a weighted score determines the level: Low ≥ {scoreLow}, Moderate ≥ {scoreMod}, High ≥ {scoreHigh}.",
 
   /* ── Limitations ─────────────────────────────────────── */
   limitationsTitle: "Limitations & Disclaimer",

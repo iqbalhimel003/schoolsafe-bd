@@ -22,8 +22,8 @@ type Translations = typeof en;
 interface LanguageContextValue {
   lang: Language;
   setLang: (lang: Language) => void;
-  /** Translate a key to the current language */
-  t: (key: TranslationKeys) => string;
+  /** Translate a key to the current language, optionally interpolating {placeholder} tokens */
+  t: (key: TranslationKeys, vars?: Record<string, string | number>) => string;
 }
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
@@ -34,10 +34,24 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLang] = useState<Language>("en");
   const { settings } = useSiteSettings();
 
-  function t(key: TranslationKeys): string {
+  function formatVar(value: string | number): string {
+    if (typeof value === "number" && lang === "bn") {
+      return new Intl.NumberFormat("bn-BD").format(value);
+    }
+    return String(value);
+  }
+
+  function t(key: TranslationKeys, vars?: Record<string, string | number>): string {
     const overrideKey = `${key}_${lang}`;
-    if (settings[overrideKey] !== undefined) return settings[overrideKey];
-    return translations[lang][key] ?? translations["en"][key] ?? key;
+    let str: string = settings[overrideKey] !== undefined
+      ? settings[overrideKey]
+      : translations[lang][key] ?? translations["en"][key] ?? key;
+    if (vars) {
+      str = str.replace(/\{(\w+)\}/g, (_, k) =>
+        k in vars ? formatVar(vars[k]) : `{${k}}`
+      );
+    }
+    return str;
   }
 
   return (
