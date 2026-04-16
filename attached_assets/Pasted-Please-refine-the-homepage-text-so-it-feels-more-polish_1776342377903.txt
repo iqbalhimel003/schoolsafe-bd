@@ -1,0 +1,72 @@
+Please refine the homepage text so it feels more polished, modern, informative, and presentation-ready for a science-fair-quality school safety website.
+
+Goals:
+- Make the hero section more attractive and professional
+- Make the introduction clearer and more impactful
+- Make the “What this website does” section more detailed and useful
+- Keep everything easy to read on both desktop and mobile
+- Preserve bilingual support
+- Do not redesign unrelated parts
+
+Please replace the existing visible text with the following improved version:
+
+1. Hero title
+English:
+SafeSchool
+
+Bangla:
+সেফস্কুল
+
+2. Hero subtitle
+English:
+A bilingual environmental safety, preparedness, and school guidance platform for Bangladesh
+
+Bangla:
+বাংলাদেশের বিদ্যালয়গুলোর জন্য দ্বিভাষিক পরিবেশগত নিরাপত্তা, প্রস্তুতি ও নির্দেশনা সহায়ক প্ল্যাটফর্ম
+
+3. Hero introductory paragraph
+English:
+SafeSchool helps school authorities, teachers, students, and guardians understand both current and upcoming environmental conditions in their area. By combining live weather data, air-quality information, rainfall outlook, and school-focused risk analysis, it provides practical safety recommendations, preparedness advice, and situation-based precautions for safer school planning and daily decision-making.
+
+Bangla:
+সেফস্কুল স্কুল কর্তৃপক্ষ, শিক্ষক, ছাত্র-ছাত্রী এবং অভিভাবকদের তাদের এলাকার বর্তমান ও সম্ভাব্য পরিবেশগত অবস্থা বুঝতে সহায়তা করে। লাইভ আবহাওয়া, বায়ুমান, বৃষ্টির পূর্বাভাস এবং বিদ্যালয়কেন্দ্রিক ঝুঁকি বিশ্লেষণ একত্রে ব্যবহার করে এটি নিরাপদ বিদ্যালয় পরিকল্পনা ও দৈনন্দিন সিদ্ধান্ত গ্রহণের জন্য ব্যবহারিক নিরাপত্তা নির্দেশনা, প্রস্তুতিমূলক পরামর্শ এবং পরিস্থিতিভিত্তিক সতর্কতা প্রদান করে।
+
+4. “What this website does” heading
+English:
+What this website does
+
+Bangla:
+এই ওয়েবসাইট কী কাজ করে
+
+5. “What this website does” body text
+English:
+SafeSchool is a school-focused environmental safety platform designed to turn complex weather and environmental information into practical guidance for everyday school use. It analyses current conditions, short-term rain trends, air-quality levels, and forecast-based risks to help users understand whether school activities can continue normally or whether extra caution and preparation are needed. The platform also provides situation-based guidance for school authorities, teachers, students, guardians, and sensitive or vulnerable groups whenever environmental risks become active.
+
+Bangla:
+সেফস্কুল একটি বিদ্যালয়কেন্দ্রিক পরিবেশগত নিরাপত্তা প্ল্যাটফর্ম, যা জটিল আবহাওয়া ও পরিবেশগত তথ্যকে দৈনন্দিন বিদ্যালয় ব্যবহারের উপযোগী ব্যবহারিক নির্দেশনায় রূপান্তর করে। এটি বর্তমান অবস্থা, স্বল্পমেয়াদি বৃষ্টির প্রবণতা, বায়ুমানের মাত্রা এবং পূর্বাভাসভিত্তিক ঝুঁকি বিশ্লেষণ করে বুঝতে সহায়তা করে যে বিদ্যালয়ের কার্যক্রম স্বাভাবিকভাবে চলতে পারবে কি না, নাকি অতিরিক্ত সতর্কতা ও প্রস্তুতির প্রয়োজন আছে। পরিবেশগত ঝুঁকি সক্রিয় হলে এই প্ল্যাটফর্ম স্কুল কর্তৃপক্ষ, শিক্ষক, ছাত্র-ছাত্রী, অভিভাবক এবং সংবেদনশীল বা ঝুঁকিপূর্ণ ব্যক্তিদের জন্য পরিস্থিতিভিত্তিক নির্দেশনাও প্রদান করে।
+
+6. “How to use” heading
+English:
+How to use
+
+Bangla:
+কীভাবে ব্যবহার করবেন
+
+7. “How to use” body text
+English:
+Select a district first, then choose an upazila. SafeSchool will display the current environmental conditions, risk breakdown, overall school safety status, practical recommendations, and forecast-based preparedness guidance for the selected location.
+
+Bangla:
+প্রথমে জেলা নির্বাচন করুন, তারপর উপজেলা নির্বাচন করুন। সেফস্কুল নির্বাচিত এলাকার বর্তমান পরিবেশগত অবস্থা, ঝুঁকির বিশ্লেষণ, সামগ্রিক বিদ্যালয় নিরাপত্তা অবস্থা, ব্যবহারিক নির্দেশনা এবং পূর্বাভাসভিত্তিক প্রস্তুতিমূলক পরামর্শ প্রদর্শন করবে।
+
+Important:
+- Keep the text visually balanced and readable
+- Preserve the current design as much as possible
+- Only change visible text content unless very small spacing adjustments are needed
+- Make sure both English and Bangla versions look polished
+- Stop after completing this text refinement
+
+When complete:
+1. summarize what text was updated
+2. list files changed
+3. wait for my instruction
