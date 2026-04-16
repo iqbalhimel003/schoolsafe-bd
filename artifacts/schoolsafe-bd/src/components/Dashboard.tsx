@@ -591,14 +591,14 @@ function DashboardPanel({
         </div>
       </div>
 
-      {/* Why this advice? */}
-      <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
-        <h3 className="text-base font-semibold text-foreground mb-3">
-          {t("whyThisAdviceTitle")}
-        </h3>
-        {risk.triggeredRules.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t("noRisksTriggered")}</p>
-        ) : (
+      {/* Why this advice? — only visible when at least one Moderate/High risk is present.
+           Since rules are only pushed for Moderate/High evaluators, triggeredRules.length > 0
+           is equivalent to "any Moderate or High risk exists". */}
+      {risk.triggeredRules.length > 0 && (
+        <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
+          <h3 className="text-base font-semibold text-foreground mb-3">
+            {t("whyThisAdviceTitle")}
+          </h3>
           <ul className="space-y-1.5">
             {risk.triggeredRules.map((rule) => (
               <li key={rule} className="flex items-start gap-2 text-sm text-foreground">
@@ -607,8 +607,8 @@ function DashboardPanel({
               </li>
             ))}
           </ul>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Recommendations */}
       {activeRecs.length > 0 && (

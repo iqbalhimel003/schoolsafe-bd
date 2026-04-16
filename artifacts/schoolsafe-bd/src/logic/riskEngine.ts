@@ -150,8 +150,10 @@ function evaluateCold(w: WeatherData): Evaluation {
     level = "Low";
   }
 
-  /* Strong wind makes cold feel significantly worse — bump level up */
-  if (level !== "None" && w.windSpeed >= T.COLD_WIND_BOOSTER) {
+  /* Strong wind makes cold feel significantly worse — bump level up.
+   * Only applies at Moderate or High (newly added Low band is not escalated
+   * so existing Moderate/High boundaries are preserved exactly). */
+  if ((level === "Moderate" || level === "High") && w.windSpeed >= T.COLD_WIND_BOOSTER) {
     level = bump(level);
     rules.push("ruleColdWind");
   }
