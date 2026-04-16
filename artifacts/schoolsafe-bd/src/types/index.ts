@@ -5,7 +5,7 @@
 
 export type Language = "en" | "bn";
 
-export type RiskLevel = "Low" | "Moderate" | "High";
+export type RiskLevel = "None" | "Low" | "Moderate" | "High";
 
 export type RiskType =
   | "heat"
@@ -93,7 +93,7 @@ export interface HourlyForecast {
 }
 
 /* Preparation level for the next-day outlook */
-export type PrepLevel = "Low" | "Moderate" | "High";
+export type PrepLevel = "None" | "Low" | "Moderate" | "High";
 
 /* Next-day (tomorrow) daily forecast summary */
 export interface TomorrowForecast {

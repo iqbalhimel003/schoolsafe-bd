@@ -44,9 +44,10 @@ function weatherIcon(code: number): string {
 
 /** CSS class for a risk badge. */
 function riskClass(level: RiskLevel): string {
-  if (level === "High") return "risk-high";
+  if (level === "High")     return "risk-high";
   if (level === "Moderate") return "risk-moderate";
-  return "risk-low";
+  if (level === "Low")      return "risk-low";
+  return "risk-none";
 }
 
 /** Format a Date as h:MM AM/PM Bangladesh Standard Time (UTC+6). */
@@ -251,36 +252,42 @@ interface Rec {
   show: (r: RiskResult) => boolean;
 }
 
+/* Helper: true when a level is Moderate or High (not None or Low).
+ * Recommendations only appear for meaningful risk levels. */
+function atLeastModerate(level: RiskLevel): boolean {
+  return level === "Moderate" || level === "High";
+}
+
 const RECOMMENDATIONS: Rec[] = [
   {
     titleKey: "recHydration",
     textKey: "recHydrationText",
-    show: (r) => r.heat !== "Low",
+    show: (r) => atLeastModerate(r.heat),
   },
   {
     titleKey: "recOutdoorAssembly",
     textKey: "recOutdoorAssemblyText",
-    show: (r) => r.heat !== "Low" || r.heavyRain !== "Low",
+    show: (r) => atLeastModerate(r.heat) || atLeastModerate(r.heavyRain),
   },
   {
     titleKey: "recOutdoorSports",
     textKey: "recOutdoorSportsText",
-    show: (r) => r.heat !== "Low" || r.storm !== "Low",
+    show: (r) => atLeastModerate(r.heat) || atLeastModerate(r.storm),
   },
   {
     titleKey: "recRainCaution",
     textKey: "recRainCautionText",
-    show: (r) => r.rain !== "Low",
+    show: (r) => atLeastModerate(r.rain),
   },
   {
     titleKey: "recAirQuality",
     textKey: "recAirQualityText",
-    show: (r) => r.airQuality !== "Low",
+    show: (r) => atLeastModerate(r.airQuality),
   },
   {
     titleKey: "recWarmClothing",
     textKey: "recWarmClothingText",
-    show: (r) => r.cold !== "Low",
+    show: (r) => atLeastModerate(r.cold),
   },
   {
     titleKey: "recDelayMorningAssembly",
@@ -290,22 +297,22 @@ const RECOMMENDATIONS: Rec[] = [
   {
     titleKey: "recLimitEarlyMorning",
     textKey: "recLimitEarlyMorningText",
-    show: (r) => r.cold !== "Low",
+    show: (r) => atLeastModerate(r.cold),
   },
   {
     titleKey: "recPostponeHeavyRain",
     textKey: "recPostponeHeavyRainText",
-    show: (r) => r.heavyRain !== "Low",
+    show: (r) => atLeastModerate(r.heavyRain),
   },
   {
     titleKey: "recAvoidFloodedAreas",
     textKey: "recAvoidFloodedAreasText",
-    show: (r) => r.flood !== "Low",
+    show: (r) => atLeastModerate(r.flood),
   },
   {
     titleKey: "recStormRestriction",
     textKey: "recStormRestrictionText",
-    show: (r) => r.storm !== "Low",
+    show: (r) => atLeastModerate(r.storm),
   },
   {
     titleKey: "recSevereWeatherCaution",
@@ -333,9 +340,9 @@ function DashboardPanel({
   const risk = evaluateRisk(weather, airQuality);
   const locationName = lang === "bn" ? upazila.nameBn : upazila.nameEn;
 
-  /* Set of risk types that are currently above Low — derived from ALL_RISK_TYPES */
+  /* Set of risk types that are currently above None — used for guidance bullet filtering */
   const activeRisks = new Set<RiskType>(
-    ALL_RISK_TYPES.filter((k) => risk[k] !== "Low")
+    ALL_RISK_TYPES.filter((k) => risk[k] !== "None")
   );
 
   /* ── Tagged bullet arrays ─────────────────────────────── */
@@ -386,9 +393,10 @@ function DashboardPanel({
 
   /* Translation helpers for risk levels */
   function levelLabel(level: RiskLevel): string {
-    if (level === "High") return t("safetyHigh");
+    if (level === "High")     return t("safetyHigh");
     if (level === "Moderate") return t("safetyModerate");
-    return t("safetyLow");
+    if (level === "Low")      return t("safetyLow");
+    return t("safetyNone");
   }
 
   /* Share handler — native share sheet on mobile, clipboard fallback on desktop */
@@ -433,8 +441,10 @@ function DashboardPanel({
   /* Contextual recommendations to show */
   const activeRecs = RECOMMENDATIONS.filter((rec) => rec.show(risk));
 
-  /* Risk presence flags for condition-based section guards */
-  const anyRisk        = activeRisks.size > 0;
+  /* Risk presence flags for condition-based section guards.
+   * anyRisk: hide all guidance when overall risk is None.
+   * activeRisks includes Low so guidance bullets still show on mild days. */
+  const anyRisk        = risk.overall !== "None";
   const hasAirRisk     = activeRisks.has("airQuality");
   const hasColdRisk    = activeRisks.has("cold");
   const hasHeatRisk    = activeRisks.has("heat");
@@ -544,7 +554,9 @@ function DashboardPanel({
           ? "bg-red-50 border-red-300"
           : risk.overall === "Moderate"
           ? "bg-amber-50 border-amber-300"
-          : "bg-green-50 border-green-200"
+          : risk.overall === "Low"
+          ? "bg-green-50 border-green-200"
+          : "bg-slate-50 border-slate-200"
       }`}>
         <h3 className="text-base font-semibold text-foreground mb-3">
           {t("overallSafetyTitle")}

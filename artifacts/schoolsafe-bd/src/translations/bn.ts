@@ -95,6 +95,7 @@ const bn = {
 
   /* ── সামগ্রিক নিরাপত্তা ব্যাজ ───────────────────────── */
   overallSafetyTitle: "সার্বিক বিদ্যালয় নিরাপত্তা",
+  safetyNone: "ঝুঁকি নেই",
   safetyLow: "কম ঝুঁকি",
   safetyModerate: "মাঝারি ঝুঁকি",
   safetyHigh: "উচ্চ ঝুঁকি",
@@ -302,6 +303,7 @@ const bn = {
   tomorrowWindMax: "সর্বোচ্চ বায়ুর গতি",
   tomorrowPM25: "PM2.5 (গড়)",
   tomorrowPrepBadgeLabel: "প্রস্তুতির প্রয়োজন",
+  tomorrowPrepNone: "কোনো প্রস্তুতির প্রয়োজন নেই",
   tomorrowPrepLow: "কম প্রস্তুতি প্রয়োজন",
   tomorrowPrepModerate: "মাঝারি প্রস্তুতি প্রয়োজন",
   tomorrowPrepHigh: "উচ্চ প্রস্তুতি প্রয়োজন",
@@ -324,6 +326,7 @@ const bn = {
   weekHeaderMaxMin: "সর্বোচ্চ / সর্বনিম্ন",
   weekHeaderRain: "বৃষ্টি %",
   weekHeaderPrep: "প্রস্তুতি",
+  weekPrepNone: "নেই",
   weekPrepLow: "কম",
   weekPrepModerate: "মাঝারি",
   weekPrepHigh: "উচ্চ",

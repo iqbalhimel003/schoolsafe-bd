@@ -158,9 +158,15 @@
 
 /* ── Risk badge color utilities ─────────────────────────────
  * Used throughout the dashboard, comparison table, and
- * methodology section. Three levels: Low, Moderate, High.
+ * methodology section. Four levels: None, Low, Moderate, High.
  * Applied via riskClass() helper functions in components.
  * ────────────────────────────────────────────────────────── */
+.risk-none {
+  background-color: #f1f5f4;
+  color: #2d3d38;
+  border: 1px solid #a7bfb8;
+  font-weight: 600;
+}
 .risk-low {
   background-color: #dcfce7;
   color: #14532d;
@@ -222,6 +228,7 @@
   }
 
   /* Keep risk badge colors for clarity — force color printing */
+  .risk-none,
   .risk-low,
   .risk-moderate,
   .risk-high {

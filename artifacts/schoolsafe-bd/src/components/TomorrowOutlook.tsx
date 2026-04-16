@@ -38,9 +38,10 @@ function weatherIcon(code: number): string {
 
 /** CSS class for the prep-level badge — reuses existing risk colour classes. */
 function prepClass(level: PrepLevel): string {
-  if (level === "High") return "risk-high";
+  if (level === "High")     return "risk-high";
   if (level === "Moderate") return "risk-moderate";
-  return "risk-low";
+  if (level === "Low")      return "risk-low";
+  return "risk-none";
 }
 
 /** Format a YYYY-MM-DD date string for display in the current locale. */
@@ -94,7 +95,9 @@ export default function TomorrowOutlook({ forecast, prepLevel }: Props) {
       ? t("tomorrowPrepHigh")
       : prepLevel === "Moderate"
       ? t("tomorrowPrepModerate")
-      : t("tomorrowPrepLow");
+      : prepLevel === "Low"
+      ? t("tomorrowPrepLow")
+      : t("tomorrowPrepNone");
 
   /* ── Build tips list ─────────────────────────────────────
    *

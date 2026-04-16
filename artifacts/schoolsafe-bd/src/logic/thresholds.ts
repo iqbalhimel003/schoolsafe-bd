@@ -15,6 +15,9 @@
 
 /* ── Heat Risk Thresholds ──────────────────────────────── */
 
+/** Temperature (°C) at or above which heat risk becomes Low */
+export const HEAT_TEMP_LOW = 30;
+
 /** Temperature (°C) at or above which heat risk becomes Moderate */
 export const HEAT_TEMP_MODERATE = 32;
 
@@ -29,6 +32,9 @@ export const HEAT_HUMIDITY_BOOSTER = 80;
 
 /* ── Rain Risk Thresholds ──────────────────────────────── */
 
+/** Precipitation probability (%) at or above which rain risk becomes Low */
+export const RAIN_PRECIP_PROB_LOW = 20;
+
 /** Precipitation probability (%) at or above which rain risk becomes Moderate */
 export const RAIN_PRECIP_PROB_MODERATE = 40;
 
@@ -40,11 +46,17 @@ export const RAIN_AMOUNT_MODERATE = 1.0;
 
 /* ── Air Quality Thresholds (WHO-based) ─────────────────── */
 
+/** PM2.5 (µg/m³) at or above which AQ risk becomes Low */
+export const AQ_PM25_LOW = 10;
+
 /** PM2.5 (µg/m³) at or above which AQ risk becomes Moderate */
 export const AQ_PM25_MODERATE = 15;
 
 /** PM2.5 (µg/m³) at or above which AQ risk becomes High */
 export const AQ_PM25_HIGH = 35;
+
+/** PM10 (µg/m³) at or above which AQ risk becomes Low */
+export const AQ_PM10_LOW = 25;
 
 /** PM10 (µg/m³) at or above which AQ risk becomes Moderate */
 export const AQ_PM10_MODERATE = 45;
@@ -53,6 +65,9 @@ export const AQ_PM10_MODERATE = 45;
 export const AQ_PM10_HIGH = 100;
 
 /* ── Cold Risk Thresholds ──────────────────────────────── */
+
+/** Temperature (°C) at or below which cold risk becomes Low */
+export const COLD_TEMP_LOW = 18;
 
 /** Temperature (°C) at or below which cold risk becomes Moderate */
 export const COLD_TEMP_MODERATE = 15;
@@ -68,6 +83,9 @@ export const COLD_WIND_BOOSTER = 20;
 /** Precipitation probability (%) required together with notable rain for Heavy Rain risk */
 export const HEAVY_RAIN_PRECIP_PROB = 60;
 
+/** 3-hour rain accumulation (mm) at or above which Heavy Rain risk becomes Low */
+export const HEAVY_RAIN_AMOUNT_LOW = 5;
+
 /** 3-hour rain accumulation (mm) at or above which Heavy Rain risk becomes Moderate
  *  (equivalent to a sustained ~5 mm/h rate over 3 hours) */
 export const HEAVY_RAIN_AMOUNT_MODERATE = 15;
@@ -81,6 +99,9 @@ export const HEAVY_RAIN_AMOUNT_HIGH = 45;
 /** Precipitation probability (%) required for flood risk assessment */
 export const FLOOD_PRECIP_PROB = 70;
 
+/** 6-hour rain accumulation (mm) at or above which Flood risk becomes Low */
+export const FLOOD_RAIN_AMOUNT_LOW = 10;
+
 /** 6-hour rain accumulation (mm) at or above which Flood risk becomes Moderate
  *  (indicating potential waterlogging conditions) */
 export const FLOOD_RAIN_AMOUNT_MODERATE = 20;
@@ -89,6 +110,9 @@ export const FLOOD_RAIN_AMOUNT_MODERATE = 20;
 export const FLOOD_RAIN_AMOUNT_HIGH = 40;
 
 /* ── Storm / Cyclone Risk Thresholds ────────────────────── */
+
+/** Wind speed (km/h) at or above which Storm risk becomes Low */
+export const STORM_WIND_LOW = 20;
 
 /** Wind speed (km/h) at or above which Storm risk becomes Moderate */
 export const STORM_WIND_MODERATE = 40;

@@ -28,9 +28,10 @@ const DEFAULT_B = "tetulia";
 /* ── Helpers ────────────────────────────────────────────── */
 
 function riskClass(level: RiskLevel): string {
-  if (level === "High") return "risk-high";
+  if (level === "High")     return "risk-high";
   if (level === "Moderate") return "risk-moderate";
-  return "risk-low";
+  if (level === "Low")      return "risk-low";
+  return "risk-none";
 }
 
 function RiskBadge({ level, label }: { level: RiskLevel; label: string }) {
@@ -84,9 +85,10 @@ export default function ComparisonSection() {
   }
 
   function levelLabel(level: RiskLevel): string {
-    if (level === "High") return t("safetyHigh");
+    if (level === "High")     return t("safetyHigh");
     if (level === "Moderate") return t("safetyModerate");
-    return t("safetyLow");
+    if (level === "Low")      return t("safetyLow");
+    return t("safetyNone");
   }
 
   const cols = [upazilaA, upazilaB].map((u, i) => {

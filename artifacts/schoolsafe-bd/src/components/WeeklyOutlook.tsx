@@ -30,6 +30,7 @@ function weatherIcon(code: number): string {
 /** Colour dot for the prep level column. */
 function PrepDot({ level }: { level: PrepLevel }) {
   const colours: Record<PrepLevel, string> = {
+    None:     "bg-slate-300",
     Low:      "bg-green-500",
     Moderate: "bg-amber-400",
     High:     "bg-red-500",
@@ -46,7 +47,8 @@ function PrepDot({ level }: { level: PrepLevel }) {
 function prepLabel(level: PrepLevel, t: (k: string) => string): string {
   if (level === "High")     return t("weekPrepHigh");
   if (level === "Moderate") return t("weekPrepModerate");
-  return t("weekPrepLow");
+  if (level === "Low")      return t("weekPrepLow");
+  return t("weekPrepNone");
 }
 
 /**

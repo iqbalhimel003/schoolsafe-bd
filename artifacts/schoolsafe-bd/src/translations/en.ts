@@ -90,6 +90,7 @@ const en = {
 
   /* ── Overall Safety Badge ────────────────────────────── */
   overallSafetyTitle: "Overall School Safety",
+  safetyNone: "No Risk",
   safetyLow: "Low Risk",
   safetyModerate: "Moderate Risk",
   safetyHigh: "High Risk",
@@ -298,6 +299,7 @@ const en = {
   tomorrowWindMax: "Max Wind",
   tomorrowPM25: "PM2.5 (avg)",
   tomorrowPrepBadgeLabel: "Preparation Need",
+  tomorrowPrepNone: "No Preparation Needed",
   tomorrowPrepLow: "Low Preparation Need",
   tomorrowPrepModerate: "Moderate Preparation Need",
   tomorrowPrepHigh: "High Preparation Need",
@@ -320,6 +322,7 @@ const en = {
   weekHeaderMaxMin: "Max / Min",
   weekHeaderRain: "Rain %",
   weekHeaderPrep: "Prep",
+  weekPrepNone: "None",
   weekPrepLow: "Low",
   weekPrepModerate: "Moderate",
   weekPrepHigh: "High",
