@@ -49,6 +49,7 @@ const bn = {
   districtLabel: "জেলা",
   upazilaLabel: "উপজেলা",
   pilotBadge: "পাইলট",
+  hotspotBadge: "জলবায়ু-ঝুঁকিপূর্ণ এলাকা",
   comingSoon: "শীঘ্রই আসছে",
   searchDistrict: "জেলা খুঁজুন…",
   searchUpazila: "উপজেলা খুঁজুন…",

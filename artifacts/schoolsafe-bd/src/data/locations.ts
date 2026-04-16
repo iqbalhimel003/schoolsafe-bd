@@ -52,6 +52,136 @@ export const DISTRICTS: District[] = [
       },
     ],
   },
+  /* ── Representative climate-risk hotspot districts ────── */
+
+  {
+    id: "sylhet",
+    nameEn: "Sylhet",
+    nameBn: "সিলেট",
+    upazilas: [
+      {
+        id: "jaintiapur",
+        nameEn: "Jaintiapur",
+        nameBn: "জৈন্তাপুর",
+        districtId: "sylhet",
+        lat: 25.114,
+        lon: 92.118,
+        isPilot: true,
+        hotspotLabel: "Heavy Rain Representative Area",
+      },
+      {
+        id: "goainghat",
+        nameEn: "Goainghat",
+        nameBn: "গোয়াইনঘাট",
+        districtId: "sylhet",
+        lat: 25.055,
+        lon: 91.986,
+        isPilot: true,
+        hotspotLabel: "Heavy Rain Representative Area",
+      },
+    ],
+  },
+
+  {
+    id: "chuadanga",
+    nameEn: "Chuadanga",
+    nameBn: "চুয়াডাঙ্গা",
+    upazilas: [
+      {
+        id: "chuadanga-sadar",
+        nameEn: "Chuadanga Sadar",
+        nameBn: "চুয়াডাঙ্গা সদর",
+        districtId: "chuadanga",
+        lat: 23.646,
+        lon: 88.842,
+        isPilot: true,
+        hotspotLabel: "Heat Risk Representative Area",
+      },
+    ],
+  },
+
+  {
+    id: "rajshahi",
+    nameEn: "Rajshahi",
+    nameBn: "রাজশাহী",
+    upazilas: [
+      {
+        id: "paba",
+        nameEn: "Paba",
+        nameBn: "পবা",
+        districtId: "rajshahi",
+        lat: 24.375,
+        lon: 88.647,
+        isPilot: true,
+        hotspotLabel: "Heat Risk Representative Area",
+      },
+      {
+        id: "godagari",
+        nameEn: "Godagari",
+        nameBn: "গোদাগাড়ী",
+        districtId: "rajshahi",
+        lat: 24.507,
+        lon: 88.366,
+        isPilot: true,
+        hotspotLabel: "Heat Risk Representative Area",
+      },
+    ],
+  },
+
+  {
+    id: "panchagarh",
+    nameEn: "Panchagarh",
+    nameBn: "পঞ্চগড়",
+    upazilas: [
+      {
+        id: "tetulia",
+        nameEn: "Tetulia",
+        nameBn: "তেঁতুলিয়া",
+        districtId: "panchagarh",
+        lat: 26.327,
+        lon: 88.628,
+        isPilot: true,
+        hotspotLabel: "Cold Risk Representative Area",
+      },
+    ],
+  },
+
+  {
+    id: "patuakhali",
+    nameEn: "Patuakhali",
+    nameBn: "পটুয়াখালী",
+    upazilas: [
+      {
+        id: "kalapara",
+        nameEn: "Kalapara",
+        nameBn: "কলাপাড়া",
+        districtId: "patuakhali",
+        lat: 21.970,
+        lon: 90.174,
+        isPilot: true,
+        hotspotLabel: "Storm/Cyclone Representative Area",
+      },
+    ],
+  },
+
+  {
+    id: "khulna",
+    nameEn: "Khulna",
+    nameBn: "খুলনা",
+    upazilas: [
+      {
+        id: "koyra",
+        nameEn: "Koyra",
+        nameBn: "কয়রা",
+        districtId: "khulna",
+        lat: 22.370,
+        lon: 89.301,
+        isPilot: true,
+        hotspotLabel: "Storm/Cyclone Representative Area",
+      },
+    ],
+  },
+
   /* ── Future districts can be added here ──────────────────
    * Example:
    * {

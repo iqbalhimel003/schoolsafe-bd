@@ -133,6 +133,11 @@ export default function LocationSelector({ onUpazilaSelect }: Props) {
                           {t("pilotBadge")}
                         </span>
                       )}
+                      {u.hotspotLabel && (
+                        <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-medium shrink-0">
+                          {t("hotspotBadge")}
+                        </span>
+                      )}
                     </button>
                   </li>
                 ))

@@ -44,6 +44,7 @@ const en = {
   districtLabel: "District",
   upazilaLabel: "Upazila",
   pilotBadge: "Pilot",
+  hotspotBadge: "Climate-risk Hotspot",
   comingSoon: "Coming Soon",
   searchDistrict: "Search district…",
   searchUpazila: "Search upazila…",

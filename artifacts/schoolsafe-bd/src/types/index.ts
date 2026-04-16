@@ -25,6 +25,8 @@ export interface Upazila {
   lat?: number;
   lon?: number;
   isPilot: boolean;
+  /** Optional short label marking this as a representative climate-risk area */
+  hotspotLabel?: string;
 }
 
 /* Raw weather data returned by Open-Meteo forecast API */
