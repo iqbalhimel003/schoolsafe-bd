@@ -48,11 +48,12 @@ function riskClass(level: RiskLevel): string {
   return "risk-low";
 }
 
-/** Format a Date as HH:MM Bangladesh Standard Time (UTC+6). */
+/** Format a Date as h:MM AM/PM Bangladesh Standard Time (UTC+6). */
 function formatTime(d: Date): string {
-  return d.toLocaleTimeString("en-GB", {
-    hour: "2-digit",
+  return d.toLocaleTimeString("en-US", {
+    hour: "numeric",
     minute: "2-digit",
+    hour12: true,
     timeZone: "Asia/Dhaka",
   });
 }
