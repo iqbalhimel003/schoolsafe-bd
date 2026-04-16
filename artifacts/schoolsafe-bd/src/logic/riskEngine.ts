@@ -155,16 +155,16 @@ function evaluateHeavyRain(w: WeatherData): Evaluation {
   return { level, rules };
 }
 
-/** 6. Flood Risk — sustained high precipitation probability with high rain accumulation */
+/** 6. Flood Risk — sustained high precipitation probability with 6-hour rain accumulation */
 function evaluateFlood(w: WeatherData): Evaluation {
   const rules: TranslationKeys[] = [];
   let level: RiskLevel = "Low";
 
   if (w.precipitationProbability >= T.FLOOD_PRECIP_PROB) {
-    if (w.rain >= T.FLOOD_RAIN_AMOUNT_HIGH) {
+    if (w.rain6h >= T.FLOOD_RAIN_AMOUNT_HIGH) {
       level = "High";
       rules.push("ruleFloodRisk");
-    } else if (w.rain >= T.FLOOD_RAIN_AMOUNT_MODERATE) {
+    } else if (w.rain6h >= T.FLOOD_RAIN_AMOUNT_MODERATE) {
       level = "Moderate";
       rules.push("ruleFloodRisk");
     }

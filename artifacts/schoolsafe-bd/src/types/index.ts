@@ -33,7 +33,8 @@ export interface WeatherData {
   humidity: number;            /* % */
   apparentTemperature: number; /* °C */
   precipitationProbability: number; /* % */
-  rain: number;                /* mm */
+  rain: number;                /* mm — current hour */
+  rain6h: number;              /* mm — 6-hour rolling accumulation (current + 5 preceding hours) */
   windSpeed: number;           /* km/h */
   uvIndex: number;
   visibility: number;          /* m */

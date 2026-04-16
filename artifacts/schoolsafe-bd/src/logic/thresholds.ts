@@ -79,11 +79,11 @@ export const HEAVY_RAIN_AMOUNT_HIGH = 15;
 /** Precipitation probability (%) required for flood risk assessment */
 export const FLOOD_PRECIP_PROB = 70;
 
-/** Rain amount (mm/h) at or above which Flood risk becomes Moderate
+/** 6-hour rain accumulation (mm) at or above which Flood risk becomes Moderate
  *  (indicating potential waterlogging conditions) */
 export const FLOOD_RAIN_AMOUNT_MODERATE = 20;
 
-/** Rain amount (mm/h) at or above which Flood risk becomes High */
+/** 6-hour rain accumulation (mm) at or above which Flood risk becomes High */
 export const FLOOD_RAIN_AMOUNT_HIGH = 40;
 
 /* ── Storm / Cyclone Risk Thresholds ────────────────────── */

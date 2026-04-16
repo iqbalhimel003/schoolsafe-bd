@@ -173,8 +173,8 @@ const en = {
     "Precipitation probability ≥ 60% AND hourly rain ≥ 5 mm → Moderate; ≥ 15 mm → High. " +
     "Indicates risk to outdoor school activities.",
   methodologyFloodRule:
-    "Precipitation probability ≥ 70% AND hourly rain ≥ 20 mm → Moderate; ≥ 40 mm → High. " +
-    "Indicates potential waterlogging at school access areas.",
+    "Precipitation probability ≥ 70% AND 6-hour rainfall accumulation ≥ 20 mm → Moderate; ≥ 40 mm → High. " +
+    "Using a 6-hour rolling total captures sustained rain events that cause waterlogging at school access areas.",
   methodologyStormRule:
     "Wind speed ≥ 40 km/h → Moderate; ≥ 65 km/h → High. " +
     "Indicates risk from strong wind or cyclone conditions.",
