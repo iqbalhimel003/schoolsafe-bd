@@ -59,6 +59,8 @@ const en = {
   windSpeed: "Wind Speed",
   uvIndex: "UV Index",
   visibility: "Visibility",
+  pm25Label: "PM2.5 (µg/m³)",
+  pm10Label: "PM10 (µg/m³)",
 
   /* ── Risk Cards ──────────────────────────────────────── */
   riskBreakdownTitle: "Risk Breakdown",

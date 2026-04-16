@@ -264,8 +264,8 @@ function DashboardPanel({
 
       {/* Air quality mini-row */}
       <div className="grid grid-cols-2 gap-3">
-        <MetricCard icon="🫧" label="PM2.5 (µg/m³)" value={airQuality.pm25.toFixed(1)} />
-        <MetricCard icon="🌐" label="PM10 (µg/m³)"  value={airQuality.pm10.toFixed(1)} />
+        <MetricCard icon="🫧" label={t("pm25Label")} value={airQuality.pm25.toFixed(1)} />
+        <MetricCard icon="🌐" label={t("pm10Label")} value={airQuality.pm10.toFixed(1)} />
       </div>
 
       {/* Overall safety badge */}

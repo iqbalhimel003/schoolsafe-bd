@@ -64,6 +64,8 @@ const bn = {
   windSpeed: "বায়ুর গতি",
   uvIndex: "UV সূচক",
   visibility: "দৃশ্যমানতা",
+  pm25Label: "PM2.5 (µg/m³)",
+  pm10Label: "PM10 (µg/m³)",
 
   /* ── রিস্ক কার্ড ──────────────────────────────────────── */
   riskBreakdownTitle: "ঝুঁকি বিশ্লেষণ",
