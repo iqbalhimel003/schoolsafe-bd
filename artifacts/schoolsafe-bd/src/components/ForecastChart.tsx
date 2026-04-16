@@ -6,6 +6,7 @@
  * for the selected pilot upazila.
  *
  * Uses Recharts with two Y-axes and a bilingual legend.
+ * Loading and error states include a retry affordance.
  * ========================================================= */
 
 import { useQuery } from "@tanstack/react-query";
@@ -68,8 +69,14 @@ export default function ForecastChart({ selectedUpazila }: Props) {
             {t("chartLoading")}
           </div>
         ) : forecastQuery.isError ? (
-          <div className="h-48 flex items-center justify-center text-sm text-destructive">
-            {t("chartError")}
+          <div className="h-48 flex flex-col items-center justify-center gap-3">
+            <p className="text-sm text-destructive">{t("chartError")}</p>
+            <button
+              onClick={() => forecastQuery.refetch()}
+              className="bg-primary text-primary-foreground text-xs font-medium px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity"
+            >
+              {t("retryButton")}
+            </button>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={260}>

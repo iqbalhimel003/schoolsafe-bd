@@ -66,6 +66,11 @@ export default function ComparisonSection() {
   const isError =
     weatherResults.some((r) => r.isError) || aqResults.some((r) => r.isError);
 
+  function handleRetry() {
+    weatherResults.forEach((r) => r.isError && r.refetch());
+    aqResults.forEach((r) => r.isError && r.refetch());
+  }
+
   function levelLabel(level: RiskLevel): string {
     if (level === "High") return t("safetyHigh");
     if (level === "Moderate") return t("safetyModerate");
@@ -94,8 +99,14 @@ export default function ComparisonSection() {
           {t("comparisonLoading")}
         </div>
       ) : isError ? (
-        <div className="bg-card border border-destructive/30 rounded-xl p-8 text-center text-sm text-destructive">
-          {t("comparisonError")}
+        <div className="bg-card border border-destructive/30 rounded-xl p-8 flex flex-col items-center gap-3">
+          <p className="text-sm text-destructive">{t("comparisonError")}</p>
+          <button
+            onClick={handleRetry}
+            className="bg-primary text-primary-foreground text-xs font-medium px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity"
+          >
+            {t("retryButton")}
+          </button>
         </div>
       ) : (
         <>

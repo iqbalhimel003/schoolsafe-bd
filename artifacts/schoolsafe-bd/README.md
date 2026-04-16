@@ -161,7 +161,7 @@ The risk engine (`src/logic/riskEngine.ts`) reads all thresholds from this file.
 # Build the production bundle:
 pnpm --filter @workspace/schoolsafe-bd run build
 
-# The output is in artifacts/schoolsafe-bd/dist/
+# The output is in artifacts/schoolsafe-bd/dist/public/
 # Upload that folder to Vercel, Netlify, or any static host.
 ```
 
