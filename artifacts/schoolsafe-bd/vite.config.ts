@@ -4,7 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
-/* PORT and BASE_PATH are injected by the Replit artifact runtime.
+/* PORT, BASE_PATH, and VITE_SITE_URL are injected by the Replit artifact runtime.
  * Safe defaults allow ad-hoc local builds outside that environment. */
 const rawPort = process.env.PORT ?? "5173";
 const port = Number(rawPort);
@@ -13,6 +13,14 @@ if (Number.isNaN(port) || port <= 0) {
 }
 
 const basePath = process.env.BASE_PATH ?? "/";
+
+// VITE_SITE_URL is the absolute origin + base path prefix used for OG meta tags.
+// Strip the trailing slash so that "%VITE_SITE_URL%/foo" never produces a double slash.
+if (!process.env.VITE_SITE_URL) {
+  const domain = process.env.REPLIT_DEV_DOMAIN ?? "localhost:5173";
+  const base = basePath === "/" ? "" : basePath.replace(/\/$/, "");
+  process.env.VITE_SITE_URL = `https://${domain}${base}`;
+}
 
 export default defineConfig({
   base: basePath,
