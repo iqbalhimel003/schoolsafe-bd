@@ -9,7 +9,8 @@
  *   Air quality:      https://air-quality-api.open-meteo.com/v1/air-quality
  * ========================================================= */
 
-import type { WeatherData, AirQualityData, HourlyForecast, TomorrowForecast } from "@/types";
+import type { WeatherData, AirQualityData, HourlyForecast, TomorrowForecast, WeeklyForecastDay } from "@/types";
+import { assessTomorrowPrep } from "@/logic/riskEngine";
 
 const WEATHER_BASE = "https://api.open-meteo.com/v1/forecast";
 const AQ_BASE = "https://air-quality-api.open-meteo.com/v1/air-quality";
@@ -199,6 +200,58 @@ export async function fetchTomorrowForecast(
     pm25Avg,
     date:        tomorrowDate,
   };
+}
+
+/**
+ * Fetch a 7-day daily weather outlook for a given lat/lon.
+ * Uses Open-Meteo's daily endpoint with forecast_days=7.
+ * Returns one WeeklyForecastDay per day (index 0 = today through index 6).
+ * PrepLevel is derived per day using assessTomorrowPrep() with pm25Avg=0
+ * (PM2.5 is omitted to keep the weekly fetch lightweight).
+ */
+export async function fetchWeeklyForecast(
+  lat: number,
+  lon: number,
+): Promise<WeeklyForecastDay[]> {
+  const params = new URLSearchParams({
+    latitude: String(lat),
+    longitude: String(lon),
+    daily: [
+      "temperature_2m_max",
+      "temperature_2m_min",
+      "precipitation_probability_max",
+      "windspeed_10m_max",
+      "weathercode",
+    ].join(","),
+    timezone: "auto",
+    forecast_days: "7",
+  });
+
+  const res = await fetch(`${WEATHER_BASE}?${params}`);
+  if (!res.ok) throw new Error(`Weekly forecast API error ${res.status}: ${res.statusText}`);
+  const data = await res.json();
+
+  const d = data.daily;
+  return (d.time as string[]).map((date: string, i: number) => {
+    const tempMax     = d.temperature_2m_max[i]              ?? 0;
+    const tempMin     = d.temperature_2m_min[i]              ?? 0;
+    const rainProbMax = d.precipitation_probability_max[i]   ?? 0;
+    const windMax     = d.windspeed_10m_max[i]               ?? 0;
+    const weatherCode = d.weathercode[i]                     ?? 0;
+
+    const prepLevel = assessTomorrowPrep({
+      tempMax,
+      tempMin,
+      rainProbMax,
+      windMax,
+      weatherCode,
+      rainSum:  0,
+      pm25Avg:  0,
+      date,
+    });
+
+    return { date, tempMax, tempMin, rainProbMax, weatherCode, windMax, prepLevel };
+  });
 }
 
 /**

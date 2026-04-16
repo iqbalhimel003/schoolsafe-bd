@@ -106,3 +106,14 @@ export interface TomorrowForecast {
   pm25Avg: number;       /* µg/m³ — average PM2.5 for tomorrow's hours */
   date: string;          /* YYYY-MM-DD */
 }
+
+/* One day in the 7-day weekly outlook */
+export interface WeeklyForecastDay {
+  date: string;          /* YYYY-MM-DD */
+  tempMax: number;       /* °C */
+  tempMin: number;       /* °C */
+  rainProbMax: number;   /* % */
+  weatherCode: number;   /* WMO code */
+  windMax: number;       /* km/h */
+  prepLevel: PrepLevel;  /* derived from daily thresholds */
+}

@@ -312,6 +312,20 @@ const en = {
   tomorrowTipLowRiskGeneral: "Conditions tomorrow are within normal ranges. Standard school activities can proceed — students should carry water and dress appropriately for the season.",
   tomorrowTipMonitor: "Keep monitoring conditions as tomorrow approaches. Situations may change in the hours ahead. Follow any updates from school authorities or official weather advisories.",
 
+  /* ── Week Ahead ──────────────────────────────────── */
+  weekSectionTitle: "Week Ahead",
+  weekSectionSubtitle: "7-day school planning outlook",
+  weekHeaderDay: "Day",
+  weekHeaderCondition: "Condition",
+  weekHeaderMaxMin: "Max / Min",
+  weekHeaderRain: "Rain %",
+  weekHeaderPrep: "Prep",
+  weekPrepLow: "Low",
+  weekPrepModerate: "Moderate",
+  weekPrepHigh: "High",
+  weekNoData: "Weekly forecast is unavailable for this location.",
+  weekToday: "Today",
+
   /* ── Print / Share Report ────────────────────────── */
   printButton: "Print / Share Report",
   printReportTitle: "Daily School Safety Report",
