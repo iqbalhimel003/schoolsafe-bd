@@ -58,6 +58,8 @@ const en = {
   loadingData: "Fetching live data…",
   errorFetchingData: "Could not load environmental data. Please try again.",
   retryButton: "Retry",
+  refreshButton: "Refresh Data",
+  refreshingLabel: "Refreshing…",
 
   /* ── Weather Metrics ─────────────────────────────────── */
   temperature: "Temperature",

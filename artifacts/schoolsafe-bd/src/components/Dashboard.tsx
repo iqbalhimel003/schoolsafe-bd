@@ -47,9 +47,13 @@ function riskClass(level: RiskLevel): string {
   return "risk-low";
 }
 
-/** Format a Date as HH:MM local time. */
+/** Format a Date as HH:MM Bangladesh Standard Time (UTC+6). */
 function formatTime(d: Date): string {
-  return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  return d.toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Asia/Dhaka",
+  });
 }
 
 /** Format visibility: ≥1000m → km, else m. */
@@ -273,10 +277,14 @@ function DashboardPanel({
   weather,
   airQuality,
   upazila,
+  isFetching,
+  onRefresh,
 }: {
   weather: WeatherData;
   airQuality: AirQualityData;
   upazila: Upazila;
+  isFetching: boolean;
+  onRefresh: () => void;
 }) {
   const { t, lang } = useLanguage();
   const risk = evaluateRisk(weather, airQuality);
@@ -313,7 +321,7 @@ function DashboardPanel({
         <p className="text-sm mt-0.5">{t("printGeneratedOn")}: {today} — {t("lastUpdated")}: {formatTime(weather.fetchedAt)}</p>
       </div>
 
-      {/* Header: title + last updated + Print button */}
+      {/* Header: title + last updated + Refresh + Print buttons */}
       <div className="flex items-start justify-between flex-wrap gap-2">
         <div>
           <h2 className="text-xl font-bold text-foreground">{t("dashboardTitle")}</h2>
@@ -321,9 +329,31 @@ function DashboardPanel({
         </div>
         <div className="flex items-start gap-3 flex-wrap justify-end">
           <div className="text-right text-xs text-muted-foreground">
-            <p>{t("lastUpdated")}: {formatTime(weather.fetchedAt)}</p>
+            {isFetching ? (
+              <p className="flex items-center justify-end gap-1 text-primary animate-pulse">
+                <span className="inline-block h-2 w-2 rounded-full bg-primary animate-ping" aria-hidden="true" />
+                {t("refreshingLabel")}
+              </p>
+            ) : (
+              <p>{t("lastUpdated")}: {formatTime(weather.fetchedAt)}</p>
+            )}
             <p className="mt-0.5">{t("dataSource")}</p>
           </div>
+          {/* Manual refresh button */}
+          <button
+            onClick={onRefresh}
+            disabled={isFetching}
+            className="no-print shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-card hover:bg-muted active:bg-muted/80 text-foreground text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label={t("refreshButton")}
+          >
+            <span
+              aria-hidden="true"
+              className={isFetching ? "animate-spin inline-block" : "inline-block"}
+            >
+              🔄
+            </span>
+            {t("refreshButton")}
+          </button>
           <button
             onClick={() => window.print()}
             className="no-print shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary/40 bg-primary/10 hover:bg-primary/20 active:bg-primary/30 text-primary text-xs font-semibold transition-colors"
@@ -448,6 +478,9 @@ function DashboardPanel({
 
 /* ── Main export ────────────────────────────────────────── */
 
+/* Auto-refresh interval: every 5 minutes */
+const REFETCH_INTERVAL_MS = 5 * 60 * 1000;
+
 export default function Dashboard({ selectedUpazila }: Props) {
   const { t } = useLanguage();
 
@@ -455,7 +488,9 @@ export default function Dashboard({ selectedUpazila }: Props) {
     queryKey: ["weather", selectedUpazila.id],
     queryFn: () => fetchWeather(selectedUpazila.lat!, selectedUpazila.lon!),
     enabled: !!selectedUpazila.lat && !!selectedUpazila.lon,
-    staleTime: 1000 * 60 * 10,
+    staleTime: REFETCH_INTERVAL_MS,
+    refetchInterval: REFETCH_INTERVAL_MS,
+    refetchIntervalInBackground: false,
     retry: 2,
   });
 
@@ -463,14 +498,17 @@ export default function Dashboard({ selectedUpazila }: Props) {
     queryKey: ["airQuality", selectedUpazila.id],
     queryFn: () => fetchAirQuality(selectedUpazila.lat!, selectedUpazila.lon!),
     enabled: !!selectedUpazila.lat && !!selectedUpazila.lon,
-    staleTime: 1000 * 60 * 10,
+    staleTime: REFETCH_INTERVAL_MS,
+    refetchInterval: REFETCH_INTERVAL_MS,
+    refetchIntervalInBackground: false,
     retry: 2,
   });
 
-  const isLoading = weatherQuery.isLoading || aqQuery.isLoading;
-  const isError   = weatherQuery.isError   || aqQuery.isError;
+  const isLoading   = weatherQuery.isLoading || aqQuery.isLoading;
+  const isError     = weatherQuery.isError   || aqQuery.isError;
+  const isFetching  = weatherQuery.isFetching || aqQuery.isFetching;
 
-  function handleRetry() {
+  function handleRefresh() {
     weatherQuery.refetch();
     aqQuery.refetch();
   }
@@ -483,13 +521,15 @@ export default function Dashboard({ selectedUpazila }: Props) {
         <ErrorDashboard
           message={t("errorFetchingData")}
           retryLabel={t("retryButton")}
-          onRetry={handleRetry}
+          onRetry={handleRefresh}
         />
       ) : weatherQuery.data && aqQuery.data ? (
         <DashboardPanel
           weather={weatherQuery.data}
           airQuality={aqQuery.data}
           upazila={selectedUpazila}
+          isFetching={isFetching}
+          onRefresh={handleRefresh}
         />
       ) : null}
     </section>
