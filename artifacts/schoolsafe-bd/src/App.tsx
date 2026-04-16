@@ -13,6 +13,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Home from "@/pages/Home";
 import AdminPage from "@/pages/Admin";
+import { usePageTracking } from "@/hooks/usePageTracking";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,6 +36,8 @@ function NotFound() {
 function AppShell() {
   const [location] = useLocation();
   const isAdmin = location === "/admin";
+
+  usePageTracking();
 
   return (
     <div className="min-h-screen flex flex-col bg-background">

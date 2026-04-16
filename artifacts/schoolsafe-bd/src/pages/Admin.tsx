@@ -9,7 +9,16 @@
 import { useState, useEffect, useRef } from "react";
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 import { toast } from "sonner";
-import { Home, LayoutGrid, FileText, Phone } from "lucide-react";
+import { Home, LayoutGrid, FileText, Phone, BarChart2 } from "lucide-react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
 
 const API_BASE = `${import.meta.env.BASE_URL}api`;
 
@@ -26,6 +35,7 @@ type Section = {
   icon: React.ReactNode;
   fields: FieldDef[];
   bilingual?: boolean;
+  isAnalytics?: boolean;
 };
 
 const SECTIONS: Section[] = [
@@ -74,6 +84,13 @@ const SECTIONS: Section[] = [
       { key: "contact_telegram", label: "Telegram URL (leave blank to hide)" },
       { key: "contact_x", label: "X (Twitter) URL (leave blank to hide)" },
     ],
+  },
+  {
+    title: "Analytics",
+    icon: <BarChart2 size={15} />,
+    bilingual: false,
+    fields: [],
+    isAnalytics: true,
   },
 ];
 
@@ -301,6 +318,251 @@ function SingleFieldRow({
   );
 }
 
+/* ── Analytics Panel ─────────────────────────────────── */
+
+type Summary = {
+  total: number;
+  today: number;
+  last7days: number;
+  last30days: number;
+  uniqueSessions: number;
+};
+
+type DailyPoint = { date: string; count: number };
+type PageCount = { page: string; count: number };
+type DistrictCount = { district: string; count: number };
+type UpazilaCount = { upazila: string; count: number };
+type DeviceCount = { deviceType: string | null; count: number };
+type VisitRow = {
+  id: number;
+  sessionId: string;
+  visitedAt: string;
+  page: string;
+  ipMasked: string | null;
+  browser: string | null;
+  os: string | null;
+  deviceType: string | null;
+  referrer: string | null;
+  district: string | null;
+  upazila: string | null;
+  lang: string | null;
+};
+
+function SummaryCard({ label, value }: { label: string; value: number | string }) {
+  return (
+    <div className="bg-card border border-border rounded-xl px-4 py-3 shadow-sm">
+      <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium">{label}</p>
+      <p className="text-2xl font-bold text-foreground mt-1">{value}</p>
+    </div>
+  );
+}
+
+function AnalyticsPanel({ password }: { password: string }) {
+  const [summary, setSummary] = useState<Summary | null>(null);
+  const [daily, setDaily] = useState<DailyPoint[]>([]);
+  const [topPages, setTopPages] = useState<PageCount[]>([]);
+  const [topDistricts, setTopDistricts] = useState<DistrictCount[]>([]);
+  const [topUpazilas, setTopUpazilas] = useState<UpazilaCount[]>([]);
+  const [byDevice, setByDevice] = useState<DeviceCount[]>([]);
+  const [recent, setRecent] = useState<VisitRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const auth = { Authorization: `Bearer ${password}` };
+    const endpoints = [
+      "/analytics/summary",
+      "/analytics/daily?days=30",
+      "/analytics/top-pages?limit=10",
+      "/analytics/top-districts?limit=10",
+      "/analytics/top-upazilas?limit=10",
+      "/analytics/by-device",
+      "/analytics/recent?limit=50",
+    ];
+
+    setLoading(true);
+    setError(null);
+
+    Promise.all(
+      endpoints.map((e) =>
+        fetch(`${API_BASE}${e}`, { headers: auth }).then((r) => {
+          if (!r.ok) throw new Error(`${e} → ${r.status}`);
+          return r.json();
+        })
+      )
+    )
+      .then(([s, d, tp, td, tu, bd, rc]) => {
+        setSummary(s);
+        setDaily(d);
+        setTopPages(tp);
+        setTopDistricts(td);
+        setTopUpazilas(tu);
+        setByDevice(bd);
+        setRecent(rc);
+      })
+      .catch((err: Error) => {
+        setError(err.message || "Failed to load analytics");
+      })
+      .finally(() => setLoading(false));
+  }, [password]);
+
+  if (loading) {
+    return <p className="text-sm text-muted-foreground py-8">Loading analytics…</p>;
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-700">
+        Could not load analytics: {error}
+      </div>
+    );
+  }
+
+  const totalDevice = byDevice.reduce((sum, d) => sum + d.count, 0);
+
+  return (
+    <div className="space-y-6">
+      {/* Privacy note */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 text-sm text-blue-900">
+        <strong>Privacy:</strong> These analytics track traffic patterns only. No personal data
+        is stored. IP addresses are masked (e.g., <code>203.82.14.x</code>) and visitors are
+        identified by an anonymous session ID — never by name or email.
+      </div>
+
+      {/* Summary cards */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <SummaryCard label="Total Visits" value={summary?.total ?? 0} />
+        <SummaryCard label="Today" value={summary?.today ?? 0} />
+        <SummaryCard label="Last 7 Days" value={summary?.last7days ?? 0} />
+        <SummaryCard label="Last 30 Days" value={summary?.last30days ?? 0} />
+        <SummaryCard label="Unique Sessions" value={summary?.uniqueSessions ?? 0} />
+      </div>
+
+      {/* Daily chart */}
+      <div className="bg-card border border-border rounded-xl p-4">
+        <h3 className="text-sm font-semibold text-foreground mb-3">Daily Visits (last 30 days)</h3>
+        {daily.length > 0 ? (
+          <div style={{ width: "100%", height: 240 }}>
+            <ResponsiveContainer>
+              <BarChart data={daily} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis
+                  dataKey="date"
+                  tickFormatter={(d: string) => d.slice(5)}
+                  fontSize={11}
+                  stroke="hsl(var(--muted-foreground))"
+                />
+                <YAxis fontSize={11} allowDecimals={false} stroke="hsl(var(--muted-foreground))" />
+                <Tooltip
+                  contentStyle={{ fontSize: 12, borderRadius: 8 }}
+                  labelFormatter={(d: string) => d}
+                />
+                <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        ) : (
+          <p className="text-xs text-muted-foreground">No data yet.</p>
+        )}
+      </div>
+
+      {/* Two-column lists */}
+      <div className="grid md:grid-cols-2 gap-4">
+        <ListCard title="Top Pages" rows={topPages.map((p) => ({ label: p.page, count: p.count }))} />
+        <ListCard
+          title="Traffic by Device"
+          rows={byDevice.map((d) => ({
+            label: (d.deviceType ?? "unknown") + (totalDevice ? ` (${Math.round((d.count / totalDevice) * 100)}%)` : ""),
+            count: d.count,
+          }))}
+        />
+        <ListCard
+          title="Top Districts Selected"
+          rows={topDistricts.map((d) => ({ label: d.district, count: d.count }))}
+        />
+        <ListCard
+          title="Top Upazilas Selected"
+          rows={topUpazilas.map((u) => ({ label: u.upazila, count: u.count }))}
+        />
+      </div>
+
+      {/* Recent visits table */}
+      <div className="bg-card border border-border rounded-xl p-4">
+        <h3 className="text-sm font-semibold text-foreground mb-3">Recent Visits (last 50)</h3>
+        {recent.length === 0 ? (
+          <p className="text-xs text-muted-foreground">No visits yet.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="text-left border-b border-border text-muted-foreground">
+                  <th className="py-2 pr-3 font-medium">Time</th>
+                  <th className="py-2 pr-3 font-medium">Page</th>
+                  <th className="py-2 pr-3 font-medium">IP (masked)</th>
+                  <th className="py-2 pr-3 font-medium">Browser</th>
+                  <th className="py-2 pr-3 font-medium">OS</th>
+                  <th className="py-2 pr-3 font-medium">Device</th>
+                  <th className="py-2 pr-3 font-medium">District</th>
+                  <th className="py-2 pr-3 font-medium">Upazila</th>
+                  <th className="py-2 pr-3 font-medium">Lang</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recent.map((v) => (
+                  <tr key={v.id} className="border-b border-border/50 last:border-0">
+                    <td className="py-2 pr-3 whitespace-nowrap text-muted-foreground">
+                      {new Date(v.visitedAt).toLocaleString()}
+                    </td>
+                    <td className="py-2 pr-3 font-mono text-foreground">{v.page}</td>
+                    <td className="py-2 pr-3 font-mono text-muted-foreground">{v.ipMasked ?? "—"}</td>
+                    <td className="py-2 pr-3 text-foreground">{v.browser ?? "—"}</td>
+                    <td className="py-2 pr-3 text-foreground">{v.os ?? "—"}</td>
+                    <td className="py-2 pr-3 text-foreground">{v.deviceType ?? "—"}</td>
+                    <td className="py-2 pr-3 text-foreground">{v.district ?? "—"}</td>
+                    <td className="py-2 pr-3 text-foreground">{v.upazila ?? "—"}</td>
+                    <td className="py-2 pr-3 text-foreground">{v.lang ?? "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ListCard({
+  title,
+  rows,
+}: {
+  title: string;
+  rows: { label: string; count: number }[];
+}) {
+  return (
+    <div className="bg-card border border-border rounded-xl p-4">
+      <h3 className="text-sm font-semibold text-foreground mb-3">{title}</h3>
+      {rows.length === 0 ? (
+        <p className="text-xs text-muted-foreground">No data yet.</p>
+      ) : (
+        <ul className="space-y-1.5">
+          {rows.map((r, i) => (
+            <li
+              key={`${r.label}-${i}`}
+              className="flex items-center justify-between text-sm gap-3"
+            >
+              <span className="truncate text-foreground font-mono text-xs">{r.label}</span>
+              <span className="shrink-0 font-semibold text-muted-foreground tabular-nums">
+                {r.count}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 /* ── Editor ───────────────────────────────────────────── */
 
 function Editor({
@@ -443,7 +705,9 @@ function Editor({
                 {section.title}
               </h2>
 
-              {section.bilingual === false ? (
+              {section.isAnalytics ? (
+                <AnalyticsPanel password={password} />
+              ) : section.bilingual === false ? (
                 <div className="space-y-6">
                   <p className="text-xs text-muted-foreground">
                     These values are the same in both English and Bangla.
@@ -478,16 +742,18 @@ function Editor({
               )}
             </div>
 
-            {/* Bottom save button */}
-            <div className="pt-2 pb-4">
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="bg-primary text-primary-foreground rounded-lg px-6 py-2.5 text-sm font-semibold hover:bg-primary/90 disabled:opacity-50 transition-colors"
-              >
-                {saving ? "Saving…" : "Save All Changes"}
-              </button>
-            </div>
+            {/* Bottom save button — hidden on analytics section */}
+            {!section.isAnalytics && (
+              <div className="pt-2 pb-4">
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="bg-primary text-primary-foreground rounded-lg px-6 py-2.5 text-sm font-semibold hover:bg-primary/90 disabled:opacity-50 transition-colors"
+                >
+                  {saving ? "Saving…" : "Save All Changes"}
+                </button>
+              </div>
+            )}
           </div>
         </main>
       </div>
