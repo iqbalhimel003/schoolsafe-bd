@@ -356,6 +356,8 @@ const en = {
   weekToday: "Today",
   weekHeatSevere: "Heat",
   weekHeatWarm: "Warm",
+  weekHeatSevereTitle: "Severe heat ≥36°C",
+  weekHeatWarmTitle: "Warm day >30°C",
 
   /* ── Print / Share Report ────────────────────────── */
   printButton: "Print / Share Report",

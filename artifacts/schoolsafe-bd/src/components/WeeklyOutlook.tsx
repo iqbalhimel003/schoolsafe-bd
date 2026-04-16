@@ -139,14 +139,14 @@ export default function WeeklyOutlook({ days }: Props) {
                       {day.tempMax >= HEAT_TEMP_MODERATE ? (
                         <span
                           className="text-[10px] font-bold px-1 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"
-                          title={`Severe heat ≥${HEAT_TEMP_MODERATE}°C`}
+                          title={t("weekHeatSevereTitle")}
                         >
                           🌡️ {t("weekHeatSevere")}
                         </span>
                       ) : day.tempMax > HEAT_TEMP_ADVISORY ? (
                         <span
                           className="text-[10px] font-bold px-1 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
-                          title={`Warm day >${HEAT_TEMP_ADVISORY}°C`}
+                          title={t("weekHeatWarmTitle")}
                         >
                           ☀️ {t("weekHeatWarm")}
                         </span>

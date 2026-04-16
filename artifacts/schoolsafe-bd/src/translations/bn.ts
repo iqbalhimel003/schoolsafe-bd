@@ -359,6 +359,8 @@ const bn = {
   weekToday: "আজ",
   weekHeatSevere: "তাপ",
   weekHeatWarm: "গরম",
+  weekHeatSevereTitle: "তীব্র তাপ ≥৩৬°C",
+  weekHeatWarmTitle: "উষ্ণ দিন >৩০°C",
 
   /* ── প্রিন্ট / শেয়ার রিপোর্ট ─────────────────────── */
   printButton: "প্রিন্ট / শেয়ার রিপোর্ট",
