@@ -5,16 +5,18 @@
  *   - Hero (title, description, prototype notice)
  *   - Location selector (district + upazila)
  *   - Dashboard (live weather, air quality, risk cards)
- *   - Comparison (pilot upazilas — Phase 4)
- *   - Methodology
- *   - Limitations
+ *   - ForecastChart (24-hour temp + precip, when location selected)
+ *   - ComparisonSection (all 3 pilot upazilas side-by-side, live)
+ *   - MethodologySection (all 7 risk rules explained)
+ *   - LimitationsSection (disclaimer + official advisory notes)
  * ========================================================= */
 
 import { useState } from "react";
 import Hero from "@/components/Hero";
 import LocationSelector from "@/components/LocationSelector";
 import Dashboard from "@/components/Dashboard";
-import ComparisonPlaceholder from "@/components/ComparisonPlaceholder";
+import ForecastChart from "@/components/ForecastChart";
+import ComparisonSection from "@/components/ComparisonSection";
 import MethodologySection from "@/components/MethodologySection";
 import LimitationsSection from "@/components/LimitationsSection";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -36,7 +38,7 @@ export default function Home() {
         <hr className="border-border" />
       </div>
 
-      {/* Environmental Dashboard */}
+      {/* Environmental Dashboard — shown when a location is selected */}
       {selectedUpazila ? (
         <Dashboard selectedUpazila={selectedUpazila} />
       ) : (
@@ -53,23 +55,28 @@ export default function Home() {
         </section>
       )}
 
-      {/* Divider */}
-      <div className="max-w-5xl mx-auto px-4">
-        <hr className="border-border" />
-      </div>
-
-      {/* Pilot Upazila Comparison (Phase 4) */}
-      <ComparisonPlaceholder />
+      {/* 24-Hour Forecast Chart — shown when a location is selected */}
+      {selectedUpazila && (
+        <ForecastChart selectedUpazila={selectedUpazila} />
+      )}
 
       {/* Divider */}
       <div className="max-w-5xl mx-auto px-4">
         <hr className="border-border" />
       </div>
 
-      {/* Methodology */}
+      {/* Pilot Upazila Comparison — live data for all 3 upazilas */}
+      <ComparisonSection />
+
+      {/* Divider */}
+      <div className="max-w-5xl mx-auto px-4">
+        <hr className="border-border" />
+      </div>
+
+      {/* Methodology — all 7 risk rules with thresholds */}
       <MethodologySection />
 
-      {/* Limitations */}
+      {/* Limitations & Disclaimer */}
       <LimitationsSection />
     </main>
   );

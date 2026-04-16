@@ -136,13 +136,18 @@ const en = {
   comparisonTemp: "Temp",
   comparisonPM25: "PM2.5",
   comparisonColdRisk: "Cold Risk",
+  comparisonFloodRisk: "Flood Risk",
   comparisonStormRisk: "Storm Risk",
+  comparisonLoading: "Loading comparison data…",
+  comparisonError: "Could not load comparison data.",
 
   /* ── 24-Hour Chart ───────────────────────────────────── */
   chartTitle: "24-Hour Forecast",
   chartTemp: "Temperature (°C)",
   chartPrecipProb: "Precip. Probability (%)",
   chartHour: "Hour",
+  chartLoading: "Loading forecast chart…",
+  chartError: "Could not load forecast data.",
 
   /* ── Methodology ─────────────────────────────────────── */
   methodologyTitle: "Methodology",
@@ -150,6 +155,31 @@ const en = {
     "SchoolSafe BD uses a transparent rule-based system to assess environmental risks. " +
     "Data is fetched from Open-Meteo's free weather and air quality APIs. " +
     "All thresholds are based on publicly available environmental health guidance and are fully editable in the project source code.",
+  methodologyRulesTitle: "Risk Rule Summary",
+  methodologyHeatRule:
+    "Temp ≥ 32°C → Moderate; ≥ 35°C or feels-like ≥ 38°C → High. " +
+    "Humidity above 80% combined with high temperature raises risk further.",
+  methodologyRainRule:
+    "Precipitation probability ≥ 40% → Moderate; ≥ 60% → High. " +
+    "Notable rainfall forecast also raises rain risk.",
+  methodologyAQRule:
+    "PM2.5 ≥ 15 µg/m³ → Moderate; ≥ 35 µg/m³ → High. " +
+    "PM10 ≥ 45 µg/m³ → Moderate; ≥ 100 µg/m³ → High. Worst of the two is used.",
+  methodologyColdRule:
+    "Temp ≤ 15°C → Moderate; ≤ 10°C → High (Cold Wave conditions). " +
+    "Wind speed ≥ 20 km/h during cold conditions bumps risk up one level.",
+  methodologyHeavyRainRule:
+    "Precipitation probability ≥ 60% AND hourly rain ≥ 5 mm → Moderate; ≥ 15 mm → High. " +
+    "Indicates risk to outdoor school activities.",
+  methodologyFloodRule:
+    "Precipitation probability ≥ 70% AND hourly rain ≥ 20 mm → Moderate; ≥ 40 mm → High. " +
+    "Indicates potential waterlogging at school access areas.",
+  methodologyStormRule:
+    "Wind speed ≥ 40 km/h → Moderate; ≥ 65 km/h → High. " +
+    "Indicates risk from strong wind or cyclone conditions.",
+  methodologyOverallBadge:
+    "The Overall School Safety badge reflects the worst-case risk across all seven types. " +
+    "If any single risk is High, the overall badge shows High.",
 
   /* ── Limitations ─────────────────────────────────────── */
   limitationsTitle: "Limitations & Disclaimer",

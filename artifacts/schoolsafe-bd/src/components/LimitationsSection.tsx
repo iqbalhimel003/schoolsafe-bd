@@ -1,7 +1,11 @@
 /* =========================================================
  * SchoolSafe BD — Limitations & Disclaimer Section
- * Phase 4 will expand with full bilingual detail including
- * flood, storm, and cold wave guidance notes.
+ *
+ * Displays the bilingual limitations disclaimer, noting that:
+ *  - This tool does not replace official government warnings
+ *  - Flood/cyclone guidance does not replace Bangladesh
+ *    Meteorological Department or BWDB advisories
+ *  - Cold wave guidance does not replace official alerts
  * ========================================================= */
 
 import { useLanguage } from "@/contexts/LanguageContext";
