@@ -1,0 +1,215 @@
+Build a polished bilingual science fair website called “SchoolSafe BD”.
+
+This is a website, not a mobile app.
+
+Purpose:
+Create a bilingual environmental school safety website for Bangladesh that allows users to search district and upazila and view live environmental safety information for schools.
+
+Prototype scope:
+The site structure should support Bangladesh-wide district and upazila search in the future.
+For the current science fair prototype, fully implement and test these pilot upazilas in Kishoreganj district only:
+1. Kishoreganj Sadar
+2. Bhairab
+3. Itna
+
+Important scope note:
+Even if the full Bangladesh dataset is not yet implemented, the UI and code structure should be designed so the project can be expanded later to support all districts and upazilas.
+For now, the pilot demo must work correctly and fully for the 3 selected upazilas.
+
+Data source:
+Use Open-Meteo APIs only for weather and air quality.
+
+Pilot coordinates:
+- Kishoreganj Sadar: lat 24.426, lon 90.782
+- Bhairab: lat 24.052, lon 90.990
+- Itna: lat 24.184, lon 91.001
+
+Language requirements:
+- Support both English and Bangla
+- Add a language toggle in the header
+- Translate all major UI text, labels, buttons, cards, recommendations, explanations, notices, and footer content
+- Use clear, professional Bangla suitable for teachers and students in Bangladesh
+- Keep Bangla natural, readable, and not machine-like
+
+Main features:
+1. Homepage with title, subtitle, and short explanation
+2. Searchable district selector
+3. Searchable upazila selector
+4. Prototype notice in both languages:
+   English: Prototype currently demonstrates selected pilot upazilas.
+   Bangla: বর্তমানে ওয়েবসাইটটি নির্বাচিত পাইলট উপজেলার ডেমো প্রদর্শন করছে।
+5. Current environmental dashboard showing:
+   - temperature
+   - relative humidity
+   - apparent temperature
+   - precipitation probability
+   - rain forecast
+   - PM2.5
+   - PM10
+   - weather condition status/icon if possible
+6. A clear last-updated timestamp and data source label
+7. Risk breakdown cards:
+   - Heat Risk
+   - Rain Risk
+   - Air Quality Risk
+8. Overall School Safety badge:
+   - Low
+   - Moderate
+   - High
+9. Recommendation cards:
+   - outdoor assembly
+   - outdoor sports
+   - hydration reminder
+   - rain caution
+   - air quality advice
+10. “Why this advice?” section showing which rules were triggered
+11. Comparison section for the pilot upazilas
+12. A 24-hour chart for temperature and precipitation probability
+13. Small supporting cards if feasible:
+   - wind speed
+   - visibility
+   - UV index
+14. Methodology section
+15. Limitations section explaining that the site does not replace official warnings, emergency alerts, or medical advice
+16. Footer with project purpose and source note
+
+Logic:
+Use a transparent rule-based environmental risk system.
+- If temperature >= 35 C or apparent temperature >= 38 C, increase heat risk
+- If humidity >= 80% together with high temperature, increase discomfort risk
+- If precipitation probability >= 60% or rain is notable, increase rain risk
+- If PM2.5 is high, increase air quality risk
+- Combine these into overall Low / Moderate / High
+- Show triggered rules clearly in the explanation section
+
+Data structure:
+- Store district and upazila names in English and Bangla
+- Keep pilot location coordinates in an easy-to-edit constants or JSON file
+- Keep risk thresholds in a separate easy-to-edit file
+- Keep bilingual text in a separate translations file
+- Keep the data structure expandable for future Bangladesh-wide coverage
+
+Design requirements:
+- Modern, clean, responsive, visually impressive
+- Suitable for district science fair presentation
+- Use strong status colors for low/moderate/high
+- Make the dashboard easy to understand at a glance
+- Keep the comparison table neat and readable
+- Use a polished layout that looks professional on laptop screens
+
+Technical requirements:
+- No login
+- No database unless necessary
+- Add loading and error states
+- Organize code cleanly
+- Add comments in important sections
+- Make the project easy to push to GitHub and deploy from a GitHub repository
+- Keep code readable and easy to modify later
+- Do not add unnecessary features outside the requested scope
+
+Also create:
+1. README.md
+2. deployment-ready code
+3. simple project structure
+4. clear comments about where to edit translations, coordinates, and risk thresholds
+
+In README include:
+- project title
+- purpose
+- APIs used
+- how to run locally
+- how to edit district and upazila data
+- how to edit bilingual text
+- how to edit thresholds
+- how to deploy from GitHub
+
+Execution strategy:
+Do NOT try to implement the entire project in one pass.
+
+Work in small controlled phases and complete only one phase at a time.
+Use incremental edits, not large rewrites.
+Do not replace working code unless necessary.
+Do not refactor unrelated files.
+Do not add extra features beyond the requested scope.
+
+Follow this 5-phase workflow:
+
+Phase 1: Project scaffold and architecture
+- Set up the project structure
+- Create the main pages/components layout
+- Create placeholder sections for homepage, search, dashboard, comparison, methodology, limitations, and footer
+- Create clean folders/files for:
+  - district/upazila data
+  - translations
+  - risk logic
+  - API utilities
+- Add a basic language toggle shell
+- Add a basic district and upazila selector UI
+- Do not fully implement live API logic yet
+- At the end of Phase 1, run the app and fix only scaffold/layout errors
+
+Phase 2: Data layer and bilingual support
+- Add the pilot district/upazila dataset
+- Add Bangla and English translation files
+- Connect the language toggle to visible UI text
+- Make district and upazila search functional for the pilot data
+- Keep the search clean and user-friendly
+- If full Bangladesh dataset is not available, keep the structure expandable but fully functional for pilot locations
+- Do not implement charts or advanced comparison yet
+- At the end of Phase 2, test search and translations and fix only related issues
+
+Phase 3: Live environmental data and risk logic
+- Integrate Open-Meteo weather and air-quality APIs
+- Load live data for the selected pilot upazila
+- Implement the rule-based risk system
+- Show:
+  - temperature
+  - humidity
+  - apparent temperature
+  - precipitation probability
+  - rain
+  - PM2.5
+  - PM10
+  - overall school safety status
+  - risk breakdown cards
+  - why this advice section
+  - last updated timestamp
+- At the end of Phase 3, run the app and fix API mapping/runtime issues before moving on
+
+Phase 4: Comparison, chart, and supporting information
+- Add the pilot upazila comparison section
+- Add the 24-hour chart
+- Add supporting cards if feasible:
+  - wind speed
+  - visibility
+  - UV index
+- Add the methodology section
+- Add the limitations section
+- Add the prototype notice in both languages
+- At the end of Phase 4, test the comparison and chart carefully and fix only related issues
+
+Phase 5: UI polish, cleanup, and deployment readiness
+- Improve spacing, responsiveness, and visual polish
+- Make the status badges prominent
+- Improve cards, typography, and layout
+- Add loading states and error states
+- Clean up code comments
+- Create or improve README.md
+- Ensure the project is GitHub-ready and deployment-ready
+- At the end of Phase 5, do a final compile/test pass and fix remaining issues without changing stable features unnecessarily
+
+Important operating rules:
+- After completing each phase, STOP and provide:
+  1. a short summary of what was completed
+  2. files created or changed
+  3. any errors fixed
+  4. anything still pending for the next phase
+- Then wait for my confirmation before starting the next phase
+- Start with Phase 1 only
+- Do not jump ahead
+- Do not try to complete all phases at once
+- Prefer minimal safe changes over aggressive rewrites
+- Preserve working features while adding new ones
+
+Start now with Phase 1 only.
+When Phase 1 is complete, stop and wait for my instruction: “Continue to Phase 2”.
