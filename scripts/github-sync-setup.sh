@@ -56,9 +56,12 @@ HOOK_PATH="$REPO_ROOT/.git/hooks/post-commit"
 cat > "$HOOK_PATH" << 'POST_COMMIT'
 #!/bin/sh
 # Auto-sync to GitHub after every Replit checkpoint / commit
+export HOME=/home/runner
+export GIT_SSH_COMMAND="ssh -i /home/runner/.ssh/id_ed25519 -o StrictHostKeyChecking=no"
 (
+  cd /home/runner/workspace
   git push github main >> /tmp/github-sync.log 2>&1
-  echo "$(date): push exit code $?" >> /tmp/github-sync.log
+  echo "$(date '+%Y-%m-%d %H:%M:%S') — push exit code $?" >> /tmp/github-sync.log
 ) &
 POST_COMMIT
 chmod +x "$HOOK_PATH"
