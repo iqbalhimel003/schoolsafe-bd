@@ -115,6 +115,24 @@ function RiskCard({
   );
 }
 
+/* ── Guidance section ───────────────────────────────────── */
+
+function GuidanceSection({ title, items }: { title: string; items: string[] }) {
+  return (
+    <div className="bg-card border border-border rounded-lg p-4 shadow-sm">
+      <h4 className="text-sm font-semibold text-foreground mb-2">{title}</h4>
+      <ul className="space-y-1.5">
+        {items.map((item, i) => (
+          <li key={i} className="flex items-start gap-2 text-sm text-foreground">
+            <span className="text-primary shrink-0 mt-0.5" aria-hidden="true">▸</span>
+            <span className="leading-snug">{item}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 /* ── Loading skeleton ───────────────────────────────────── */
 
 function LoadingDashboard({ title }: { title: string }) {
@@ -341,6 +359,14 @@ function DashboardPanel({
   /* Contextual recommendations to show */
   const activeRecs = RECOMMENDATIONS.filter((rec) => rec.show(risk));
 
+  /* Risk presence flags for conditional guidance sections */
+  const anyRisk       = risk.overall !== "Low";
+  const hasAirRisk    = risk.airQuality !== "Low";
+  const hasColdRisk   = risk.cold !== "Low";
+  const hasHeatRisk   = risk.heat !== "Low";
+  const hasRainRisk   = risk.rain !== "Low" || risk.heavyRain !== "Low" || risk.flood !== "Low" || risk.storm !== "Low";
+  const hasAllergyRisk = risk.heat !== "Low" || risk.cold !== "Low" || risk.airQuality !== "Low";
+
   const today = new Date().toLocaleDateString(lang === "bn" ? "bn-BD" : "en-GB", {
     weekday: "long",
     year: "numeric",
@@ -520,6 +546,150 @@ function DashboardPanel({
             ))}
           </div>
         </div>
+      )}
+
+      {/* ── Role-based & condition-based guidance (only when any risk is active) ── */}
+      {anyRisk && (
+        <>
+          {/* Section 1: Role-based guidance */}
+          <div>
+            <h3 className="text-base font-semibold text-foreground mb-3">
+              {lang === "bn" ? "ভূমিকা-ভিত্তিক নির্দেশনা" : "Guidance by Role"}
+            </h3>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <GuidanceSection
+                title={t("guidanceAuthoritiesTitle")}
+                items={[
+                  t("guidanceAuthorities1"),
+                  t("guidanceAuthorities2"),
+                  t("guidanceAuthorities3"),
+                  t("guidanceAuthorities4"),
+                  t("guidanceAuthorities5"),
+                ]}
+              />
+              <GuidanceSection
+                title={t("guidanceTeachersTitle")}
+                items={[
+                  t("guidanceTeachers1"),
+                  t("guidanceTeachers2"),
+                  t("guidanceTeachers3"),
+                  t("guidanceTeachers4"),
+                  t("guidanceTeachers5"),
+                ]}
+              />
+              <GuidanceSection
+                title={t("guidanceGuardiansTitle")}
+                items={[
+                  t("guidanceGuardians1"),
+                  t("guidanceGuardians2"),
+                  t("guidanceGuardians3"),
+                  t("guidanceGuardians4"),
+                ]}
+              />
+              <GuidanceSection
+                title={t("guidanceStudentsTitle")}
+                items={[
+                  t("guidanceStudents1"),
+                  t("guidanceStudents2"),
+                  t("guidanceStudents3"),
+                  t("guidanceStudents4"),
+                  t("guidanceStudents5"),
+                ]}
+              />
+            </div>
+          </div>
+
+          {/* Section 2: Condition-based extra precautions (conditional per risk) */}
+          {(hasAirRisk || hasColdRisk || hasHeatRisk || hasRainRisk || hasAllergyRisk) && (
+            <div>
+              <h3 className="text-base font-semibold text-foreground mb-3">
+                {lang === "bn" ? "অবস্থা-ভিত্তিক অতিরিক্ত সতর্কতা" : "Extra Precautions"}
+              </h3>
+              <div className="grid sm:grid-cols-2 gap-3">
+                {hasAirRisk && (
+                  <GuidanceSection
+                    title={t("guidanceLungTitle")}
+                    items={[
+                      t("guidanceLung1"),
+                      t("guidanceLung2"),
+                      t("guidanceLung3"),
+                      t("guidanceLung4"),
+                    ]}
+                  />
+                )}
+                {hasColdRisk && (
+                  <GuidanceSection
+                    title={t("guidanceColdSensitiveTitle")}
+                    items={[
+                      t("guidanceColdSensitive1"),
+                      t("guidanceColdSensitive2"),
+                      t("guidanceColdSensitive3"),
+                    ]}
+                  />
+                )}
+                {hasHeatRisk && (
+                  <GuidanceSection
+                    title={t("guidanceHeatSensitiveTitle")}
+                    items={[
+                      t("guidanceHeatSensitive1"),
+                      t("guidanceHeatSensitive2"),
+                      t("guidanceHeatSensitive3"),
+                    ]}
+                  />
+                )}
+                {hasRainRisk && (
+                  <GuidanceSection
+                    title={t("guidanceRainSensitiveTitle")}
+                    items={[
+                      t("guidanceRainSensitive1"),
+                      t("guidanceRainSensitive2"),
+                      t("guidanceRainSensitive3"),
+                      t("guidanceRainSensitive4"),
+                    ]}
+                  />
+                )}
+                {hasAllergyRisk && (
+                  <GuidanceSection
+                    title={t("guidanceAllergyTitle")}
+                    items={[
+                      t("guidanceAllergy1"),
+                      t("guidanceAllergy2"),
+                      t("guidanceAllergy3"),
+                      t("guidanceAllergy4"),
+                    ]}
+                  />
+                )}
+                <GuidanceSection
+                  title={t("guidanceVulnStudentsTitle")}
+                  items={[
+                    t("guidanceVulnStudents1"),
+                    t("guidanceVulnStudents2"),
+                    t("guidanceVulnStudents3"),
+                    t("guidanceVulnStudents4"),
+                  ]}
+                />
+                <GuidanceSection
+                  title={t("guidanceVulnTeachersTitle")}
+                  items={[
+                    t("guidanceVulnTeachers1"),
+                    t("guidanceVulnTeachers2"),
+                    t("guidanceVulnTeachers3"),
+                  ]}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Disclaimer — always shown when any guidance is visible */}
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 shadow-sm">
+            <p className="text-sm font-semibold text-amber-800 mb-1">
+              ⚠ {t("guidanceDisclaimerTitle")}
+            </p>
+            <p className="text-sm text-amber-900 leading-relaxed">
+              {t("guidanceDisclaimerText")}
+            </p>
+          </div>
+        </>
       )}
     </div>
   );

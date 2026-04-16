@@ -140,6 +140,80 @@ const en = {
   recSevereWeatherCaution: "Severe Weather Caution",
   recSevereWeatherCautionText: "Exercise extra caution. Monitor official alerts in severe weather.",
 
+  /* ── Role-based Guidance ─────────────────────────────── */
+  guidanceAuthoritiesTitle: "Guidance for School Authorities",
+  guidanceAuthorities1: "Consider adjusting or delaying morning assembly during severe heat, cold, heavy rain, or storm conditions.",
+  guidanceAuthorities2: "Reduce or suspend outdoor activities when environmental risk is high.",
+  guidanceAuthorities3: "Communicate active safety alerts clearly to teachers and families.",
+  guidanceAuthorities4: "Arrange extra supervision for vulnerable or unwell students.",
+  guidanceAuthorities5: "Keep school entry, exit, and movement areas clear and safer during rain or flood-prone conditions.",
+
+  guidanceTeachersTitle: "Guidance for Teachers",
+  guidanceTeachers1: "Monitor students for signs of visible discomfort during heat, cold, poor air quality, or rain.",
+  guidanceTeachers2: "Reduce outdoor class activities when environmental risk is active.",
+  guidanceTeachers3: "Keep vulnerable or unwell students indoors when conditions are poor.",
+  guidanceTeachers4: "Remind students to carry water, warm clothing, rain protection, or masks as conditions require.",
+  guidanceTeachers5: "Follow school safety instructions and official guidance during severe weather.",
+
+  guidanceGuardiansTitle: "Guidance for Guardians",
+  guidanceGuardians1: "Send children prepared with water, warm clothing, rain protection, or masks as conditions require.",
+  guidanceGuardians2: "Take extra care during travel in heavy rain, flood-prone, or stormy conditions.",
+  guidanceGuardians3: "Avoid unnecessary outdoor exposure for children who are unwell or environmentally sensitive.",
+  guidanceGuardians4: "Follow school notices and weather-related safety updates.",
+
+  guidanceStudentsTitle: "Guidance for Students",
+  guidanceStudents1: "Carry water and stay hydrated during hot conditions.",
+  guidanceStudents2: "Wear warm clothing during cold or cold-wave conditions.",
+  guidanceStudents3: "Use an umbrella or rain protection during rainy weather.",
+  guidanceStudents4: "Reduce outdoor time during poor air quality, storm, or severe weather.",
+  guidanceStudents5: "Follow teacher and school instructions carefully.",
+
+  /* ── Condition-based Extra Precautions ───────────────── */
+  guidanceLungTitle: "Extra Precautions for People with Lung Problems",
+  guidanceLung1: "Reduce outdoor exposure during poor air quality, dusty, or smoke-like conditions.",
+  guidanceLung2: "Avoid strenuous outdoor activity when air quality risk is active.",
+  guidanceLung3: "Keep personal protective items nearby if already advised to do so.",
+  guidanceLung4: "Consult a medical professional promptly if breathing discomfort increases.",
+
+  guidanceColdSensitiveTitle: "Extra Precautions for People Sensitive to Cold",
+  guidanceColdSensitive1: "Avoid prolonged outdoor exposure during cold mornings or cold-wave conditions.",
+  guidanceColdSensitive2: "Wear sufficient warm clothing and cover extremities.",
+  guidanceColdSensitive3: "Reduce early morning outdoor activity when cold risk is high.",
+
+  guidanceHeatSensitiveTitle: "Extra Precautions for People Sensitive to Heat",
+  guidanceHeatSensitive1: "Avoid prolonged outdoor exposure during hot periods.",
+  guidanceHeatSensitive2: "Reduce strenuous outdoor activity when heat risk is active.",
+  guidanceHeatSensitive3: "Stay hydrated and remain in shaded or cooler areas when possible.",
+
+  guidanceRainSensitiveTitle: "Extra Precautions for People Sensitive to Rain or Damp Weather",
+  guidanceRainSensitive1: "Avoid staying in wet or damp clothing.",
+  guidanceRainSensitive2: "Use rain protection when moving outdoors.",
+  guidanceRainSensitive3: "Take extra care on slippery or waterlogged paths.",
+  guidanceRainSensitive4: "Reduce unnecessary outdoor movement during heavy rain.",
+
+  guidanceAllergyTitle: "Extra Precautions for People with Heat, Cold, or Dust Allergy",
+  guidanceAllergy1: "Reduce outdoor exposure during active heat, cold, or dusty conditions.",
+  guidanceAllergy2: "Avoid unnecessary outdoor time when air quality or dust risk is active.",
+  guidanceAllergy3: "Use any protective measures already personally recommended to you.",
+  guidanceAllergy4: "Consult a medical professional if symptoms become severe.",
+
+  guidanceVulnStudentsTitle: "Extra Precautions for Sick or Vulnerable Students",
+  guidanceVulnStudents1: "Avoid prolonged outdoor exposure during high heat, cold, poor air quality, heavy rain, flood, or storm conditions.",
+  guidanceVulnStudents2: "Remain under closer adult supervision when environmental conditions are poor.",
+  guidanceVulnStudents3: "Rest indoors when conditions are unsafe.",
+  guidanceVulnStudents4: "Follow professional medical guidance if health worsens.",
+
+  guidanceVulnTeachersTitle: "Extra Precautions for Sick or Vulnerable Teachers",
+  guidanceVulnTeachers1: "Reduce unnecessary outdoor exposure during adverse environmental conditions.",
+  guidanceVulnTeachers2: "Take added care during travel and outdoor duty in severe weather.",
+  guidanceVulnTeachers3: "Follow professional medical guidance if health worsens.",
+
+  /* ── Guidance Disclaimer ─────────────────────────────── */
+  guidanceDisclaimerTitle: "Important Notice",
+  guidanceDisclaimerText:
+    "These are general environmental safety precautions only. They do not replace professional medical advice, treatment, or official emergency instructions. " +
+    "People with severe symptoms, breathing difficulty, or worsening health conditions should seek professional medical care and follow official guidance.",
+
   /* ── Comparison Section ──────────────────────────────── */
   comparisonTitle: "Pilot Upazila Comparison",
   comparisonSubtitle: "Live conditions across all pilot locations in Kishoreganj",
