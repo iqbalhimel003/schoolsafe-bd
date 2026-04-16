@@ -91,3 +91,18 @@ export interface HourlyForecast {
   temperature: number;
   precipitationProbability: number;
 }
+
+/* Preparation level for the next-day outlook */
+export type PrepLevel = "Low" | "Moderate" | "High";
+
+/* Next-day (tomorrow) daily forecast summary */
+export interface TomorrowForecast {
+  tempMax: number;       /* °C — daily maximum temperature */
+  tempMin: number;       /* °C — daily minimum temperature */
+  rainSum: number;       /* mm — total daily precipitation */
+  rainProbMax: number;   /* % — maximum precipitation probability during the day */
+  windMax: number;       /* km/h — maximum wind speed */
+  weatherCode: number;   /* WMO code representing the dominant condition */
+  pm25Avg: number;       /* µg/m³ — average PM2.5 for tomorrow's hours */
+  date: string;          /* YYYY-MM-DD */
+}

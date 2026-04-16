@@ -17,7 +17,7 @@
  *   and add the result to the spread in the return statement.
  * ========================================================= */
 
-import type { WeatherData, AirQualityData, RiskResult, RiskLevel } from "@/types";
+import type { WeatherData, AirQualityData, RiskResult, RiskLevel, TomorrowForecast, PrepLevel } from "@/types";
 import type { TranslationKeys } from "@/translations/en";
 import * as T from "./thresholds";
 
@@ -240,4 +240,41 @@ export function evaluateRisk(
     overall,
     triggeredRules,
   };
+}
+
+/* ── Tomorrow prep-level assessment ─────────────────────── */
+
+/**
+ * Assess next-day preparation need from a TomorrowForecast object.
+ * Uses the same threshold constants as the live risk engine.
+ *
+ * Returns:
+ *   "High"     — at least one critical threshold exceeded
+ *   "Moderate" — at least one moderate threshold exceeded
+ *   "Low"      — no notable thresholds exceeded
+ */
+export function assessTomorrowPrep(f: TomorrowForecast): PrepLevel {
+  /* ── High prep conditions ─── */
+  if (
+    f.tempMax   >= T.HEAT_TEMP_HIGH       ||
+    f.tempMin   <= T.COLD_TEMP_HIGH       ||
+    f.windMax   >= T.STORM_WIND_HIGH      ||
+    f.rainProbMax >= 80                   ||
+    f.pm25Avg   >= T.AQ_PM25_HIGH
+  ) {
+    return "High";
+  }
+
+  /* ── Moderate prep conditions ─── */
+  if (
+    f.tempMax   >= T.HEAT_TEMP_MODERATE   ||
+    f.tempMin   <= T.COLD_TEMP_MODERATE   ||
+    f.windMax   >= T.STORM_WIND_MODERATE  ||
+    f.rainProbMax >= T.RAIN_PRECIP_PROB_MODERATE ||
+    f.pm25Avg   >= T.AQ_PM25_MODERATE
+  ) {
+    return "Moderate";
+  }
+
+  return "Low";
 }

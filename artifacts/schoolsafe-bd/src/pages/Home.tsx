@@ -15,6 +15,7 @@ import { useState } from "react";
 import Hero from "@/components/Hero";
 import LocationSelector from "@/components/LocationSelector";
 import Dashboard from "@/components/Dashboard";
+import TomorrowSection from "@/components/TomorrowSection";
 import ForecastChart from "@/components/ForecastChart";
 import ComparisonSection from "@/components/ComparisonSection";
 import MethodologySection from "@/components/MethodologySection";
@@ -88,6 +89,13 @@ export default function Home() {
             </p>
           </div>
         </section>
+      )}
+
+      {/* Tomorrow's Forecast & Preparedness — shown when a location is selected */}
+      {selectedUpazila && (
+        <div className="no-print">
+          <TomorrowSection selectedUpazila={selectedUpazila} />
+        </div>
       )}
 
       {/* 24-Hour Forecast Chart — shown when a location is selected */}

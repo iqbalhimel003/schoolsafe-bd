@@ -9,7 +9,7 @@
  *   Air quality:      https://air-quality-api.open-meteo.com/v1/air-quality
  * ========================================================= */
 
-import type { WeatherData, AirQualityData, HourlyForecast } from "@/types";
+import type { WeatherData, AirQualityData, HourlyForecast, TomorrowForecast } from "@/types";
 
 const WEATHER_BASE = "https://api.open-meteo.com/v1/forecast";
 const AQ_BASE = "https://air-quality-api.open-meteo.com/v1/air-quality";
@@ -124,6 +124,80 @@ export async function fetchAirQuality(
     pm25:      h.pm2_5[idx] ?? 0,
     pm10:      h.pm10[idx]  ?? 0,
     fetchedAt: new Date(),
+  };
+}
+
+/**
+ * Fetch tomorrow's daily weather + air quality summary for a given lat/lon.
+ *
+ * Weather: Open-Meteo daily endpoint — index 1 = tomorrow (index 0 = today).
+ * PM2.5:   AQ hourly endpoint with 2 forecast days; hourly entries whose date
+ *          matches tomorrow are averaged to produce pm25Avg.
+ */
+export async function fetchTomorrowForecast(
+  lat: number,
+  lon: number,
+): Promise<TomorrowForecast> {
+  /* ── Weather daily call ────────────────────────────────── */
+  const weatherParams = new URLSearchParams({
+    latitude: String(lat),
+    longitude: String(lon),
+    daily: [
+      "temperature_2m_max",
+      "temperature_2m_min",
+      "precipitation_sum",
+      "precipitation_probability_max",
+      "windspeed_10m_max",
+      "weathercode",
+    ].join(","),
+    timezone: "auto",
+    forecast_days: "2",
+  });
+
+  const weatherRes = await fetch(`${WEATHER_BASE}?${weatherParams}`);
+  if (!weatherRes.ok)
+    throw new Error(`Tomorrow weather API error ${weatherRes.status}: ${weatherRes.statusText}`);
+  const weatherData = await weatherRes.json();
+
+  const d = weatherData.daily;
+  /* Index 1 = tomorrow */
+  const tomorrowDate: string = d.time[1] ?? "";
+
+  /* ── AQ hourly call for tomorrow's PM2.5 ──────────────── */
+  const aqParams = new URLSearchParams({
+    latitude: String(lat),
+    longitude: String(lon),
+    hourly: "pm2_5",
+    timezone: "auto",
+    forecast_days: "2",
+  });
+
+  const aqRes = await fetch(`${AQ_BASE}?${aqParams}`);
+  if (!aqRes.ok)
+    throw new Error(`Tomorrow AQ API error ${aqRes.status}: ${aqRes.statusText}`);
+  const aqData = await aqRes.json();
+
+  /* Filter hourly AQ entries to tomorrow's date and average non-null values */
+  const aqTimes: string[] = aqData.hourly.time ?? [];
+  const aqPm25: (number | null)[] = aqData.hourly.pm2_5 ?? [];
+  const tomorrowPm25Values = aqTimes
+    .map((t, i) => ({ date: t.slice(0, 10), val: aqPm25[i] }))
+    .filter((e) => e.date === tomorrowDate && e.val !== null)
+    .map((e) => e.val as number);
+  const pm25Avg =
+    tomorrowPm25Values.length > 0
+      ? tomorrowPm25Values.reduce((a, b) => a + b, 0) / tomorrowPm25Values.length
+      : 0;
+
+  return {
+    tempMax:     d.temperature_2m_max[1]              ?? 0,
+    tempMin:     d.temperature_2m_min[1]              ?? 0,
+    rainSum:     d.precipitation_sum[1]               ?? 0,
+    rainProbMax: d.precipitation_probability_max[1]   ?? 0,
+    windMax:     d.windspeed_10m_max[1]               ?? 0,
+    weatherCode: d.weathercode[1]                     ?? 0,
+    pm25Avg,
+    date:        tomorrowDate,
   };
 }
 
