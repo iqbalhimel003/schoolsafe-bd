@@ -94,9 +94,7 @@ export default function Home() {
 
       {/* Tomorrow's Forecast & Preparedness — shown when a location is selected */}
       {selectedUpazila && (
-        <div className="no-print">
-          <TomorrowSection selectedUpazila={selectedUpazila} />
-        </div>
+        <TomorrowSection selectedUpazila={selectedUpazila} />
       )}
 
       {/* Week Ahead — 7-day planning outlook, shown when a location is selected */}
