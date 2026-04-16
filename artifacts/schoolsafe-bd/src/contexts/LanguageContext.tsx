@@ -4,6 +4,10 @@
  * Provides the current language ("en" | "bn") and a t()
  * translation helper to all components. Wrap the app with
  * <LanguageProvider> and consume with useLanguage().
+ *
+ * The t() function checks site settings overrides first
+ * (keyed as `<key>_en` / `<key>_bn`), then falls back to
+ * the built-in translations.
  * ========================================================= */
 
 import React, { createContext, useContext, useState } from "react";
@@ -11,6 +15,7 @@ import type { Language } from "@/types";
 import en from "@/translations/en";
 import bn from "@/translations/bn";
 import type { TranslationKeys } from "@/translations/en";
+import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 
 type Translations = typeof en;
 
@@ -27,8 +32,11 @@ const translations: Record<Language, Translations> = { en, bn };
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLang] = useState<Language>("en");
+  const { settings } = useSiteSettings();
 
   function t(key: TranslationKeys): string {
+    const overrideKey = `${key}_${lang}`;
+    if (settings[overrideKey] !== undefined) return settings[overrideKey];
     return translations[lang][key] ?? translations["en"][key] ?? key;
   }
 

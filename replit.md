@@ -45,3 +45,13 @@ React + Vite, using Open-Meteo free APIs for live weather and air quality data.
   - Downgrade rules: AQ-only Moderate→Low, Rain-only Moderate→Low
 - **Weather data fields**: rain (hourly), rain3h, rain6h, rain24h (24-hour rolling sum)
 - **GitHub repo**: iqbalhimel003/schoolsafe-bd (SSH deploy key required for push)
+
+### Admin Panel
+
+- Route: `/admin` (password-protected)
+- Password: `ADMIN_PASSWORD` secret (set via Replit secrets)
+- Editable sections: Hero (siteName, siteTagline, siteDescription, prototypeNotice), Intro Cards (introWhatTitle, introWhatText, introHowTitle, introHowText), Footer (footerPurpose, footerDataSource, footerDisclaimer, footerCreditBefore, footerCreditAfter)
+- Storage: `site_settings` table in PostgreSQL — key=`<translationKey>_<lang>`, value=text
+- API: `GET /api/settings` returns all overrides; `PUT /api/settings` (requires Bearer token = ADMIN_PASSWORD) upserts them
+- Context: `SiteSettingsContext` fetches overrides on app load; `LanguageContext.t()` checks overrides first, then falls back to built-in translations
+- Session: password stored in `sessionStorage`; logging out clears it
