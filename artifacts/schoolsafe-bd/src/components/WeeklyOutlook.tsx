@@ -67,15 +67,6 @@ function formatDayName(dateStr: string, locale: string): string {
   }
 }
 
-/** Return today's YYYY-MM-DD string in local time. */
-function todayString(): string {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, "0");
-  const d = String(now.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
-
 /* ── Main component ─────────────────────────────────────── */
 
 interface Props {
@@ -84,7 +75,6 @@ interface Props {
 
 export default function WeeklyOutlook({ days }: Props) {
   const { t, lang } = useLanguage();
-  const today = todayString();
 
   return (
     <section className="space-y-3">
@@ -114,18 +104,14 @@ export default function WeeklyOutlook({ days }: Props) {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {days.map((day) => {
-              const isToday = day.date === today;
-              return (
+            {days.map((day) => (
                 <tr
                   key={day.date}
-                  className={isToday ? "bg-primary/5 font-semibold" : "bg-card hover:bg-muted/30 transition-colors"}
+                  className="bg-card hover:bg-muted/30 transition-colors"
                 >
                   {/* Day name */}
                   <td className="px-3 py-2.5 whitespace-nowrap text-foreground">
-                    {isToday
-                      ? t("weekToday")
-                      : formatDayName(day.date, lang)}
+                    {formatDayName(day.date, lang)}
                   </td>
 
                   {/* Weather icon */}
@@ -174,8 +160,7 @@ export default function WeeklyOutlook({ days }: Props) {
                     </span>
                   </td>
                 </tr>
-              );
-            })}
+            ))}
           </tbody>
         </table>
       </div>

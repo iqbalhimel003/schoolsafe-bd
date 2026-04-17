@@ -10,7 +10,7 @@
  * ========================================================= */
 
 import type { WeatherData, AirQualityData, HourlyForecast, TomorrowForecast, WeeklyForecastDay } from "@/types";
-import { assessTomorrowPrep } from "@/logic/riskEngine";
+import { assessTomorrowPrep, assessWeeklyPrep } from "@/logic/riskEngine";
 
 const WEATHER_BASE = "https://api.open-meteo.com/v1/forecast";
 const AQ_BASE = "https://air-quality-api.open-meteo.com/v1/air-quality";
@@ -247,7 +247,7 @@ export async function fetchWeeklyForecast(
       "weathercode",
     ].join(","),
     timezone: "auto",
-    forecast_days: "7",
+    forecast_days: "8",  // fetch 8 so we can drop today (index 0) and keep 7 future days
   });
 
   const res = await fetch(`${WEATHER_BASE}?${params}`);
@@ -255,26 +255,29 @@ export async function fetchWeeklyForecast(
   const data = await res.json();
 
   const d = data.daily;
-  return (d.time as string[]).map((date: string, i: number) => {
-    const tempMax     = d.temperature_2m_max[i]              ?? 0;
-    const tempMin     = d.temperature_2m_min[i]              ?? 0;
-    const rainProbMax = d.precipitation_probability_max[i]   ?? 0;
-    const windMax     = d.windspeed_10m_max[i]               ?? 0;
-    const weatherCode = d.weathercode[i]                     ?? 0;
+  return (d.time as string[])
+    .slice(1)  // skip today (index 0) — Week Ahead shows future days only
+    .map((date: string, i: number) => {
+      const idx         = i + 1;  // offset into the original arrays
+      const tempMax     = d.temperature_2m_max[idx]              ?? 0;
+      const tempMin     = d.temperature_2m_min[idx]              ?? 0;
+      const rainProbMax = d.precipitation_probability_max[idx]   ?? 0;
+      const windMax     = d.windspeed_10m_max[idx]               ?? 0;
+      const weatherCode = d.weathercode[idx]                     ?? 0;
 
-    const prepLevel = assessTomorrowPrep({
-      tempMax,
-      tempMin,
-      rainProbMax,
-      windMax,
-      weatherCode,
-      rainSum:  0,
-      pm25Avg:  0,
-      date,
+      const prepLevel = assessWeeklyPrep({
+        tempMax,
+        tempMin,
+        rainProbMax,
+        windMax,
+        weatherCode,
+        rainSum:  0,
+        pm25Avg:  0,
+        date,
+      });
+
+      return { date, tempMax, tempMin, rainProbMax, weatherCode, windMax, prepLevel };
     });
-
-    return { date, tempMax, tempMin, rainProbMax, weatherCode, windMax, prepLevel };
-  });
 }
 
 /**

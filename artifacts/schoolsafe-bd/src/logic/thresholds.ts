@@ -121,6 +121,15 @@ export const STORM_WIND_LOW = 30;
 export const STORM_WIND_MODERATE = 40;
 export const STORM_WIND_HIGH = 60;
 
+/* ── Weekly PREP Thresholds (assessWeeklyPrep only) ─────── *
+ * Used ONLY by assessWeeklyPrep() for the 7-day school      *
+ * planning outlook. assessTomorrowPrep() is unchanged.       */
+
+export const WEEKLY_HEAT_TEMP_MODERATE = 35.0; // 35°C+ → Moderate (Tomorrow uses 36)
+export const WEEKLY_RAIN_PROB_LOW      = 20;   // 20%+  → Low awareness
+export const WEEKLY_RAIN_PROB_MODERATE = 40;   // 40%+  → Moderate (Tomorrow uses 60)
+export const WEEKLY_RAIN_PROB_HIGH     = 70;   // 70%+  → High (Tomorrow uses 75)
+
 /* ── Weighted Overall Aggregation ───────────────────────── *
  * Per-risk weights and score-to-level band boundaries.       */
 

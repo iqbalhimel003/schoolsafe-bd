@@ -434,3 +434,43 @@ export function assessTomorrowPrep(f: TomorrowForecast): PrepLevel {
 
   return "None";
 }
+
+/* ── Weekly 7-day prep-level assessment ─────────────────── *
+ * Used ONLY by fetchWeeklyForecast() for the Week Ahead     *
+ * table. Uses Bangladesh school-planning calibrated          *
+ * thresholds (WEEKLY_*). assessTomorrowPrep() is unchanged.  */
+
+export function assessWeeklyPrep(f: TomorrowForecast): PrepLevel {
+  if (
+    f.tempMax     >= T.HEAT_TEMP_HIGH            ||
+    f.tempMin     <= T.COLD_TEMP_HIGH            ||
+    f.windMax     >= T.STORM_WIND_HIGH           ||
+    f.rainProbMax >= T.WEEKLY_RAIN_PROB_HIGH     ||
+    f.rainSum     >= T.TOMORROW_RAIN_AMT_HIGH    ||
+    isThunderstormCode(f.weatherCode)
+  ) {
+    return "High";
+  }
+
+  if (
+    f.tempMax     >= T.WEEKLY_HEAT_TEMP_MODERATE ||
+    f.tempMin     <= T.COLD_TEMP_MODERATE        ||
+    f.windMax     >= T.STORM_WIND_MODERATE       ||
+    f.rainProbMax >= T.WEEKLY_RAIN_PROB_MODERATE ||
+    f.rainSum     >= T.TOMORROW_RAIN_AMT_MODERATE
+  ) {
+    return "Moderate";
+  }
+
+  if (
+    f.tempMax     >  T.HEAT_TEMP_ADVISORY        ||
+    f.windMax     >= T.STORM_WIND_LOW            ||
+    f.rainProbMax >= T.WEEKLY_RAIN_PROB_LOW      ||
+    f.rainSum     >= T.TOMORROW_RAIN_AMT_LOW     ||
+    f.tempMin     <= T.COLD_TEMP_LOW
+  ) {
+    return "Low";
+  }
+
+  return "None";
+}
