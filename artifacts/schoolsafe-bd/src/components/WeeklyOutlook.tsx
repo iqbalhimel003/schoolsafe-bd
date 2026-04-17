@@ -1,11 +1,13 @@
 /* =========================================================
  * SchoolSafe BD — Weekly Outlook Table
  *
- * Displays a compact 7-row table showing the week ahead:
+ * Displays a compact 7-row table showing the 7 future days
+ * (tomorrow onward — Today is excluded):
  *   Day name | Weather icon | Max / Min temp | Rain % | Prep level dot
  *
  * PrepLevel is derived per-day in fetchWeeklyForecast() using
- * assessTomorrowPrep() (PM2.5 omitted for the lightweight weekly call).
+ * assessWeeklyPrep() — a dedicated function with Bangladesh
+ * school-planning thresholds (PM2.5 omitted for lightweight call).
  *
  * All text is bilingual via useLanguage().
  * ========================================================= */

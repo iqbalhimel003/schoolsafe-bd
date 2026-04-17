@@ -227,10 +227,10 @@ export async function fetchTomorrowForecast(
 
 /**
  * Fetch a 7-day daily weather outlook for a given lat/lon.
- * Uses Open-Meteo's daily endpoint with forecast_days=7.
- * Returns one WeeklyForecastDay per day (index 0 = today through index 6).
- * PrepLevel is derived per day using assessTomorrowPrep() with pm25Avg=0
- * (PM2.5 is omitted to keep the weekly fetch lightweight).
+ * Uses Open-Meteo's daily endpoint with forecast_days=8.
+ * Fetches 8 days and skips today (index 0), returning 7 future days
+ * (tomorrow through +7). PrepLevel is derived using assessWeeklyPrep()
+ * with pm25Avg=0 (PM2.5 omitted to keep the weekly fetch lightweight).
  */
 export async function fetchWeeklyForecast(
   lat: number,
