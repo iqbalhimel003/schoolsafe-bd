@@ -111,15 +111,17 @@ export default function Home() {
         </div>
       )}
 
-      {/* Divider */}
-      <div className="no-print max-w-5xl mx-auto px-4">
-        <hr className="border-border" />
-      </div>
-
-      {/* Pilot Upazila Comparison — live data for all 3 upazilas */}
-      <div className="no-print">
-        <ComparisonSection />
-      </div>
+      {/* Pilot Upazila Comparison — shown only after location is selected */}
+      {selectedUpazila && (
+        <>
+          <div className="no-print max-w-5xl mx-auto px-4">
+            <hr className="border-border" />
+          </div>
+          <div className="no-print">
+            <ComparisonSection />
+          </div>
+        </>
+      )}
 
       {/* Divider */}
       <div className="no-print max-w-5xl mx-auto px-4">
