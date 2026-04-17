@@ -75,19 +75,21 @@ function evaluateHeat(w: WeatherData): Evaluation {
   let tempLevel: RiskLevel = "None";
   let feelsLevel: RiskLevel = "None";
 
-  if (w.temperature >= T.HEAT_TEMP_HIGH) {
+  // Current-condition thresholds (CURRENT_HEAT_TEMP_*).
+  // assessTomorrowPrep() uses the separate HEAT_TEMP_* constants — unchanged.
+  if (w.temperature >= T.CURRENT_HEAT_TEMP_HIGH) {
     tempLevel = "High";
-  } else if (w.temperature >= T.HEAT_TEMP_MODERATE) {
+  } else if (w.temperature >= T.CURRENT_HEAT_TEMP_MODERATE) {
     tempLevel = "Moderate";
-  } else if (w.temperature >= T.HEAT_TEMP_LOW) {
+  } else if (w.temperature >= T.CURRENT_HEAT_TEMP_LOW) {
     tempLevel = "Low";
   }
 
-  if (w.apparentTemperature >= T.HEAT_FEELS_HIGH) {
+  if (w.apparentTemperature >= T.CURRENT_HEAT_FEELS_HIGH) {
     feelsLevel = "High";
-  } else if (w.apparentTemperature >= T.HEAT_FEELS_MODERATE) {
+  } else if (w.apparentTemperature >= T.CURRENT_HEAT_FEELS_MODERATE) {
     feelsLevel = "Moderate";
-  } else if (w.apparentTemperature >= T.HEAT_FEELS_LOW) {
+  } else if (w.apparentTemperature >= T.CURRENT_HEAT_FEELS_LOW) {
     feelsLevel = "Low";
   }
 
@@ -106,21 +108,23 @@ function evaluateHeat(w: WeatherData): Evaluation {
 function evaluateRain(w: WeatherData): Evaluation {
   const rules: TranslationKeys[] = [];
 
+  // Current-condition probability thresholds (CURRENT_RAIN_PROB_*).
+  // rain3h / rainNext6h / weatherCode sub-components keep their own bands.
   let currentProbLevel: RiskLevel = "None";
-  if (w.precipitationProbability >= T.RAIN_PROB_HIGH) {
+  if (w.precipitationProbability >= T.CURRENT_RAIN_PROB_HIGH) {
     currentProbLevel = "High";
-  } else if (w.precipitationProbability >= T.RAIN_PROB_MODERATE) {
+  } else if (w.precipitationProbability >= T.CURRENT_RAIN_PROB_MODERATE) {
     currentProbLevel = "Moderate";
-  } else if (w.precipitationProbability >= T.RAIN_PROB_LOW) {
+  } else if (w.precipitationProbability >= T.CURRENT_RAIN_PROB_LOW) {
     currentProbLevel = "Low";
   }
 
   let next3hProbLevel: RiskLevel = "None";
-  if (w.precipProbNext3hMax >= T.RAIN_PROB_HIGH) {
+  if (w.precipProbNext3hMax >= T.CURRENT_RAIN_PROB_HIGH) {
     next3hProbLevel = "High";
-  } else if (w.precipProbNext3hMax >= T.RAIN_PROB_MODERATE) {
+  } else if (w.precipProbNext3hMax >= T.CURRENT_RAIN_PROB_MODERATE) {
     next3hProbLevel = "Moderate";
-  } else if (w.precipProbNext3hMax >= T.RAIN_PROB_LOW) {
+  } else if (w.precipProbNext3hMax >= T.CURRENT_RAIN_PROB_LOW) {
     next3hProbLevel = "Low";
   }
 

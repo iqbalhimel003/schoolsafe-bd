@@ -22,6 +22,19 @@ export const HEAT_FEELS_LOW = 38.0;
 export const HEAT_FEELS_MODERATE = 41.0;
 export const HEAT_FEELS_HIGH = 44.0;
 
+/* ── Current-Condition Heat Thresholds ─────────────────── *
+ * Used ONLY by evaluateHeat() for the Current Environmental *
+ * Conditions section. assessTomorrowPrep() continues to use *
+ * the HEAT_TEMP_* constants above.                          */
+
+export const CURRENT_HEAT_TEMP_LOW      = 30.0;  // 30°C+ → Low
+export const CURRENT_HEAT_TEMP_MODERATE = 34.0;  // 34°C+ → Moderate
+export const CURRENT_HEAT_TEMP_HIGH     = 38.0;  // 38°C+ → High
+
+export const CURRENT_HEAT_FEELS_LOW      = 34.0; // feels 34°C+ → Low
+export const CURRENT_HEAT_FEELS_MODERATE = 38.0; // feels 38°C+ → Moderate
+export const CURRENT_HEAT_FEELS_HIGH     = 43.0; // feels 43°C+ → High
+
 /* ── Rain Risk Thresholds ──────────────────────────────── *
  * 5-input model: current prob, next-3h max prob, recent 3h *
  * rain, next 6h rain, and WMO weather code.                 */
@@ -29,6 +42,14 @@ export const HEAT_FEELS_HIGH = 44.0;
 export const RAIN_PROB_LOW = 40;
 export const RAIN_PROB_MODERATE = 60;
 export const RAIN_PROB_HIGH = 80;
+
+/* ── Current-Condition Rain Probability Thresholds ──────── *
+ * Used ONLY by evaluateRain() probability sub-components.   *
+ * rain3h / rainNext6h / weatherCode keep their own bands.   */
+
+export const CURRENT_RAIN_PROB_LOW      = 5;   // 5%+  → Low
+export const CURRENT_RAIN_PROB_MODERATE = 40;  // 40%+ → Moderate
+export const CURRENT_RAIN_PROB_HIGH     = 60;  // 60%+ → High
 
 export const RAIN_3H_LOW = 1;
 export const RAIN_3H_MODERATE = 5;
