@@ -380,6 +380,12 @@ const en = {
   shareToastCopied: "Link copied to clipboard!",
   shareToastFailed: "Could not share. Please copy the link manually.",
 
+  /* ── Hero ────────────────────────────────────────── */
+  heroFeature1: "7 Risk Types",
+  heroFeature2: "Real-time Data",
+  heroFeature3: "Bilingual",
+  heroCtaLabel: "Choose your location",
+
   /* ── SEO ─────────────────────────────────────────── */
   seoHomeTitle:
     "Environmental School Safety, Preparedness & Guidance for Bangladesh",

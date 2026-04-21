@@ -110,7 +110,7 @@ export default function Home() {
       </Reveal>
 
       {/* Location Search */}
-      <div className="no-print">
+      <div id="location-selector" className="no-print">
         <Reveal>
           <LocationSelector onUpazilaSelect={setSelectedUpazila} />
         </Reveal>

@@ -2,14 +2,26 @@
  * SchoolSafe BD — Hero Section (Premium)
  *
  * Aurora gradient background, word-by-word headline entrance,
- * animated weather/leaf icon cluster, and a polished prototype
- * notice pill. Honors prefers-reduced-motion: animations are
- * suppressed for users with that preference.
+ * feature chips, CTA button, animated icon cluster, and a
+ * quiet prototype notice. Honors prefers-reduced-motion.
  * ========================================================= */
 
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import AnimatedWeatherIcon from "@/components/animated/AnimatedWeatherIcon";
+
+const CHIPS = [
+  { keyName: "heroFeature1" as const, icon: "🛡", delay: 0.0 },
+  { keyName: "heroFeature2" as const, icon: "📡", delay: 0.08 },
+  { keyName: "heroFeature3" as const, icon: "🌐", delay: 0.16 },
+] as const;
+
+function scrollToLocation() {
+  const el = document.getElementById("location-selector");
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
 
 export default function Hero() {
   const { t } = useLanguage();
@@ -45,18 +57,27 @@ export default function Hero() {
       </div>
 
       <div className="relative max-w-5xl mx-auto">
-        <div className="flex flex-col-reverse sm:flex-row sm:items-center gap-6 sm:gap-8">
+        {/* Text-first on mobile, side-by-side on desktop */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-8">
+
+          {/* ── Text column ─────────────────────────────── */}
           <div className="flex-1 min-w-0">
-            {/* Brand pill */}
-            <motion.div
-              initial={{ opacity: 0, y: reduce ? 0 : -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-              className="inline-flex items-center gap-2 mb-4 rounded-full border border-primary/25 bg-white/70 backdrop-blur px-3 py-1 text-xs font-semibold text-primary shadow-sm"
-            >
-              <AnimatedWeatherIcon kind="leaf" size={16} />
-              <span>{t("siteTagline")}</span>
-            </motion.div>
+
+            {/* Feature chips */}
+            <div className="flex flex-wrap gap-2 mb-5">
+              {CHIPS.map(({ keyName, icon, delay }) => (
+                <motion.span
+                  key={keyName}
+                  initial={{ opacity: 0, y: reduce ? 0 : -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.45, delay: reduce ? 0 : delay, ease: "easeOut" }}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-white/70 backdrop-blur px-3 py-1 text-xs font-semibold text-primary shadow-sm select-none"
+                >
+                  <span aria-hidden="true">{icon}</span>
+                  <span>{t(keyName)}</span>
+                </motion.span>
+              ))}
+            </div>
 
             {/* Animated headline */}
             <motion.h1
@@ -86,19 +107,40 @@ export default function Hero() {
               {t("siteDescription")}
             </motion.p>
 
-            {/* Prototype notice pill */}
-            <motion.div
+            {/* CTA button */}
+            <motion.button
+              type="button"
+              onClick={scrollToLocation}
               initial={{ opacity: 0, y: reduce ? 0 : 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: reduce ? 0 : 0.6, ease: "easeOut" }}
-              className="mt-6 inline-flex items-start gap-2 rounded-full border border-amber-300/70 bg-amber-50/85 backdrop-blur px-4 py-2 text-sm text-amber-900 shadow-sm"
+              transition={{ duration: 0.55, delay: reduce ? 0 : 0.55, ease: "easeOut" }}
+              className="
+                mt-6 inline-flex items-center gap-2
+                rounded-full bg-primary text-primary-foreground
+                px-6 py-2.5 text-sm font-semibold
+                shadow-md hover:shadow-lg
+                btn-shine lift-on-hover
+                focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary/60
+                transition-colors
+              "
             >
-              <span className="shrink-0 mt-0.5" aria-hidden="true">⚠️</span>
-              <span className="leading-snug">{t("prototypeNotice")}</span>
-            </motion.div>
+              {t("heroCtaLabel")}
+              <span aria-hidden="true" className="text-base leading-none">→</span>
+            </motion.button>
+
+            {/* Prototype notice — quiet */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: reduce ? 0 : 0.75 }}
+              className="mt-4 flex items-start gap-1.5 text-xs text-muted-foreground max-w-lg"
+            >
+              <span className="shrink-0 mt-px" aria-hidden="true">ℹ️</span>
+              <span>{t("prototypeNotice")}</span>
+            </motion.p>
           </div>
 
-          {/* Animated icon cluster */}
+          {/* ── Animated icon cluster ────────────────────── */}
           <motion.div
             initial={{ opacity: 0, scale: reduce ? 1 : 0.85 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -143,6 +185,7 @@ export default function Hero() {
               </motion.div>
             </div>
           </motion.div>
+
         </div>
       </div>
     </section>
