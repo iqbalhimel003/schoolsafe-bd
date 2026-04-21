@@ -22,20 +22,13 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import type { TomorrowForecast, PrepLevel } from "@/types";
 import * as T from "@/logic/thresholds";
 import { isThunderstormCode } from "@/logic/riskEngine";
+import AnimatedWeatherIcon, {
+  weatherCodeToIconKind,
+  type AnimatedIconKind,
+} from "@/components/animated/AnimatedWeatherIcon";
+import AnimatedNumber from "@/components/animated/AnimatedNumber";
 
 /* ── Helpers ────────────────────────────────────────────── */
-
-/** Map a WMO code to a weather emoji — same logic as Dashboard. */
-function weatherIcon(code: number): string {
-  if (code === 0) return "☀️";
-  if (code <= 3) return "⛅";
-  if (code <= 49) return "🌫️";
-  if (code <= 67) return "🌧️";
-  if (code <= 77) return "🌨️";
-  if (code <= 82) return "🌦️";
-  if (code <= 99) return "⛈️";
-  return "🌤️";
-}
 
 /** CSS class for the prep-level badge — reuses existing risk colour classes. */
 function prepClass(level: PrepLevel): string {
@@ -61,19 +54,25 @@ function formatDate(dateStr: string, locale: string): string {
 /* ── Small metric tile ───────────────────────────────────── */
 
 function ForecastTile({
-  icon,
+  iconKind,
   label,
-  value,
+  numericValue,
+  decimals = 0,
+  suffix = "",
 }: {
-  icon: string;
+  iconKind: AnimatedIconKind;
   label: string;
-  value: string;
+  numericValue: number;
+  decimals?: number;
+  suffix?: string;
 }) {
   return (
-    <div className="bg-card border border-border rounded-lg p-3 shadow-sm flex flex-col gap-1">
-      <span className="text-xl" aria-hidden="true">{icon}</span>
+    <div className="glass-card lift-on-hover rounded-lg p-3 flex flex-col gap-1">
+      <AnimatedWeatherIcon kind={iconKind} size={24} />
       <p className="text-xs text-muted-foreground leading-tight">{label}</p>
-      <p className="text-base font-bold text-foreground">{value}</p>
+      <p className="text-base font-bold text-foreground tabular-nums">
+        <AnimatedNumber value={numericValue} decimals={decimals} suffix={suffix} />
+      </p>
     </div>
   );
 }
@@ -163,9 +162,7 @@ export default function TomorrowOutlook({ forecast, prepLevel }: Props) {
     <section className="space-y-4">
       {/* Section heading */}
       <div className="flex items-center gap-2">
-        <span className="text-2xl" aria-hidden="true">
-          {weatherIcon(forecast.weatherCode)}
-        </span>
+        <AnimatedWeatherIcon kind={weatherCodeToIconKind(forecast.weatherCode)} size={32} />
         <div>
           <h3 className="text-lg font-bold text-foreground">
             {t("tomorrowSectionTitle")}
@@ -190,36 +187,12 @@ export default function TomorrowOutlook({ forecast, prepLevel }: Props) {
 
       {/* 6 metric tiles — 3 columns on sm+, 2 on mobile */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <ForecastTile
-          icon="🌡️"
-          label={t("tomorrowMaxTemp")}
-          value={`${forecast.tempMax.toFixed(1)}°C`}
-        />
-        <ForecastTile
-          icon="🌡️"
-          label={t("tomorrowMinTemp")}
-          value={`${forecast.tempMin.toFixed(1)}°C`}
-        />
-        <ForecastTile
-          icon="🌧️"
-          label={t("tomorrowRainProb")}
-          value={`${Math.round(forecast.rainProbMax)}%`}
-        />
-        <ForecastTile
-          icon="💧"
-          label={t("tomorrowRainAmount")}
-          value={`${forecast.rainSum.toFixed(1)} mm`}
-        />
-        <ForecastTile
-          icon="💨"
-          label={t("tomorrowWindMax")}
-          value={`${forecast.windMax.toFixed(1)} km/h`}
-        />
-        <ForecastTile
-          icon="😷"
-          label={t("tomorrowPM25")}
-          value={`${forecast.pm25Avg.toFixed(1)} µg/m³`}
-        />
+        <ForecastTile iconKind="thermometerHot"  label={t("tomorrowMaxTemp")}    numericValue={forecast.tempMax}     decimals={1} suffix="°C" />
+        <ForecastTile iconKind="thermometerCold" label={t("tomorrowMinTemp")}    numericValue={forecast.tempMin}     decimals={1} suffix="°C" />
+        <ForecastTile iconKind="rain"            label={t("tomorrowRainProb")}   numericValue={Math.round(forecast.rainProbMax)} decimals={0} suffix="%" />
+        <ForecastTile iconKind="humidity"        label={t("tomorrowRainAmount")} numericValue={forecast.rainSum}     decimals={1} suffix=" mm" />
+        <ForecastTile iconKind="wind"            label={t("tomorrowWindMax")}    numericValue={forecast.windMax}     decimals={1} suffix=" km/h" />
+        <ForecastTile iconKind="mask"            label={t("tomorrowPM25")}       numericValue={forecast.pm25Avg}     decimals={1} suffix=" µg/m³" />
       </div>
 
       {/* Preparedness tips — always 2–4 */}

@@ -4,6 +4,7 @@
  * ========================================================= */
 
 import { useLanguage } from "@/contexts/LanguageContext";
+import AnimatedWeatherIcon from "@/components/animated/AnimatedWeatherIcon";
 
 export default function Header() {
   const { lang, setLang, t } = useLanguage();
@@ -24,7 +25,7 @@ export default function Header() {
         >
           <div className="flex items-center gap-2">
             {/* Leaf icon — represents environmental safety */}
-            <span className="text-2xl" aria-hidden="true">🌿</span>
+            <AnimatedWeatherIcon kind="leaf" size={26} />
             <span className="text-xl font-bold tracking-tight leading-none">
               {t("siteName")}
             </span>

@@ -23,6 +23,11 @@ import { HEAT_TEMP_ADVISORY } from "@/logic/thresholds";
 import type { Upazila, RiskLevel, RiskType, WeatherData, AirQualityData, RiskResult } from "@/types";
 import { ALL_RISK_TYPES } from "@/types";
 import type { TranslationKeys } from "@/translations/en";
+import AnimatedWeatherIcon, {
+  weatherCodeToIconKind,
+  type AnimatedIconKind,
+} from "@/components/animated/AnimatedWeatherIcon";
+import AnimatedNumber from "@/components/animated/AnimatedNumber";
 
 /* ── Types ──────────────────────────────────────────────── */
 
@@ -31,18 +36,6 @@ interface Props {
 }
 
 /* ── Helpers ────────────────────────────────────────────── */
-
-/** Map a WMO weather code to a representative emoji. */
-function weatherIcon(code: number): string {
-  if (code === 0) return "☀️";
-  if (code <= 3) return "⛅";
-  if (code <= 49) return "🌫️";
-  if (code <= 67) return "🌧️";
-  if (code <= 77) return "🌨️";
-  if (code <= 82) return "🌦️";
-  if (code <= 99) return "⛈️";
-  return "🌤️";
-}
 
 /** CSS class for a risk badge. */
 function riskClass(level: RiskLevel): string {
@@ -71,42 +64,74 @@ function formatVisibility(m: number): string {
 /* ── Sub-components ─────────────────────────────────────── */
 
 function MetricCard({
-  icon,
+  iconKind,
+  fallbackIcon,
   label,
-  value,
+  numericValue,
+  decimals = 0,
+  suffix = "",
+  locale,
+  rawValue,
 }: {
-  icon: string;
+  /** Animated SVG icon kind. Falls back to emoji glyph if omitted. */
+  iconKind?: AnimatedIconKind;
+  fallbackIcon?: string;
   label: string;
-  value: string;
+  /** Numeric value — animated counter is used when provided. */
+  numericValue?: number;
+  decimals?: number;
+  suffix?: string;
+  locale?: string;
+  /** Pre-formatted string value — used when numericValue isn't appropriate. */
+  rawValue?: string;
 }) {
   return (
-    <div className="bg-card border border-border rounded-lg p-4 shadow-sm flex flex-col gap-1">
-      <span className="text-2xl" aria-hidden="true">{icon}</span>
+    <div className="glass-card lift-on-hover rounded-lg p-4 flex flex-col gap-1">
+      <span className="h-8 w-8" aria-hidden="true">
+        {iconKind ? (
+          <AnimatedWeatherIcon kind={iconKind} size={28} />
+        ) : (
+          <span className="text-2xl">{fallbackIcon}</span>
+        )}
+      </span>
       <p className="text-xs text-muted-foreground leading-tight">{label}</p>
-      <p className="text-xl font-bold text-foreground">{value}</p>
+      <p className="text-xl font-bold text-foreground tabular-nums">
+        {numericValue !== undefined ? (
+          <AnimatedNumber
+            value={numericValue}
+            decimals={decimals}
+            suffix={suffix}
+            locale={locale}
+          />
+        ) : (
+          rawValue
+        )}
+      </p>
     </div>
   );
 }
 
 function RiskCard({
-  icon,
+  iconKind,
   label,
   level,
   levelLabel,
   subValue,
 }: {
-  icon: string;
+  iconKind: AnimatedIconKind;
   label: string;
   level: RiskLevel;
   levelLabel: string;
   subValue?: string;
 }) {
   return (
-    <div className={`bg-card border rounded-lg p-4 shadow-sm transition-colors ${
-      level === "High" ? "border-red-300 bg-red-50/40" : "border-border"
-    }`}>
+    <div
+      className={`glass-card lift-on-hover rounded-lg p-4 transition-colors ${
+        level === "High" ? "ring-1 ring-red-300/60" : ""
+      }`}
+    >
       <div className="flex items-center gap-1.5 mb-2">
-        <span className="text-base" aria-hidden="true">{icon}</span>
+        <AnimatedWeatherIcon kind={iconKind} size={20} />
         <p className="text-xs text-muted-foreground leading-tight">{label}</p>
       </div>
       <span className={`inline-block text-xs px-2.5 py-1 rounded-full ${riskClass(level)}`}>
@@ -145,7 +170,7 @@ function FilteredGuidanceSection({
   const visible = bullets.filter((b) => b.risks.some((r) => activeRisks.has(r)));
   if (visible.length === 0) return null;
   return (
-    <div className="bg-card border border-border rounded-lg p-4 shadow-sm">
+    <div className="glass-card lift-on-hover rounded-xl p-4">
       <h4 className="text-sm font-semibold text-foreground mb-2">{title}</h4>
       <ul className="space-y-1.5">
         {visible.map((b) => (
@@ -529,26 +554,26 @@ function DashboardPanel({
 
       {/* Weather icon + subtitle */}
       <div className="flex items-center gap-3">
-        <span className="text-4xl" aria-hidden="true">{weatherIcon(weather.weatherCode)}</span>
+        <AnimatedWeatherIcon kind={weatherCodeToIconKind(weather.weatherCode)} size={44} />
         <p className="text-sm text-muted-foreground">{t("dashboardSubtitle")}</p>
       </div>
 
       {/* Weather metrics grid — 8 cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <MetricCard icon="🌡️" label={t("temperature")}              value={`${weather.temperature.toFixed(1)}°C`} />
-        <MetricCard icon="💧" label={t("humidity")}                  value={`${Math.round(weather.humidity)}%`} />
-        <MetricCard icon="🤔" label={t("apparentTemperature")}       value={`${weather.apparentTemperature.toFixed(1)}°C`} />
-        <MetricCard icon="🌧️" label={t("precipitationProbability")} value={`${Math.round(weather.precipitationProbability)}%`} />
-        <MetricCard icon="🌂" label={t("rain")}                      value={`${weather.rain.toFixed(1)} mm`} />
-        <MetricCard icon="💨" label={t("windSpeed")}                 value={`${weather.windSpeed.toFixed(1)} km/h`} />
-        <MetricCard icon="🔆" label={t("uvIndex")}                   value={weather.uvIndex.toFixed(1)} />
-        <MetricCard icon="👁️" label={t("visibility")}               value={formatVisibility(weather.visibility)} />
+        <MetricCard iconKind="thermometerHot"   label={t("temperature")}              numericValue={weather.temperature}              decimals={1} suffix="°C" />
+        <MetricCard iconKind="humidity"         label={t("humidity")}                  numericValue={Math.round(weather.humidity)}     decimals={0} suffix="%" />
+        <MetricCard iconKind="thermometerHot"   label={t("apparentTemperature")}       numericValue={weather.apparentTemperature}      decimals={1} suffix="°C" />
+        <MetricCard iconKind="rain"             label={t("precipitationProbability")} numericValue={Math.round(weather.precipitationProbability)} decimals={0} suffix="%" />
+        <MetricCard iconKind="umbrella"         label={t("rain")}                      numericValue={weather.rain}                     decimals={1} suffix=" mm" />
+        <MetricCard iconKind="wind"             label={t("windSpeed")}                 numericValue={weather.windSpeed}                decimals={1} suffix=" km/h" />
+        <MetricCard iconKind="uv"               label={t("uvIndex")}                   numericValue={weather.uvIndex}                  decimals={1} />
+        <MetricCard iconKind="visibility"       label={t("visibility")}                rawValue={formatVisibility(weather.visibility)} />
       </div>
 
       {/* Air quality mini-row */}
       <div className="grid grid-cols-2 gap-3">
-        <MetricCard icon="🫧" label={t("pm25Label")} value={airQuality.pm25.toFixed(1)} />
-        <MetricCard icon="🌐" label={t("pm10Label")} value={airQuality.pm10.toFixed(1)} />
+        <MetricCard iconKind="mask" label={t("pm25Label")} numericValue={airQuality.pm25} decimals={1} />
+        <MetricCard iconKind="fog"  label={t("pm10Label")} numericValue={airQuality.pm10} decimals={1} />
       </div>
 
       {/* Heat advisory badge — shown when temp ≥ 30°C but below Moderate/High heat risk */}
@@ -565,8 +590,8 @@ function DashboardPanel({
         </div>
       )}
 
-      {/* Overall safety badge — prominent, color-coded box */}
-      <div className={`border rounded-xl p-5 shadow-sm ${
+      {/* Overall safety badge — prominent, color-coded with glowing halo */}
+      <div className={`border rounded-xl p-5 shadow-sm transition-colors duration-500 ${
         risk.overall === "High"
           ? "bg-red-50 border-red-300"
           : risk.overall === "Moderate"
@@ -578,9 +603,14 @@ function DashboardPanel({
         <h3 className="text-base font-semibold text-foreground mb-3">
           {t("overallSafetyTitle")}
         </h3>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <span
-            className={`inline-block text-base font-bold px-5 py-2 rounded-full ${riskClass(risk.overall)}`}
+            className={`safety-halo inline-block text-base font-bold px-6 py-2.5 rounded-full transition-colors duration-500 ${riskClass(risk.overall)} ${
+              risk.overall === "High"     ? "halo-high"     :
+              risk.overall === "Moderate" ? "halo-moderate" :
+              risk.overall === "Low"      ? "halo-low"      :
+                                            "halo-none"
+            }`}
           >
             {levelLabel(risk.overall)}
           </span>
@@ -598,13 +628,13 @@ function DashboardPanel({
           {t("riskBreakdownTitle")}
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <RiskCard icon="🌡️" label={t("heatRisk")}       level={risk.heat}       levelLabel={levelLabel(risk.heat)} />
-          <RiskCard icon="🌧️" label={t("rainRisk")}       level={risk.rain}       levelLabel={levelLabel(risk.rain)} />
-          <RiskCard icon="🌫️" label={t("airQualityRisk")} level={risk.airQuality} levelLabel={levelLabel(risk.airQuality)} />
-          <RiskCard icon="🧥" label={t("coldRisk")}       level={risk.cold}       levelLabel={levelLabel(risk.cold)} />
-          <RiskCard icon="⛈️" label={t("heavyRainRisk")}  level={risk.heavyRain}  levelLabel={levelLabel(risk.heavyRain)} />
-          <RiskCard icon="🌊" label={t("floodRisk")}      level={risk.flood}      levelLabel={levelLabel(risk.flood)} subValue={`${t("rain6hLabel")}: ${weather.rain6h.toFixed(1)} mm`} />
-          <RiskCard icon="🌀" label={t("stormRisk")}      level={risk.storm}      levelLabel={levelLabel(risk.storm)} />
+          <RiskCard iconKind="thermometerHot"  label={t("heatRisk")}       level={risk.heat}       levelLabel={levelLabel(risk.heat)} />
+          <RiskCard iconKind="rain"            label={t("rainRisk")}       level={risk.rain}       levelLabel={levelLabel(risk.rain)} />
+          <RiskCard iconKind="fog"             label={t("airQualityRisk")} level={risk.airQuality} levelLabel={levelLabel(risk.airQuality)} />
+          <RiskCard iconKind="thermometerCold" label={t("coldRisk")}       level={risk.cold}       levelLabel={levelLabel(risk.cold)} />
+          <RiskCard iconKind="heavyRain"       label={t("heavyRainRisk")}  level={risk.heavyRain}  levelLabel={levelLabel(risk.heavyRain)} />
+          <RiskCard iconKind="flood"           label={t("floodRisk")}      level={risk.flood}      levelLabel={levelLabel(risk.flood)} subValue={`${t("rain6hLabel")}: ${weather.rain6h.toFixed(1)} mm`} />
+          <RiskCard iconKind="storm"           label={t("stormRisk")}      level={risk.storm}      levelLabel={levelLabel(risk.storm)} />
         </div>
       </div>
 
@@ -612,7 +642,7 @@ function DashboardPanel({
            Since rules are only pushed for Moderate/High evaluators, triggeredRules.length > 0
            is equivalent to "any Moderate or High risk exists". */}
       {risk.triggeredRules.length > 0 && (
-        <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
+        <div className="glass-card lift-on-hover rounded-2xl p-5">
           <h3 className="text-base font-semibold text-foreground mb-3">
             {t("whyThisAdviceTitle")}
           </h3>
@@ -637,7 +667,7 @@ function DashboardPanel({
             {activeRecs.map((rec) => (
               <div
                 key={rec.titleKey}
-                className="bg-primary/5 border border-primary/20 rounded-lg p-4"
+                className="gradient-border lift-on-hover rounded-xl p-4 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent"
               >
                 <p className="text-sm font-semibold text-primary mb-1">
                   {t(rec.titleKey)}
@@ -711,7 +741,7 @@ function DashboardPanel({
               {/* Toggle button */}
               <button
                 onClick={() => setShowExtraPrecautions((v) => !v)}
-                className="mb-3 flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-card hover:bg-muted active:bg-muted/80 text-foreground text-sm font-medium transition-colors shadow-sm"
+                className="btn-shine mb-3 inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5 hover:from-primary/15 hover:to-primary/10 text-foreground text-sm font-medium transition-colors shadow-sm"
                 aria-expanded={showExtraPrecautions}
                 aria-controls="extra-precautions-cards"
               >

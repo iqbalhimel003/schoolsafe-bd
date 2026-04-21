@@ -191,6 +191,148 @@
   font-family: 'Noto Sans Bengali', 'Kalpurush', 'SolaimanLipi', sans-serif;
 }
 
+/* ── Premium homepage utilities ─────────────────────────────
+ * Adds glassmorphism, gradient surfaces, hover lift, and
+ * level-aware glow animations for the safety badge. All
+ * looping animations are suppressed under reduced motion.
+ * ────────────────────────────────────────────────────────── */
+
+.glass-card {
+  background: linear-gradient(140deg, rgba(255,255,255,0.86), rgba(255,255,255,0.66));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.55);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.7) inset,
+    0 6px 18px -6px rgba(15, 23, 42, 0.10),
+    0 2px 4px -2px rgba(15, 23, 42, 0.06);
+}
+
+.lift-on-hover {
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.lift-on-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px -10px rgba(15, 23, 42, 0.18),
+              0 4px 10px -4px rgba(15, 23, 42, 0.10);
+}
+
+.gradient-border {
+  position: relative;
+  background-clip: padding-box;
+  border: 1px solid transparent;
+}
+.gradient-border::before {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, hsl(162 60% 60% / .55), hsl(201 80% 60% / .45) 50%, hsl(162 60% 60% / .55));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+          mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Aurora hero background — slowly drifting blobs */
+.aurora {
+  position: absolute; inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.aurora::before,
+.aurora::after {
+  content: "";
+  position: absolute;
+  width: 60vmax; height: 60vmax;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: .55;
+  animation: auroraDrift 18s ease-in-out infinite alternate;
+}
+.aurora::before {
+  top: -25%; left: -15%;
+  background: radial-gradient(circle, hsl(162 70% 55% / .55), transparent 60%);
+}
+.aurora::after {
+  top: -10%; right: -20%;
+  background: radial-gradient(circle, hsl(201 85% 60% / .45), transparent 60%);
+  animation-duration: 22s;
+  animation-delay: -6s;
+}
+.aurora .aurora-c {
+  position: absolute;
+  bottom: -40%; left: 30%;
+  width: 60vmax; height: 60vmax;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: .35;
+  background: radial-gradient(circle, hsl(38 95% 65% / .45), transparent 60%);
+  animation: auroraDrift 26s ease-in-out infinite alternate;
+  animation-delay: -10s;
+}
+
+@keyframes auroraDrift {
+  0%   { transform: translate3d(0,0,0) scale(1); }
+  50%  { transform: translate3d(4%, 3%, 0) scale(1.08); }
+  100% { transform: translate3d(-3%, 2%, 0) scale(0.98); }
+}
+
+/* Soft halo around the safety badge — color set per-level */
+.safety-halo {
+  position: relative;
+  isolation: isolate;
+}
+.safety-halo::before {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border-radius: inherit;
+  background: radial-gradient(circle at center, var(--halo-color, hsl(162 60% 50% / .35)), transparent 70%);
+  z-index: -1;
+  animation: haloPulse 3.2s ease-in-out infinite;
+  filter: blur(6px);
+}
+@keyframes haloPulse {
+  0%, 100% { opacity: .55; transform: scale(1); }
+  50%      { opacity: .9;  transform: scale(1.05); }
+}
+
+.halo-low      { --halo-color: hsl(142 70% 50% / .40); }
+.halo-moderate { --halo-color: hsl(38 95% 55% / .45); }
+.halo-high     { --halo-color: hsl(0 80% 55% / .50); }
+.halo-none     { --halo-color: hsl(210 15% 70% / .30); }
+
+/* Subtle shine sweep on premium buttons */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+.btn-shine::after {
+  content: "";
+  position: absolute; top: 0; left: -120%;
+  width: 60%; height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,.45), transparent);
+  transition: left .6s ease;
+}
+.btn-shine:hover::after { left: 130%; }
+
+/* Honour reduced-motion across our custom animations */
+@media (prefers-reduced-motion: reduce) {
+  .aurora::before,
+  .aurora::after,
+  .aurora .aurora-c,
+  .safety-halo::before,
+  .btn-shine::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .lift-on-hover {
+    transition: none !important;
+  }
+}
+
 /* ── Print utilities ────────────────────────────────────
  * .no-print  — hidden when printing, visible on screen
  * .print-only — visible only when printing

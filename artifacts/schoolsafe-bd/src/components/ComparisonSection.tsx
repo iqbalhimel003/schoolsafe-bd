@@ -124,6 +124,7 @@ export default function ComparisonSection() {
 
   return (
     <section className="max-w-5xl mx-auto px-4 py-6">
+      <div className="glass-card rounded-2xl p-6 lift-on-hover">
       <h2 className="text-xl font-bold text-foreground mb-1">
         {t("comparisonTitle")}
       </h2>
@@ -175,7 +176,7 @@ export default function ComparisonSection() {
           </button>
         </div>
       ) : (
-        <div className="bg-card border border-border rounded-xl shadow-sm overflow-x-auto">
+        <div className="rounded-xl border border-border/60 bg-card/70 backdrop-blur-sm shadow-sm overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/40">
@@ -299,6 +300,7 @@ export default function ComparisonSection() {
           </table>
         </div>
       )}
+      </div>
     </section>
   );
 }

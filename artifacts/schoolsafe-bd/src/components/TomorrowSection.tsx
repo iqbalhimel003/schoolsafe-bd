@@ -53,7 +53,7 @@ function TomorrowSkeleton() {
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
-            className="bg-card border border-border rounded-lg p-3 shadow-sm space-y-1.5"
+            className="glass-card rounded-lg p-3 space-y-1.5"
           >
             <div className="w-6 h-6 bg-muted rounded" />
             <div className="h-2.5 w-20 bg-muted rounded" />
@@ -63,7 +63,7 @@ function TomorrowSkeleton() {
       </div>
 
       {/* Tips card skeleton */}
-      <div className="bg-card border border-border rounded-lg p-4 shadow-sm space-y-2">
+      <div className="glass-card rounded-lg p-4 space-y-2">
         <div className="h-3.5 w-40 bg-muted rounded mb-3" />
         {Array.from({ length: 2 }).map((_, i) => (
           <div key={i} className="flex items-start gap-2">
@@ -91,7 +91,7 @@ export default function TomorrowSection({ selectedUpazila }: Props) {
 
   return (
     <section className="max-w-5xl mx-auto px-4 py-4">
-      <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
+      <div className="glass-card lift-on-hover rounded-2xl p-5">
         {query.isLoading ? (
           <TomorrowSkeleton />
         ) : query.isError || !query.data ? (

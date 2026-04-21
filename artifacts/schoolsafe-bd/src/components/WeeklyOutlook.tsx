@@ -15,20 +15,11 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { WeeklyForecastDay, PrepLevel } from "@/types";
 import { HEAT_TEMP_ADVISORY, HEAT_TEMP_MODERATE } from "@/logic/thresholds";
+import AnimatedWeatherIcon, {
+  weatherCodeToIconKind,
+} from "@/components/animated/AnimatedWeatherIcon";
 
 /* ── Helpers ────────────────────────────────────────────── */
-
-/** Map a WMO code to a weather emoji — same logic as TomorrowOutlook. */
-function weatherIcon(code: number): string {
-  if (code === 0) return "☀️";
-  if (code <= 3) return "⛅";
-  if (code <= 49) return "🌫️";
-  if (code <= 67) return "🌧️";
-  if (code <= 77) return "🌨️";
-  if (code <= 82) return "🌦️";
-  if (code <= 99) return "⛈️";
-  return "🌤️";
-}
 
 /** Colour dot for the prep level column. */
 function PrepDot({ level }: { level: PrepLevel }) {
@@ -82,7 +73,7 @@ export default function WeeklyOutlook({ days }: Props) {
     <section className="space-y-3">
       {/* Section heading */}
       <div className="flex items-center gap-2">
-        <span className="text-2xl" aria-hidden="true">📅</span>
+        <AnimatedWeatherIcon kind="calendar" size={32} />
         <div>
           <h3 className="text-lg font-bold text-foreground">
             {t("weekSectionTitle")}
@@ -117,8 +108,8 @@ export default function WeeklyOutlook({ days }: Props) {
                   </td>
 
                   {/* Weather icon */}
-                  <td className="px-3 py-2.5 text-xl" aria-label={`weather code ${day.weatherCode}`}>
-                    {weatherIcon(day.weatherCode)}
+                  <td className="px-3 py-2.5" aria-label={`weather code ${day.weatherCode}`}>
+                    <AnimatedWeatherIcon kind={weatherCodeToIconKind(day.weatherCode)} size={26} />
                   </td>
 
                   {/* Max / Min temp — with two-tier heat indicator */}

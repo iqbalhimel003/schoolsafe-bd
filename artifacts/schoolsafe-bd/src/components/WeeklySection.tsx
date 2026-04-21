@@ -78,7 +78,7 @@ export default function WeeklySection({ selectedUpazila }: Props) {
 
   return (
     <section className="max-w-5xl mx-auto px-4 py-4">
-      <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
+      <div className="glass-card lift-on-hover rounded-2xl p-5">
         {query.isLoading ? (
           <WeeklySkeleton />
         ) : query.isError || !query.data ? (

@@ -2,13 +2,15 @@
  * SchoolSafe BD — Home Page
  *
  * Orchestrates all page sections:
- *   - Hero (title, description, prototype notice)
+ *   - Hero (animated headline + aurora background)
+ *   - Intro cards (premium glass treatment)
  *   - Location selector (district + upazila)
  *   - Dashboard (live weather, air quality, risk cards)
- *   - ForecastChart (24-hour temp + precip, when location selected)
- *   - ComparisonSection (all 3 pilot upazilas side-by-side, live)
- *   - MethodologySection (all 7 risk rules explained)
- *   - LimitationsSection (disclaimer + official advisory notes)
+ *   - Tomorrow / Weekly / 24h chart (when location selected)
+ *   - Comparison, Methodology, Limitations
+ *
+ * Each section is wrapped in <Reveal> so it fades + slides
+ * in as it scrolls into view, honoring reduced-motion users.
  * ========================================================= */
 
 import { useState } from "react";
@@ -22,6 +24,8 @@ import ForecastChart from "@/components/ForecastChart";
 import ComparisonSection from "@/components/ComparisonSection";
 import MethodologySection from "@/components/MethodologySection";
 import LimitationsSection from "@/components/LimitationsSection";
+import Reveal from "@/components/animated/Reveal";
+import AnimatedWeatherIcon from "@/components/animated/AnimatedWeatherIcon";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { Upazila } from "@/types";
 
@@ -76,13 +80,12 @@ export default function Home() {
         <Hero />
       </div>
 
-      {/* Introduction — two info cards explaining purpose and usage */}
-      <section className="max-w-5xl mx-auto px-4 pt-6 pb-2">
+      {/* Introduction — two premium glass cards */}
+      <Reveal as="section" className="max-w-5xl mx-auto px-4 pt-6 pb-2">
         <div className="grid sm:grid-cols-2 gap-4">
-          {/* Card 1: What this website does */}
-          <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
+          <Reveal delay={0.05} className="glass-card lift-on-hover rounded-xl p-5">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-lg" aria-hidden="true">📋</span>
+              <AnimatedWeatherIcon kind="leaf" size={22} />
               <h3 className="text-sm font-semibold text-foreground">
                 {t("introWhatTitle")}
               </h3>
@@ -90,12 +93,11 @@ export default function Home() {
             <p className="text-sm text-muted-foreground leading-relaxed">
               {t("introWhatText")}
             </p>
-          </div>
+          </Reveal>
 
-          {/* Card 2: How to use */}
-          <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
+          <Reveal delay={0.12} className="glass-card lift-on-hover rounded-xl p-5">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-lg" aria-hidden="true">🗺️</span>
+              <AnimatedWeatherIcon kind="visibility" size={22} />
               <h3 className="text-sm font-semibold text-foreground">
                 {t("introHowTitle")}
               </h3>
@@ -103,13 +105,15 @@ export default function Home() {
             <p className="text-sm text-muted-foreground leading-relaxed">
               {t("introHowText")}
             </p>
-          </div>
+          </Reveal>
         </div>
-      </section>
+      </Reveal>
 
       {/* Location Search */}
       <div className="no-print">
-        <LocationSelector onUpazilaSelect={setSelectedUpazila} />
+        <Reveal>
+          <LocationSelector onUpazilaSelect={setSelectedUpazila} />
+        </Reveal>
       </div>
 
       {/* Divider */}
@@ -119,11 +123,15 @@ export default function Home() {
 
       {/* Environmental Dashboard — shown when a location is selected */}
       {selectedUpazila ? (
-        <Dashboard selectedUpazila={selectedUpazila} />
+        <Reveal>
+          <Dashboard selectedUpazila={selectedUpazila} />
+        </Reveal>
       ) : (
-        <section className="no-print max-w-5xl mx-auto px-4 py-8">
-          <div className="bg-card border border-border rounded-xl p-10 text-center shadow-sm">
-            <div className="text-5xl mb-4" aria-hidden="true">🌤</div>
+        <Reveal as="section" className="no-print max-w-5xl mx-auto px-4 py-8">
+          <div className="glass-card gradient-border rounded-xl p-10 text-center">
+            <div className="flex justify-center mb-3">
+              <AnimatedWeatherIcon kind="partlyCloudy" size={64} />
+            </div>
             <h2 className="text-xl font-semibold text-foreground mb-2">
               {t("dashboardTitle")}
             </h2>
@@ -131,36 +139,44 @@ export default function Home() {
               {t("selectLocationPrompt")}
             </p>
           </div>
-        </section>
+        </Reveal>
       )}
 
-      {/* Tomorrow's Forecast & Preparedness — shown when a location is selected */}
+      {/* Tomorrow's Forecast & Preparedness */}
       {selectedUpazila && (
-        <TomorrowSection selectedUpazila={selectedUpazila} />
+        <Reveal>
+          <TomorrowSection selectedUpazila={selectedUpazila} />
+        </Reveal>
       )}
 
-      {/* Week Ahead — 7-day planning outlook, shown when a location is selected */}
+      {/* Week Ahead — 7-day planning outlook */}
       {selectedUpazila && (
         <div className="no-print">
-          <WeeklySection selectedUpazila={selectedUpazila} />
+          <Reveal>
+            <WeeklySection selectedUpazila={selectedUpazila} />
+          </Reveal>
         </div>
       )}
 
-      {/* 24-Hour Forecast Chart — shown when a location is selected */}
+      {/* 24-Hour Forecast Chart */}
       {selectedUpazila && (
         <div className="no-print">
-          <ForecastChart selectedUpazila={selectedUpazila} />
+          <Reveal>
+            <ForecastChart selectedUpazila={selectedUpazila} />
+          </Reveal>
         </div>
       )}
 
-      {/* Pilot Upazila Comparison — shown only after location is selected */}
+      {/* Pilot Upazila Comparison */}
       {selectedUpazila && (
         <>
           <div className="no-print max-w-5xl mx-auto px-4">
             <hr className="border-border" />
           </div>
           <div className="no-print">
-            <ComparisonSection />
+            <Reveal>
+              <ComparisonSection />
+            </Reveal>
           </div>
         </>
       )}
@@ -170,14 +186,18 @@ export default function Home() {
         <hr className="border-border" />
       </div>
 
-      {/* Methodology — all 7 risk rules with thresholds */}
+      {/* Methodology */}
       <div className="no-print">
-        <MethodologySection />
+        <Reveal>
+          <MethodologySection />
+        </Reveal>
       </div>
 
       {/* Limitations & Disclaimer */}
       <div className="no-print">
-        <LimitationsSection />
+        <Reveal>
+          <LimitationsSection />
+        </Reveal>
       </div>
     </main>
   );

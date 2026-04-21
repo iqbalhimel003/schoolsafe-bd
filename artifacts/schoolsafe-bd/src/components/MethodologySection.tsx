@@ -12,6 +12,10 @@
 
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { TranslationKeys } from "@/translations/en";
+import AnimatedWeatherIcon, {
+  type AnimatedIconKind,
+} from "@/components/animated/AnimatedWeatherIcon";
+import { Award } from "lucide-react";
 import {
   HEAT_TEMP_LOW, HEAT_TEMP_MODERATE, HEAT_TEMP_HIGH,
   HEAT_FEELS_LOW, HEAT_FEELS_MODERATE, HEAT_FEELS_HIGH,
@@ -33,13 +37,13 @@ type Vars = Record<string, string | number>;
 
 /* One entry per risk type */
 const RISK_RULES: Array<{
-  icon: string;
+  iconKind: AnimatedIconKind;
   nameKey: TranslationKeys;
   ruleKey: TranslationKeys;
   vars: Vars;
 }> = [
   {
-    icon: "🌡️",
+    iconKind: "thermometerHot",
     nameKey: "heatRisk",
     ruleKey: "methodologyHeatRule",
     vars: {
@@ -52,7 +56,7 @@ const RISK_RULES: Array<{
     },
   },
   {
-    icon: "🌧️",
+    iconKind: "rain",
     nameKey: "rainRisk",
     ruleKey: "methodologyRainRule",
     vars: {
@@ -68,7 +72,7 @@ const RISK_RULES: Array<{
     },
   },
   {
-    icon: "🌫️",
+    iconKind: "fog",
     nameKey: "airQualityRisk",
     ruleKey: "methodologyAQRule",
     vars: {
@@ -81,7 +85,7 @@ const RISK_RULES: Array<{
     },
   },
   {
-    icon: "🧥",
+    iconKind: "thermometerCold",
     nameKey: "coldRisk",
     ruleKey: "methodologyColdRule",
     vars: {
@@ -91,7 +95,7 @@ const RISK_RULES: Array<{
     },
   },
   {
-    icon: "⛈️",
+    iconKind: "heavyRain",
     nameKey: "heavyRainRisk",
     ruleKey: "methodologyHeavyRainRule",
     vars: {
@@ -104,7 +108,7 @@ const RISK_RULES: Array<{
     },
   },
   {
-    icon: "🌊",
+    iconKind: "flood",
     nameKey: "floodRisk",
     ruleKey: "methodologyFloodRule",
     vars: {
@@ -117,7 +121,7 @@ const RISK_RULES: Array<{
     },
   },
   {
-    icon: "🌀",
+    iconKind: "storm",
     nameKey: "stormRisk",
     ruleKey: "methodologyStormRule",
     vars: {
@@ -139,7 +143,7 @@ export default function MethodologySection() {
 
   return (
     <section className="max-w-5xl mx-auto px-4 py-6">
-      <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+      <div className="glass-card rounded-2xl p-6 lift-on-hover">
 
         {/* Title + intro */}
         <h2 className="text-xl font-bold text-foreground mb-2">
@@ -154,13 +158,13 @@ export default function MethodologySection() {
           {t("methodologyRulesTitle")}
         </h3>
         <div className="grid sm:grid-cols-2 gap-3 mb-4">
-          {RISK_RULES.map(({ icon, nameKey, ruleKey, vars }) => (
+          {RISK_RULES.map(({ iconKind, nameKey, ruleKey, vars }) => (
             <div
               key={nameKey}
-              className="border border-border rounded-lg p-3 bg-muted/30"
+              className="glass-card rounded-xl p-3.5 lift-on-hover"
             >
-              <p className="text-sm font-semibold text-foreground mb-1">
-                <span className="mr-1.5" aria-hidden="true">{icon}</span>
+              <p className="text-sm font-semibold text-foreground mb-1.5 flex items-center gap-2">
+                <AnimatedWeatherIcon kind={iconKind} size={22} />
                 {t(nameKey)}
               </p>
               <p className="text-xs text-muted-foreground leading-relaxed">
@@ -171,9 +175,10 @@ export default function MethodologySection() {
         </div>
 
         {/* Overall badge explanation */}
-        <div className="border border-primary/20 bg-primary/5 rounded-lg p-3">
-          <p className="text-sm font-semibold text-primary mb-1">
-            🏅 {t("overallSafetyTitle")}
+        <div className="gradient-border rounded-xl p-3.5 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent">
+          <p className="text-sm font-semibold text-primary mb-1 flex items-center gap-1.5">
+            <Award className="h-4 w-4" aria-hidden="true" />
+            {t("overallSafetyTitle")}
           </p>
           <p className="text-xs text-muted-foreground leading-relaxed">
             {t("methodologyOverallBadge", OVERALL_BADGE_VARS)}
