@@ -2,28 +2,31 @@ import { Router, type IRouter, type Request, type Response } from "express";
 import { db } from "@workspace/db";
 import { siteSettingsTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
+import { checkAdminAuth, getCurrentUsername } from "../lib/auth";
 
 const router: IRouter = Router();
+
+/* ── GET /settings — public (admin_ keys filtered out) ── */
 
 router.get("/settings", async (_req: Request, res: Response) => {
   try {
     const rows = await db.select().from(siteSettingsTable);
     const settings: Record<string, string> = {};
     for (const row of rows) {
-      settings[row.key] = row.value;
+      if (!row.key.startsWith("admin_")) {
+        settings[row.key] = row.value;
+      }
     }
     res.json(settings);
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: "Failed to fetch settings" });
   }
 });
 
-router.put("/settings", async (req: Request, res: Response) => {
-  const authHeader = req.headers.authorization ?? "";
-  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
-  const adminPassword = process.env.ADMIN_PASSWORD;
+/* ── PUT /settings — save site content (auth required) ── */
 
-  if (!adminPassword || token !== adminPassword) {
+router.put("/settings", async (req: Request, res: Response) => {
+  if (!(await checkAdminAuth(req))) {
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
@@ -39,7 +42,9 @@ router.put("/settings", async (req: Request, res: Response) => {
       ([, v]) => typeof v === "string",
     ) as [string, string][];
 
-    const toDelete = entries.filter(([, v]) => v.trim() === "").map(([k]) => k);
+    const toDelete = entries
+      .filter(([, v]) => v.trim() === "")
+      .map(([k]) => k);
     const toUpsert = entries.filter(([, v]) => v.trim() !== "");
 
     for (const key of toDelete) {
@@ -57,8 +62,64 @@ router.put("/settings", async (req: Request, res: Response) => {
     }
 
     res.json({ ok: true, updated: toUpsert.length, deleted: toDelete.length });
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: "Failed to save settings" });
+  }
+});
+
+/* ── GET /me — current admin username (auth required) ── */
+
+router.get("/me", async (req: Request, res: Response) => {
+  if (!(await checkAdminAuth(req))) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  try {
+    const username = await getCurrentUsername();
+    res.json({ username });
+  } catch {
+    res.status(500).json({ error: "Failed to fetch admin info" });
+  }
+});
+
+/* ── PUT /credentials — update username/password (auth required) ── */
+
+router.put("/credentials", async (req: Request, res: Response) => {
+  if (!(await checkAdminAuth(req))) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+
+  const body = req.body as { newUsername?: string; newPassword?: string };
+  if (!body || (!body.newUsername && !body.newPassword)) {
+    res.status(400).json({ error: "No changes provided" });
+    return;
+  }
+
+  try {
+    if (body.newUsername?.trim()) {
+      await db
+        .insert(siteSettingsTable)
+        .values({ key: "admin_username", value: body.newUsername.trim() })
+        .onConflictDoUpdate({
+          target: siteSettingsTable.key,
+          set: { value: body.newUsername.trim(), updatedAt: new Date() },
+        });
+    }
+
+    if (body.newPassword?.trim()) {
+      await db
+        .insert(siteSettingsTable)
+        .values({ key: "admin_password", value: body.newPassword.trim() })
+        .onConflictDoUpdate({
+          target: siteSettingsTable.key,
+          set: { value: body.newPassword.trim(), updatedAt: new Date() },
+        });
+    }
+
+    res.json({ ok: true });
+  } catch {
+    res.status(500).json({ error: "Failed to update credentials" });
   }
 });
 

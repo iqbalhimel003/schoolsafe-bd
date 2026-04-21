@@ -4,6 +4,7 @@ import { db } from "@workspace/db";
 import { visitorLogsTable } from "@workspace/db/schema";
 import { desc, sql, count, countDistinct, gte, isNotNull } from "drizzle-orm";
 import { UAParser } from "ua-parser-js";
+import { checkAdminAuth } from "../lib/auth";
 
 const router: IRouter = Router();
 
@@ -67,14 +68,15 @@ function classifyDevice(uaResult: ReturnType<UAParser["getResult"]>): "mobile" |
 }
 
 function requireAdmin(req: Request, res: Response, next: NextFunction): void {
-  const authHeader = req.headers.authorization ?? "";
-  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
-  const adminPassword = process.env.ADMIN_PASSWORD;
-  if (!adminPassword || token !== adminPassword) {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
-  }
-  next();
+  checkAdminAuth(req).then((ok) => {
+    if (!ok) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+    next();
+  }).catch(() => {
+    res.status(500).json({ error: "Auth check failed" });
+  });
 }
 
 function truncate(s: unknown, max: number): string | null {

@@ -9,7 +9,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 import { toast } from "sonner";
-import { Home, LayoutGrid, FileText, Phone, BarChart2 } from "lucide-react";
+import { Home, LayoutGrid, FileText, Phone, BarChart2, User } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -36,6 +36,7 @@ type Section = {
   fields: FieldDef[];
   bilingual?: boolean;
   isAnalytics?: boolean;
+  isAccount?: boolean;
 };
 
 const SECTIONS: Section[] = [
@@ -92,18 +93,66 @@ const SECTIONS: Section[] = [
     fields: [],
     isAnalytics: true,
   },
+  {
+    title: "Account",
+    icon: <User size={15} />,
+    bilingual: false,
+    fields: [],
+    isAccount: true,
+  },
 ];
 
+/* ── Forgot Password Modal ────────────────────────────── */
+
+function ForgotPasswordModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-card border border-border rounded-xl p-6 max-w-sm w-full shadow-lg">
+        <h2 className="text-base font-bold text-foreground mb-2">Password Recovery</h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          To reset your admin password or username, use one of these methods:
+        </p>
+        <ol className="text-sm text-foreground space-y-3 list-decimal list-inside">
+          <li>
+            Go to your <strong>Replit project</strong> → <strong>Secrets</strong> → Update{" "}
+            <code className="bg-muted px-1 py-0.5 rounded text-xs">ADMIN_PASSWORD</code>
+          </li>
+          <li>
+            Once logged in, go to the <strong>Account</strong> tab in the admin panel to
+            change your username and password.
+          </li>
+          <li>
+            Contact the site administrator:{" "}
+            <strong>iqbal.himel003@gmail.com</strong>
+          </li>
+        </ol>
+        <button
+          onClick={onClose}
+          className="mt-5 w-full bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/90 transition-colors"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* ── Login Form ───────────────────────────────────────── */
+
+const DEFAULT_ADMIN_USERNAME = "iqbal.himel003@gmail.com";
 
 function LoginForm({
   onLogin,
 }: {
-  onLogin: (password: string) => void;
+  onLogin: (password: string, username: string) => void;
 }) {
+  const [username, setUsername] = useState(
+    sessionStorage.getItem("admin_username") ?? DEFAULT_ADMIN_USERNAME,
+  );
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showRecovery, setShowRecovery] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -115,13 +164,14 @@ function LoginForm({
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${password}`,
+          "X-Admin-Username": username,
         },
         body: JSON.stringify({}),
       });
       if (res.status === 401) {
-        setError("Incorrect password. Please try again.");
+        setError("Invalid credentials. Please check your username and password.");
       } else if (res.ok) {
-        onLogin(password);
+        onLogin(password, username);
       } else {
         setError("Server error. Please try again.");
       }
@@ -133,44 +183,73 @@ function LoginForm({
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="w-full max-w-sm bg-card border border-border rounded-xl shadow-sm p-8">
-        <h1 className="text-xl font-bold text-foreground mb-1">Admin Panel</h1>
-        <p className="text-sm text-muted-foreground mb-6">
-          Enter the admin password to manage site content.
-        </p>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label
-              htmlFor="admin-password"
-              className="block text-sm font-medium text-foreground mb-1"
+    <>
+      {showRecovery && <ForgotPasswordModal onClose={() => setShowRecovery(false)} />}
+      <div className="min-h-screen flex items-center justify-center bg-background px-4">
+        <div className="w-full max-w-sm bg-card border border-border rounded-xl shadow-sm p-8">
+          <h1 className="text-xl font-bold text-foreground mb-1">Admin Panel</h1>
+          <p className="text-sm text-muted-foreground mb-6">
+            Enter your credentials to manage site content.
+          </p>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label
+                htmlFor="admin-username"
+                className="block text-sm font-medium text-foreground mb-1"
+              >
+                Username
+              </label>
+              <input
+                id="admin-username"
+                type="email"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="admin@example.com"
+                required
+                autoFocus
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="admin-password"
+                className="block text-sm font-medium text-foreground mb-1"
+              >
+                Password
+              </label>
+              <input
+                id="admin-password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="Enter password"
+                required
+              />
+            </div>
+            {error && (
+              <p className="text-sm text-red-600 font-medium">{error}</p>
+            )}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/90 disabled:opacity-50 transition-colors"
             >
-              Password
-            </label>
-            <input
-              id="admin-password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="Enter password"
-              required
-              autoFocus
-            />
+              {loading ? "Checking…" : "Log In"}
+            </button>
+          </form>
+          <div className="mt-4 text-center">
+            <button
+              type="button"
+              onClick={() => setShowRecovery(true)}
+              className="text-xs text-muted-foreground hover:text-primary transition-colors hover:underline"
+            >
+              Forgot password?
+            </button>
           </div>
-          {error && (
-            <p className="text-sm text-red-600 font-medium">{error}</p>
-          )}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/90 disabled:opacity-50 transition-colors"
-          >
-            {loading ? "Checking…" : "Log In"}
-          </button>
-        </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -357,7 +436,7 @@ function SummaryCard({ label, value }: { label: string; value: number | string }
   );
 }
 
-function AnalyticsPanel({ password }: { password: string }) {
+function AnalyticsPanel({ password, username }: { password: string; username: string }) {
   const [summary, setSummary] = useState<Summary | null>(null);
   const [daily, setDaily] = useState<DailyPoint[]>([]);
   const [topPages, setTopPages] = useState<PageCount[]>([]);
@@ -369,7 +448,7 @@ function AnalyticsPanel({ password }: { password: string }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const auth = { Authorization: `Bearer ${password}` };
+    const auth = { Authorization: `Bearer ${password}`, "X-Admin-Username": username };
     const endpoints = [
       "/analytics/summary",
       "/analytics/daily?days=30",
@@ -404,7 +483,7 @@ function AnalyticsPanel({ password }: { password: string }) {
         setError(err.message || "Failed to load analytics");
       })
       .finally(() => setLoading(false));
-  }, [password]);
+  }, [password, username]);
 
   if (loading) {
     return <p className="text-sm text-muted-foreground py-8">Loading analytics…</p>;
@@ -563,14 +642,152 @@ function ListCard({
   );
 }
 
+/* ── Account Panel ────────────────────────────────────── */
+
+function AccountPanel({
+  password,
+  username,
+  onCredentialsChanged,
+}: {
+  password: string;
+  username: string;
+  onCredentialsChanged: (newUser: string, newPass: string) => void;
+}) {
+  const inputClass =
+    "w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary";
+
+  const [newUsername, setNewUsername] = useState(username);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  async function handleSave() {
+    const usernameChanged = newUsername.trim() !== username;
+    const passwordChanged = newPassword.trim() !== "";
+
+    if (!usernameChanged && !passwordChanged) {
+      toast.info("No changes to save.");
+      return;
+    }
+    if (passwordChanged && newPassword !== confirmPassword) {
+      toast.error("New passwords do not match.");
+      return;
+    }
+    if (passwordChanged && newPassword.length < 6) {
+      toast.error("New password must be at least 6 characters.");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const res = await fetch(`${API_BASE}/credentials`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${password}`,
+          "X-Admin-Username": username,
+        },
+        body: JSON.stringify({
+          newUsername: usernameChanged ? newUsername.trim() : undefined,
+          newPassword: passwordChanged ? newPassword : undefined,
+        }),
+      });
+
+      if (res.ok) {
+        toast.success(
+          "Credentials updated! You will need to log in again if you changed your password.",
+        );
+        onCredentialsChanged(newUsername.trim(), newPassword || password);
+        setNewPassword("");
+        setConfirmPassword("");
+      } else if (res.status === 401) {
+        toast.error("Session expired. Please log in again.");
+      } else {
+        toast.error("Failed to update credentials. Please try again.");
+      }
+    } catch {
+      toast.error("Could not connect to the server.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="space-y-6 max-w-md">
+      <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 text-sm text-blue-900">
+        <strong>Security note:</strong> Changing your password here stores it in the database.
+        It overrides the <code className="bg-blue-100 px-1 rounded text-xs">ADMIN_PASSWORD</code>{" "}
+        environment variable for all future logins.
+      </div>
+
+      {/* Username */}
+      <div className="space-y-1">
+        <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+          Username (email)
+        </label>
+        <input
+          type="email"
+          value={newUsername}
+          onChange={(e) => setNewUsername(e.target.value)}
+          className={inputClass}
+          placeholder="admin@example.com"
+        />
+      </div>
+
+      {/* New password */}
+      <div className="space-y-1">
+        <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+          New Password
+        </label>
+        <input
+          type="password"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          className={inputClass}
+          placeholder="Leave blank to keep current password"
+          autoComplete="new-password"
+        />
+        <p className="text-xs text-muted-foreground">Minimum 6 characters</p>
+      </div>
+
+      {/* Confirm password */}
+      <div className="space-y-1">
+        <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+          Confirm New Password
+        </label>
+        <input
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          className={inputClass}
+          placeholder="Re-enter new password"
+          autoComplete="new-password"
+        />
+      </div>
+
+      <button
+        onClick={handleSave}
+        disabled={saving}
+        className="bg-primary text-primary-foreground rounded-lg px-6 py-2.5 text-sm font-semibold hover:bg-primary/90 disabled:opacity-50 transition-colors"
+      >
+        {saving ? "Saving…" : "Save Credentials"}
+      </button>
+    </div>
+  );
+}
+
 /* ── Editor ───────────────────────────────────────────── */
 
 function Editor({
   password,
+  username,
   onLogout,
+  onCredentialsChanged,
 }: {
   password: string;
+  username: string;
   onLogout: () => void;
+  onCredentialsChanged: (newUser: string, newPass: string) => void;
 }) {
   const { settings, reload } = useSiteSettings();
   const [draft, setDraft] = useState<Record<string, string>>({});
@@ -602,6 +819,7 @@ function Editor({
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${password}`,
+          "X-Admin-Username": username,
         },
         body: JSON.stringify(draft),
       });
@@ -705,8 +923,14 @@ function Editor({
                 {section.title}
               </h2>
 
-              {section.isAnalytics ? (
-                <AnalyticsPanel password={password} />
+              {section.isAccount ? (
+                <AccountPanel
+                  password={password}
+                  username={username}
+                  onCredentialsChanged={onCredentialsChanged}
+                />
+              ) : section.isAnalytics ? (
+                <AnalyticsPanel password={password} username={username} />
               ) : section.bilingual === false ? (
                 <div className="space-y-6">
                   <p className="text-xs text-muted-foreground">
@@ -742,8 +966,8 @@ function Editor({
               )}
             </div>
 
-            {/* Bottom save button — hidden on analytics section */}
-            {!section.isAnalytics && (
+            {/* Bottom save button — hidden on analytics and account sections */}
+            {!section.isAnalytics && !section.isAccount && (
               <div className="pt-2 pb-4">
                 <button
                   onClick={handleSave}
@@ -764,23 +988,45 @@ function Editor({
 /* ── Admin Page ───────────────────────────────────────── */
 
 export default function AdminPage() {
-  const [password, setPassword] = useState<string | null>(() => {
-    return sessionStorage.getItem("admin_password");
-  });
+  const [password, setPassword] = useState<string | null>(() =>
+    sessionStorage.getItem("admin_password"),
+  );
+  const [username, setUsername] = useState<string>(
+    () =>
+      sessionStorage.getItem("admin_username") ?? DEFAULT_ADMIN_USERNAME,
+  );
 
-  function handleLogin(pw: string) {
+  function handleLogin(pw: string, user: string) {
     sessionStorage.setItem("admin_password", pw);
+    sessionStorage.setItem("admin_username", user);
     setPassword(pw);
+    setUsername(user);
   }
 
   function handleLogout() {
     sessionStorage.removeItem("admin_password");
+    sessionStorage.removeItem("admin_username");
     setPassword(null);
+    setUsername(DEFAULT_ADMIN_USERNAME);
+  }
+
+  function handleCredentialsChanged(newUser: string, newPass: string) {
+    sessionStorage.setItem("admin_username", newUser);
+    sessionStorage.setItem("admin_password", newPass);
+    setUsername(newUser);
+    setPassword(newPass);
   }
 
   if (!password) {
     return <LoginForm onLogin={handleLogin} />;
   }
 
-  return <Editor password={password} onLogout={handleLogout} />;
+  return (
+    <Editor
+      password={password}
+      username={username}
+      onLogout={handleLogout}
+      onCredentialsChanged={handleCredentialsChanged}
+    />
+  );
 }
