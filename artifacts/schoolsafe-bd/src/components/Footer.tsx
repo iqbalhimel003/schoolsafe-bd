@@ -9,7 +9,6 @@
 import { Mail, Phone, Facebook, MessageCircle, Twitter } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
-import AnimatedWeatherIcon from "@/components/animated/AnimatedWeatherIcon";
 
 export default function Footer() {
   const { t } = useLanguage();
@@ -28,23 +27,11 @@ export default function Footer() {
     <footer className="no-print bg-primary text-primary-foreground mt-8">
 
       {/* ── Main grid ──────────────────────────────────── */}
-      <div className="max-w-5xl mx-auto px-6 py-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6">
+      <div className="max-w-5xl mx-auto px-6 py-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-          {/* Column 1 — Brand */}
+          {/* Column 1 — About */}
           <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2">
-              <AnimatedWeatherIcon kind="leaf" size={24} />
-              <span className="text-lg font-bold tracking-tight leading-none">
-                {t("siteName")}
-              </span>
-            </div>
-            {/* Mobile-only separator */}
-            <hr className="md:hidden border-white/15 mt-1" />
-          </div>
-
-          {/* Column 2 — About */}
-          <div className="flex flex-col gap-3 md:border-l md:border-white/15 md:pl-6">
             <h2 className="text-xs font-semibold uppercase tracking-widest text-white/50">
               {t("siteName")}
             </h2>
