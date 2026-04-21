@@ -139,7 +139,7 @@ function ForgotPasswordModal({ onClose }: { onClose: () => void }) {
 function LoginForm({
   onLogin,
 }: {
-  onLogin: (password: string, username: string) => void;
+  onLogin: (username: string) => void;
 }) {
   const [username, setUsername] = useState(
     localStorage.getItem("admin_username") ?? "",
@@ -154,19 +154,17 @@ function LoginForm({
     setError("");
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/settings`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${password}`,
-          "X-Admin-Username": username,
-        },
-        body: JSON.stringify({}),
+      const res = await fetch(`${API_BASE}/admin/login`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
       });
       if (res.status === 401) {
         setError("Invalid credentials. Please check your username and password.");
       } else if (res.ok) {
-        onLogin(password, username);
+        const data = (await res.json()) as { username: string };
+        onLogin(data.username || username);
       } else {
         setError("Server error. Please try again.");
       }
@@ -431,7 +429,7 @@ function SummaryCard({ label, value }: { label: string; value: number | string }
   );
 }
 
-function AnalyticsPanel({ password, username }: { password: string; username: string }) {
+function AnalyticsPanel() {
   const [summary, setSummary] = useState<Summary | null>(null);
   const [daily, setDaily] = useState<DailyPoint[]>([]);
   const [topPages, setTopPages] = useState<PageCount[]>([]);
@@ -443,7 +441,6 @@ function AnalyticsPanel({ password, username }: { password: string; username: st
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const auth = { Authorization: `Bearer ${password}`, "X-Admin-Username": username };
     const endpoints = [
       "/analytics/summary",
       "/analytics/daily?days=30",
@@ -459,7 +456,7 @@ function AnalyticsPanel({ password, username }: { password: string; username: st
 
     Promise.all(
       endpoints.map((e) =>
-        fetch(`${API_BASE}${e}`, { headers: auth }).then((r) => {
+        fetch(`${API_BASE}${e}`, { credentials: "include" }).then((r) => {
           if (!r.ok) throw new Error(`${e} → ${r.status}`);
           return r.json();
         })
@@ -478,7 +475,7 @@ function AnalyticsPanel({ password, username }: { password: string; username: st
         setError(err.message || "Failed to load analytics");
       })
       .finally(() => setLoading(false));
-  }, [password, username]);
+  }, []);
 
   if (loading) {
     return <p className="text-sm text-muted-foreground py-8">Loading analytics…</p>;
@@ -640,13 +637,11 @@ function ListCard({
 /* ── Account Panel ────────────────────────────────────── */
 
 function AccountPanel({
-  password,
   username,
   onCredentialsChanged,
 }: {
-  password: string;
   username: string;
-  onCredentialsChanged: (newUser: string, newPass: string) => void;
+  onCredentialsChanged: (newUser: string, passwordChanged: boolean) => void;
 }) {
   const inputClass =
     "w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary";
@@ -658,12 +653,7 @@ function AccountPanel({
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    fetch(`${API_BASE}/me`, {
-      headers: {
-        Authorization: `Bearer ${password}`,
-        "X-Admin-Username": username,
-      },
-    })
+    fetch(`${API_BASE}/me`, { credentials: "include" })
       .then((r) => (r.ok ? r.json() : null))
       .then((data: { username: string } | null) => {
         if (data?.username) {
@@ -672,7 +662,7 @@ function AccountPanel({
         }
       })
       .catch(() => {});
-  }, [password, username]);
+  }, []);
 
   async function handleSave() {
     const usernameChanged = newUsername.trim() !== canonicalUsername;
@@ -695,11 +685,8 @@ function AccountPanel({
     try {
       const res = await fetch(`${API_BASE}/credentials`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${password}`,
-          "X-Admin-Username": canonicalUsername,
-        },
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           newUsername: usernameChanged ? newUsername.trim() : undefined,
           newPassword: passwordChanged ? newPassword : undefined,
@@ -708,9 +695,11 @@ function AccountPanel({
 
       if (res.ok) {
         toast.success(
-          "Credentials updated! You will need to log in again if you changed your password.",
+          passwordChanged
+            ? "Credentials updated! Please log in again with your new password."
+            : "Credentials updated.",
         );
-        onCredentialsChanged(newUsername.trim(), newPassword || password);
+        onCredentialsChanged(newUsername.trim(), passwordChanged);
         setNewPassword("");
         setConfirmPassword("");
       } else if (res.status === 401) {
@@ -792,15 +781,13 @@ function AccountPanel({
 /* ── Editor ───────────────────────────────────────────── */
 
 function Editor({
-  password,
   username,
   onLogout,
   onCredentialsChanged,
 }: {
-  password: string;
   username: string;
   onLogout: () => void;
-  onCredentialsChanged: (newUser: string, newPass: string) => void;
+  onCredentialsChanged: (newUser: string, passwordChanged: boolean) => void;
 }) {
   const { settings, reload } = useSiteSettings();
   const [draft, setDraft] = useState<Record<string, string>>({});
@@ -829,11 +816,8 @@ function Editor({
     try {
       const res = await fetch(`${API_BASE}/settings`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${password}`,
-          "X-Admin-Username": username,
-        },
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(draft),
       });
       if (res.ok) {
@@ -938,12 +922,11 @@ function Editor({
 
               {section.isAccount ? (
                 <AccountPanel
-                  password={password}
                   username={username}
                   onCredentialsChanged={onCredentialsChanged}
                 />
               ) : section.isAnalytics ? (
-                <AnalyticsPanel password={password} username={username} />
+                <AnalyticsPanel />
               ) : section.bilingual === false ? (
                 <div className="space-y-6">
                   <p className="text-xs text-muted-foreground">
@@ -1001,40 +984,80 @@ function Editor({
 /* ── Admin Page ───────────────────────────────────────── */
 
 export default function AdminPage() {
-  const [password, setPassword] = useState<string | null>(() =>
-    sessionStorage.getItem("admin_password"),
-  );
+  const [authed, setAuthed] = useState(false);
   const [username, setUsername] = useState<string>(
-    () =>
-      localStorage.getItem("admin_username") ?? "",
+    () => localStorage.getItem("admin_username") ?? "",
   );
+  const [checking, setChecking] = useState(true);
 
-  function handleLogin(pw: string, user: string) {
-    sessionStorage.setItem("admin_password", pw);
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`${API_BASE}/admin/session`, { credentials: "include" })
+      .then(async (r) => {
+        if (cancelled) return;
+        if (r.ok) {
+          const data = (await r.json()) as { username: string };
+          if (data?.username) {
+            localStorage.setItem("admin_username", data.username);
+            setUsername(data.username);
+          }
+          setAuthed(true);
+        } else {
+          setAuthed(false);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setAuthed(false);
+      })
+      .finally(() => {
+        if (!cancelled) setChecking(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  function handleLogin(user: string) {
     localStorage.setItem("admin_username", user);
-    setPassword(pw);
     setUsername(user);
+    setAuthed(true);
   }
 
-  function handleLogout() {
-    sessionStorage.removeItem("admin_password");
-    setPassword(null);
+  async function handleLogout() {
+    try {
+      await fetch(`${API_BASE}/admin/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch {
+      /* ignore */
+    }
+    setAuthed(false);
   }
 
-  function handleCredentialsChanged(newUser: string, newPass: string) {
+  function handleCredentialsChanged(newUser: string, passwordChanged: boolean) {
     localStorage.setItem("admin_username", newUser);
-    sessionStorage.setItem("admin_password", newPass);
     setUsername(newUser);
-    setPassword(newPass);
+    if (passwordChanged) {
+      // Server invalidates the session when the password changes; force re-login.
+      setAuthed(false);
+    }
   }
 
-  if (!password) {
+  if (checking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <p className="text-sm text-muted-foreground">Loading…</p>
+      </div>
+    );
+  }
+
+  if (!authed) {
     return <LoginForm onLogin={handleLogin} />;
   }
 
   return (
     <Editor
-      password={password}
       username={username}
       onLogout={handleLogout}
       onCredentialsChanged={handleCredentialsChanged}

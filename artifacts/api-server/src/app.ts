@@ -1,5 +1,6 @@
 import express, { type Express, type Request } from "express";
 import cors, { type CorsOptions } from "cors";
+import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import pinoHttp from "pino-http";
@@ -128,6 +129,7 @@ app.use(cors(corsOptions));
 
 app.use(express.json({ limit: "100kb" }));
 app.use(express.urlencoded({ extended: true, limit: "100kb" }));
+app.use(cookieParser());
 
 /* ── Global rate limit ─────────────────────────────────────
  * Moderate per-IP limit applied to every /api/* route. Composes

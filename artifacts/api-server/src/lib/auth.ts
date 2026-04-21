@@ -25,13 +25,17 @@
  * ========================================================= */
 
 import { db } from "@workspace/db";
-import { siteSettingsTable } from "@workspace/db/schema";
-import { inArray } from "drizzle-orm";
-import type { Request } from "express";
+import { siteSettingsTable, adminSessionsTable } from "@workspace/db/schema";
+import { inArray, eq, lt } from "drizzle-orm";
+import type { Request, Response } from "express";
 import rateLimit from "express-rate-limit";
-import { timingSafeEqual } from "node:crypto";
+import { randomBytes, timingSafeEqual } from "node:crypto";
 import { comparePassword, hashPassword, isBcryptHash } from "./password";
 import { logger } from "./logger";
+
+/* ── Session config ─────────────────────────────────────── */
+export const SESSION_COOKIE = "ss_admin";
+export const SESSION_TTL_MS = 8 * 60 * 60 * 1000; // 8 hours
 
 /* Constant-time string compare.
  *
@@ -102,19 +106,29 @@ async function persistHashedPassword(hash: string): Promise<void> {
     });
 }
 
-/* ── Main check ─────────────────────────────────────────── */
+/* ── Credential verification (raw values) ───────────────── */
 
-export async function checkAdminAuth(req: Request): Promise<boolean> {
-  const token = (req.headers.authorization ?? "")
-    .replace(/^Bearer\s+/i, "")
-    .trim();
-  const usernameHeader = ((req.headers["x-admin-username"] as string) ?? "").trim();
+export interface VerifyResult {
+  ok: boolean;
+  username: string;
+}
+
+/* Verifies a raw username + password pair against DB-then-env
+ * credentials. Returns the canonical stored username on success
+ * (so the caller can persist it on the session). Used by the
+ * /admin/login endpoint and as the inner check for the legacy
+ * Bearer-token fallback in `checkAdminAuth`. */
+export async function verifyCredentials(
+  submittedUsername: string,
+  submittedPassword: string,
+): Promise<VerifyResult> {
+  const u = submittedUsername.trim();
+  const p = submittedPassword;
 
   const dbRows = await db
     .select()
     .from(siteSettingsTable)
     .where(inArray(siteSettingsTable.key, ["admin_username", "admin_password"]));
-
   const dbCreds: Record<string, string> = {};
   for (const r of dbRows) dbCreds[r.key] = r.value;
 
@@ -126,27 +140,23 @@ export async function checkAdminAuth(req: Request): Promise<boolean> {
     ? "env"
     : "none";
   const storedPassword = storedPasswordRaw || fallbackPassword;
-  const storedUsername =
-    dbCreds["admin_username"] ?? envFallbackUsername();
+  const storedUsername = dbCreds["admin_username"] ?? envFallbackUsername();
 
-  if (!storedPassword || !token) return false;
+  if (!storedPassword || !p) return { ok: false, username: "" };
 
-  const passwordOk = await comparePassword(token, storedPassword);
-  // Username check is "open" when:
-  //  - the client didn't send a username header (backward compat), OR
-  //  - no admin username is configured anywhere (DB or env).
-  // Otherwise both must match (constant-time compare).
+  const passwordOk = await comparePassword(p, storedPassword);
+  // Username check is "open" when no admin username is configured
+  // anywhere (DB or env) OR no username was submitted (legacy
+  // Bearer flow). Otherwise both must match (constant-time).
   const usernameOk =
-    !usernameHeader ||
-    !storedUsername ||
-    timingSafeStringEqual(usernameHeader, storedUsername);
+    !u || !storedUsername || timingSafeStringEqual(u, storedUsername);
 
-  if (!passwordOk || !usernameOk) return false;
+  if (!passwordOk || !usernameOk) return { ok: false, username: "" };
 
   // Auto-migrate legacy plain-text DB password to bcrypt hash.
   if (passwordSource === "db" && !isBcryptHash(storedPassword)) {
     try {
-      const hash = await hashPassword(token);
+      const hash = await hashPassword(p);
       await persistHashedPassword(hash);
       logger.info("Migrated legacy admin password to bcrypt hash");
     } catch (err) {
@@ -154,10 +164,117 @@ export async function checkAdminAuth(req: Request): Promise<boolean> {
     }
   }
 
-  return true;
+  return { ok: true, username: storedUsername || u };
 }
 
-export async function getCurrentUsername(): Promise<string> {
+/* ── Cookie session helpers ─────────────────────────────── */
+
+function generateSessionToken(): string {
+  return randomBytes(32).toString("hex");
+}
+
+export async function createSession(username: string): Promise<string> {
+  const token = generateSessionToken();
+  const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
+  await db.insert(adminSessionsTable).values({ token, username, expiresAt });
+  return token;
+}
+
+export async function destroySession(token: string): Promise<void> {
+  if (!token) return;
+  await db.delete(adminSessionsTable).where(eq(adminSessionsTable.token, token));
+}
+
+export async function lookupSession(
+  token: string,
+): Promise<{ username: string } | null> {
+  if (!token) return null;
+  const rows = await db
+    .select()
+    .from(adminSessionsTable)
+    .where(eq(adminSessionsTable.token, token))
+    .limit(1);
+  const row = rows[0];
+  if (!row) return null;
+  if (row.expiresAt.getTime() < Date.now()) {
+    // Expired — best-effort cleanup
+    db.delete(adminSessionsTable)
+      .where(eq(adminSessionsTable.token, token))
+      .catch(() => {});
+    return null;
+  }
+  return { username: row.username };
+}
+
+/* Best-effort periodic cleanup of expired sessions. Called
+ * opportunistically from the login route. Errors are swallowed. */
+export async function cleanupExpiredSessions(): Promise<void> {
+  try {
+    await db.delete(adminSessionsTable).where(lt(adminSessionsTable.expiresAt, new Date()));
+  } catch {
+    /* ignore */
+  }
+}
+
+export function setSessionCookie(res: Response, token: string): void {
+  const isProd = process.env.NODE_ENV === "production";
+  res.cookie(SESSION_COOKIE, token, {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: "strict",
+    path: "/",
+    maxAge: SESSION_TTL_MS,
+  });
+}
+
+export function clearSessionCookie(res: Response): void {
+  const isProd = process.env.NODE_ENV === "production";
+  res.clearCookie(SESSION_COOKIE, {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: "strict",
+    path: "/",
+  });
+}
+
+/* ── Main check (cookie first, Bearer fallback) ─────────── */
+
+interface ReqWithCookies extends Request {
+  cookies: Record<string, string>;
+}
+
+export async function checkAdminAuth(req: Request): Promise<boolean> {
+  // 1) Cookie session (preferred)
+  const cookieToken =
+    (req as ReqWithCookies).cookies?.[SESSION_COOKIE] ?? "";
+  if (cookieToken) {
+    const session = await lookupSession(cookieToken);
+    if (session) return true;
+  }
+
+  // 2) Legacy Bearer + X-Admin-Username fallback (deprecated).
+  // Will be removed once the frontend is fully migrated.
+  const bearer = (req.headers.authorization ?? "")
+    .replace(/^Bearer\s+/i, "")
+    .trim();
+  const usernameHeader = ((req.headers["x-admin-username"] as string) ?? "").trim();
+  if (!bearer) return false;
+  const result = await verifyCredentials(usernameHeader, bearer);
+  return result.ok;
+}
+
+/* Returns the username associated with the current request's
+ * cookie session, OR — if there's no cookie session — the
+ * canonical stored admin username. Used by GET /me and GET
+ * /admin/session. */
+export async function getCurrentUsername(req?: Request): Promise<string> {
+  if (req) {
+    const cookieToken = (req as ReqWithCookies).cookies?.[SESSION_COOKIE] ?? "";
+    if (cookieToken) {
+      const session = await lookupSession(cookieToken);
+      if (session) return session.username;
+    }
+  }
   const rows = await db
     .select()
     .from(siteSettingsTable)

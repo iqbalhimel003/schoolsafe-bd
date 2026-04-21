@@ -80,7 +80,7 @@ router.get("/me", adminAuthLimiter, async (req: Request, res: Response) => {
     return;
   }
   try {
-    const username = await getCurrentUsername();
+    const username = await getCurrentUsername(req);
     res.json({ username });
   } catch {
     res.status(500).json({ error: "Failed to fetch admin info" });
