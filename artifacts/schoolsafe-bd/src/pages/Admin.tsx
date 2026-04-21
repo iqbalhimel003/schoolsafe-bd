@@ -147,7 +147,7 @@ function LoginForm({
   onLogin: (password: string, username: string) => void;
 }) {
   const [username, setUsername] = useState(
-    sessionStorage.getItem("admin_username") ?? DEFAULT_ADMIN_USERNAME,
+    localStorage.getItem("admin_username") ?? DEFAULT_ADMIN_USERNAME,
   );
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -1011,25 +1011,23 @@ export default function AdminPage() {
   );
   const [username, setUsername] = useState<string>(
     () =>
-      sessionStorage.getItem("admin_username") ?? DEFAULT_ADMIN_USERNAME,
+      localStorage.getItem("admin_username") ?? DEFAULT_ADMIN_USERNAME,
   );
 
   function handleLogin(pw: string, user: string) {
     sessionStorage.setItem("admin_password", pw);
-    sessionStorage.setItem("admin_username", user);
+    localStorage.setItem("admin_username", user);
     setPassword(pw);
     setUsername(user);
   }
 
   function handleLogout() {
     sessionStorage.removeItem("admin_password");
-    sessionStorage.removeItem("admin_username");
     setPassword(null);
-    setUsername(DEFAULT_ADMIN_USERNAME);
   }
 
   function handleCredentialsChanged(newUser: string, newPass: string) {
-    sessionStorage.setItem("admin_username", newUser);
+    localStorage.setItem("admin_username", newUser);
     sessionStorage.setItem("admin_password", newPass);
     setUsername(newUser);
     setPassword(newPass);
