@@ -25,9 +25,9 @@ export default function Header() {
           <div className="flex items-center gap-2">
             {/* Leaf icon — represents environmental safety */}
             <span className="text-2xl" aria-hidden="true">🌿</span>
-            <h1 className="text-xl font-bold tracking-tight leading-none">
+            <span className="text-xl font-bold tracking-tight leading-none">
               {t("siteName")}
-            </h1>
+            </span>
           </div>
           <p className="text-sm opacity-85 mt-0.5 ml-9">
             {t("siteTagline")}

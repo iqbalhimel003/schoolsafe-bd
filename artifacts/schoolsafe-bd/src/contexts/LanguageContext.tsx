@@ -10,7 +10,7 @@
  * the built-in translations.
  * ========================================================= */
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import type { Language } from "@/types";
 import en from "@/translations/en";
 import bn from "@/translations/bn";
@@ -30,9 +30,43 @@ const LanguageContext = createContext<LanguageContextValue | null>(null);
 
 const translations: Record<Language, Translations> = { en, bn };
 
+function readInitialLang(): Language {
+  if (typeof window === "undefined") return "en";
+  const q = new URLSearchParams(window.location.search).get("lang");
+  if (q === "bn" || q === "en") return q;
+  const stored = window.localStorage.getItem("safeschool_lang");
+  if (stored === "bn" || stored === "en") return stored;
+  return "en";
+}
+
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLang] = useState<Language>("en");
+  const [lang, setLangState] = useState<Language>(readInitialLang);
   const { settings } = useSiteSettings();
+
+  const setLang = useCallback((next: Language) => {
+    setLangState(next);
+    if (typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem("safeschool_lang", next);
+    } catch {
+      /* ignore quota / private mode */
+    }
+    // Reflect language in the URL for shareable / canonical links.
+    const url = new URL(window.location.href);
+    if (next === "en") {
+      url.searchParams.delete("lang");
+    } else {
+      url.searchParams.set("lang", next);
+    }
+    window.history.replaceState({}, "", url.toString());
+  }, []);
+
+  // Keep <html lang> in sync as a fallback (Seo also handles this via Helmet).
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.documentElement.lang = lang;
+    }
+  }, [lang]);
 
   function formatVar(value: string | number): string {
     if (typeof value === "number" && lang === "bn") {

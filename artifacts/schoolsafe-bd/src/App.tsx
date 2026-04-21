@@ -5,12 +5,14 @@
  * ========================================================= */
 
 import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
+import { HelmetProvider } from "react-helmet-async";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteSettingsProvider } from "@/contexts/SiteSettingsContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Seo from "@/components/Seo";
 import Home from "@/pages/Home";
 import AdminPage from "@/pages/Admin";
 import { usePageTracking } from "@/hooks/usePageTracking";
@@ -27,9 +29,17 @@ const queryClient = new QueryClient({
 
 function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <p className="text-muted-foreground text-lg">Page not found.</p>
-    </div>
+    <>
+      <Seo
+        title="Page not found"
+        description="The page you are looking for could not be found."
+        pathname="/404"
+        noindex
+      />
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-muted-foreground text-lg">Page not found.</p>
+      </div>
+    </>
   );
 }
 
@@ -57,14 +67,16 @@ function AppShell() {
 
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <SiteSettingsProvider>
-        <LanguageProvider>
-          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-            <AppShell />
-          </WouterRouter>
-        </LanguageProvider>
-      </SiteSettingsProvider>
-    </QueryClientProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <SiteSettingsProvider>
+          <LanguageProvider>
+            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+              <AppShell />
+            </WouterRouter>
+          </LanguageProvider>
+        </SiteSettingsProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
   );
 }

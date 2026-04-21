@@ -7,6 +7,7 @@
  * ========================================================= */
 
 import { useState, useEffect, useRef } from "react";
+import Seo from "@/components/Seo";
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 import { toast } from "sonner";
 import { Home, LayoutGrid, FileText, Phone, BarChart2, User } from "lucide-react";
@@ -1044,23 +1045,43 @@ export default function AdminPage() {
     }
   }
 
+  const adminSeo = (
+    <Seo
+      title="Admin"
+      description="SafeSchool admin panel — restricted access."
+      pathname="/admin"
+      noindex
+    />
+  );
+
   if (checking) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <p className="text-sm text-muted-foreground">Loading…</p>
-      </div>
+      <>
+        {adminSeo}
+        <div className="min-h-screen flex items-center justify-center bg-background">
+          <p className="text-sm text-muted-foreground">Loading…</p>
+        </div>
+      </>
     );
   }
 
   if (!authed) {
-    return <LoginForm onLogin={handleLogin} />;
+    return (
+      <>
+        {adminSeo}
+        <LoginForm onLogin={handleLogin} />
+      </>
+    );
   }
 
   return (
-    <Editor
-      username={username}
-      onLogout={handleLogout}
-      onCredentialsChanged={handleCredentialsChanged}
-    />
+    <>
+      {adminSeo}
+      <Editor
+        username={username}
+        onLogout={handleLogout}
+        onCredentialsChanged={handleCredentialsChanged}
+      />
+    </>
   );
 }

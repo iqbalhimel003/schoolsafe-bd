@@ -1,0 +1,11 @@
+{
+  "name": "SafeSchool — Environmental School Safety for Bangladesh",
+  "short_name": "SafeSchool",
+  "icons": [
+    { "src": "/favicon.svg", "type": "image/svg+xml", "sizes": "any" }
+  ],
+  "theme_color": "#16a34a",
+  "background_color": "#ffffff",
+  "display": "browser",
+  "start_url": "/"
+}

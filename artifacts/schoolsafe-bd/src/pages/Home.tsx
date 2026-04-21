@@ -12,6 +12,7 @@
  * ========================================================= */
 
 import { useState } from "react";
+import Seo from "@/components/Seo";
 import Hero from "@/components/Hero";
 import LocationSelector from "@/components/LocationSelector";
 import Dashboard from "@/components/Dashboard";
@@ -28,8 +29,33 @@ export default function Home() {
   const [selectedUpazila, setSelectedUpazila] = useState<Upazila | null>(null);
   const { t } = useLanguage();
 
+  const SITE_URL =
+    (import.meta.env.VITE_SITE_URL as string | undefined) ?? "https://safeschool.live";
+
+  const jsonLd: Array<Record<string, unknown>> = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: t("siteName"),
+      alternateName: "SafeSchool BD",
+      url: SITE_URL,
+      inLanguage: ["en", "bn"],
+      description: t("siteDescription"),
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: t("siteName"),
+      url: SITE_URL,
+      logo: `${SITE_URL}/favicon.svg`,
+      description: t("siteTagline"),
+      areaServed: { "@type": "Country", name: "Bangladesh" },
+    },
+  ];
+
   return (
     <main>
+      <Seo pathname="/" jsonLd={jsonLd} />
       <div className="no-print">
         <Hero />
       </div>

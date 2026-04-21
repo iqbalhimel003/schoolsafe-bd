@@ -12,9 +12,9 @@ export default function Hero() {
     <section className="bg-gradient-to-b from-primary/10 to-background pt-8 pb-6 sm:pt-10 sm:pb-8 px-4">
       <div className="max-w-5xl mx-auto">
         {/* Main heading */}
-        <h2 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight">
           {t("siteName")}
-        </h2>
+        </h1>
         <p className="mt-3 text-base sm:text-lg text-muted-foreground leading-relaxed">
           {t("siteDescription")}
         </p>
