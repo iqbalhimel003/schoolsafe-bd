@@ -11,7 +11,19 @@ import Seo from "@/components/Seo";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 import { toast } from "sonner";
-import { Home, LayoutGrid, FileText, Phone, BarChart2, User } from "lucide-react";
+import {
+  Home,
+  LayoutGrid,
+  FileText,
+  Phone,
+  BarChart2,
+  User,
+  Leaf,
+  LogOut,
+  Save,
+  ChevronRight,
+  Loader2,
+} from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -44,7 +56,7 @@ type Section = {
 const SECTIONS: Section[] = [
   {
     title: "Hero",
-    icon: <Home size={15} />,
+    icon: <Home size={18} />,
     bilingual: true,
     fields: [
       { key: "siteName", label: "Site Name" },
@@ -55,7 +67,7 @@ const SECTIONS: Section[] = [
   },
   {
     title: "Intro Cards",
-    icon: <LayoutGrid size={15} />,
+    icon: <LayoutGrid size={18} />,
     bilingual: true,
     fields: [
       { key: "introWhatTitle", label: '"What this website does" — Title' },
@@ -66,7 +78,7 @@ const SECTIONS: Section[] = [
   },
   {
     title: "Footer",
-    icon: <FileText size={15} />,
+    icon: <FileText size={18} />,
     bilingual: true,
     fields: [
       { key: "footerPurpose", label: "Purpose", multiline: true },
@@ -78,7 +90,7 @@ const SECTIONS: Section[] = [
   },
   {
     title: "Contact",
-    icon: <Phone size={15} />,
+    icon: <Phone size={18} />,
     bilingual: false,
     fields: [
       { key: "contact_email", label: "Email Address" },
@@ -90,14 +102,14 @@ const SECTIONS: Section[] = [
   },
   {
     title: "Analytics",
-    icon: <BarChart2 size={15} />,
+    icon: <BarChart2 size={18} />,
     bilingual: false,
     fields: [],
     isAnalytics: true,
   },
   {
     title: "Account",
-    icon: <User size={15} />,
+    icon: <User size={18} />,
     bilingual: false,
     fields: [],
     isAccount: true,
@@ -180,10 +192,21 @@ function LoginForm({
   return (
     <>
       {showRecovery && <ForgotPasswordModal onClose={() => setShowRecovery(false)} />}
-      <div className="min-h-screen flex items-center justify-center bg-background px-4">
-        <div className="w-full max-w-sm bg-card border border-border rounded-xl shadow-sm p-8">
-          <h1 className="text-xl font-bold text-foreground mb-1">Admin Panel</h1>
-          <p className="text-sm text-muted-foreground mb-6">
+      <div
+        className="min-h-screen flex items-center justify-center px-4"
+        style={{
+          background:
+            "radial-gradient(ellipse 80% 60% at 50% -10%, hsl(142 60% 85% / 0.55), transparent), radial-gradient(ellipse 60% 50% at 90% 80%, hsl(160 55% 80% / 0.4), transparent), hsl(var(--background))",
+        }}
+      >
+        <div className="w-full max-w-sm bg-card border border-border rounded-2xl shadow-md p-8">
+          <div className="flex justify-center mb-4">
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <Leaf className="text-primary" size={24} />
+            </div>
+          </div>
+          <h1 className="text-xl font-bold text-foreground text-center mb-1">Admin Panel</h1>
+          <p className="text-sm text-muted-foreground text-center mb-6">
             Enter your credentials to manage site content.
           </p>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -199,7 +222,7 @@ function LoginForm({
                 type="email"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full border border-border rounded-lg px-3 py-2.5 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-shadow"
                 placeholder="admin@example.com"
                 required
                 autoFocus
@@ -217,7 +240,7 @@ function LoginForm({
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full border border-border rounded-lg px-3 py-2.5 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-shadow"
                 placeholder="Enter password"
                 required
               />
@@ -228,9 +251,16 @@ function LoginForm({
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/90 disabled:opacity-50 transition-colors"
+              className="w-full bg-primary text-primary-foreground rounded-lg px-4 py-2.5 text-sm font-semibold hover:bg-primary/90 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
             >
-              {loading ? "Checking…" : "Log In"}
+              {loading ? (
+                <>
+                  <Loader2 size={15} className="animate-spin" />
+                  Checking…
+                </>
+              ) : (
+                "Log In"
+              )}
             </button>
           </form>
           <div className="mt-4 text-center">
@@ -495,14 +525,12 @@ function AnalyticsPanel() {
 
   return (
     <div className="space-y-6">
-      {/* Privacy note */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 text-sm text-blue-900">
         <strong>Privacy:</strong> These analytics track traffic patterns only. No personal data
         is stored. IP addresses are masked (e.g., <code>203.82.14.x</code>) and visitors are
         identified by an anonymous session ID — never by name or email.
       </div>
 
-      {/* Summary cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <SummaryCard label="Total Visits" value={summary?.total ?? 0} />
         <SummaryCard label="Today" value={summary?.today ?? 0} />
@@ -511,7 +539,6 @@ function AnalyticsPanel() {
         <SummaryCard label="Unique Sessions" value={summary?.uniqueSessions ?? 0} />
       </div>
 
-      {/* Daily chart */}
       <div className="bg-card border border-border rounded-xl p-4">
         <h3 className="text-sm font-semibold text-foreground mb-3">Daily Visits (last 30 days)</h3>
         {daily.length > 0 ? (
@@ -539,7 +566,6 @@ function AnalyticsPanel() {
         )}
       </div>
 
-      {/* Two-column lists */}
       <div className="grid md:grid-cols-2 gap-4">
         <ListCard title="Top Pages" rows={topPages.map((p) => ({ label: p.page, count: p.count }))} />
         <ListCard
@@ -559,7 +585,6 @@ function AnalyticsPanel() {
         />
       </div>
 
-      {/* Recent visits table */}
       <div className="bg-card border border-border rounded-xl p-4">
         <h3 className="text-sm font-semibold text-foreground mb-3">Recent Visits (last 50)</h3>
         {recent.length === 0 ? (
@@ -724,7 +749,6 @@ function AccountPanel({
         environment variable for all future logins.
       </div>
 
-      {/* Username */}
       <div className="space-y-1">
         <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wide">
           Username (email)
@@ -738,7 +762,6 @@ function AccountPanel({
         />
       </div>
 
-      {/* New password */}
       <div className="space-y-1">
         <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wide">
           New Password
@@ -754,7 +777,6 @@ function AccountPanel({
         <p className="text-xs text-muted-foreground">Minimum 6 characters</p>
       </div>
 
-      {/* Confirm password */}
       <div className="space-y-1">
         <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wide">
           Confirm New Password
@@ -776,6 +798,36 @@ function AccountPanel({
       >
         {saving ? "Saving…" : "Save Credentials"}
       </button>
+    </div>
+  );
+}
+
+/* ── Collapsible Info Banner ──────────────────────────── */
+
+function InfoBanner() {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <div className="rounded-xl border border-amber-200 bg-amber-50 text-amber-800 text-sm overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        className="w-full flex items-center gap-2 px-4 py-2.5 text-left hover:bg-amber-100/60 transition-colors"
+        aria-expanded={expanded}
+      >
+        <span className="text-base leading-none">ℹ️</span>
+        <span className="font-medium text-sm">How overrides work</span>
+        <ChevronRight
+          size={15}
+          className={`ml-auto shrink-0 transition-transform duration-200 ${expanded ? "rotate-90" : ""}`}
+        />
+      </button>
+      {expanded && (
+        <div className="px-4 pb-3 pt-1 text-xs leading-relaxed border-t border-amber-200">
+          Leaving a field blank uses the built-in default text. Fill in only the fields you want
+          to override. Use the <strong>Reset to default</strong> button on any field to clear your
+          override — the change takes effect when you save.
+        </div>
+      )}
     </div>
   );
 }
@@ -839,89 +891,98 @@ function Editor({
   }
 
   const section = SECTIONS[activeSection];
+  const isContentSection = !section.isAnalytics && !section.isAccount;
+
+  /* top-bar height: 48px = h-12 */
+  const TOP_BAR_H = "3rem";
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* ── Top bar ─────────────────────────────────────── */}
-      <div className="sticky top-0 z-20 bg-card border-b border-border px-4 py-3 flex items-center justify-between shadow-sm">
-        <div>
-          <h1 className="text-base font-bold text-foreground">Admin Panel</h1>
-          <p className="text-xs text-muted-foreground">
-            Edit site content — changes are saved to the database
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-semibold hover:bg-primary/90 disabled:opacity-50 transition-colors"
-          >
-            {saving ? "Saving…" : "Save All Changes"}
-          </button>
-          <button
-            onClick={onLogout}
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Log out
-          </button>
-        </div>
-      </div>
-
-      {/* ── Mobile section picker (full-width bar, above content) ─ */}
-      <div className="md:hidden border-b border-border bg-card px-4 py-2 sticky top-[57px] z-10">
-        <select
-          value={activeSection}
-          onChange={(e) => setActiveSection(Number(e.target.value))}
-          className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+      <div className="sticky top-0 z-20 h-12 bg-card border-b border-border px-4 flex items-center justify-between shadow-sm shrink-0">
+        <h1 className="text-sm font-semibold text-foreground flex items-center gap-2">
+          <span className="text-primary">{section.icon}</span>
+          {section.title}
+        </h1>
+        {/* Save button — icon-only on xs, icon+label on sm+ */}
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          aria-label="Save all changes"
+          className="flex items-center gap-1.5 bg-primary text-primary-foreground rounded-lg px-3 py-1.5 text-sm font-semibold hover:bg-primary/90 disabled:opacity-50 transition-colors"
         >
-          {SECTIONS.map((s, i) => (
-            <option key={s.title} value={i}>
-              {s.title}
-            </option>
-          ))}
-        </select>
+          {saving ? (
+            <Loader2 size={15} className="animate-spin" />
+          ) : (
+            <Save size={15} />
+          )}
+          <span className="hidden sm:inline">{saving ? "Saving…" : "Save"}</span>
+        </button>
       </div>
 
       {/* ── Body: sidebar + content ──────────────────────── */}
       <div className="flex flex-1 overflow-hidden">
 
-        {/* Desktop sidebar (hidden on mobile) */}
-        <aside className="hidden md:flex flex-col w-52 shrink-0 border-r border-border bg-card sticky top-[57px] h-[calc(100vh-57px)] overflow-y-auto">
-          <nav className="py-3 px-2 space-y-0.5">
-            {SECTIONS.map((s, i) => (
-              <button
-                key={s.title}
-                onClick={() => setActiveSection(i)}
-                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-left ${
-                  activeSection === i
-                    ? "bg-primary/10 text-primary font-semibold"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                }`}
-              >
-                <span className={activeSection === i ? "text-primary" : "text-muted-foreground"}>
-                  {s.icon}
-                </span>
-                {s.title}
-              </button>
-            ))}
+        {/* Sidebar — icon-only on <sm, icon+label on ≥sm */}
+        <aside
+          className="flex flex-col shrink-0 border-r border-border bg-card overflow-y-auto w-16 sm:w-48"
+          style={{ position: "sticky", top: TOP_BAR_H, height: `calc(100vh - ${TOP_BAR_H})` }}
+        >
+          {/* Brand mark */}
+          <div className="flex items-center gap-2 px-3 py-3 border-b border-border shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+              <Leaf className="text-primary" size={16} />
+            </div>
+            <span className="hidden sm:block text-xs font-bold text-foreground tracking-wide">
+              Admin
+            </span>
+          </div>
+
+          {/* Nav items */}
+          <nav className="flex-1 py-2 px-2 space-y-0.5">
+            {SECTIONS.map((s, i) => {
+              const active = activeSection === i;
+              return (
+                <button
+                  key={s.title}
+                  onClick={() => setActiveSection(i)}
+                  title={s.title}
+                  className={`w-full flex items-center gap-2.5 rounded-lg transition-colors text-left
+                    ${active
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    }
+                    px-2 py-2.5 sm:px-3`}
+                >
+                  <span className="shrink-0">{s.icon}</span>
+                  <span className="hidden sm:block text-sm font-medium truncate">{s.title}</span>
+                </button>
+              );
+            })}
           </nav>
+
+          {/* Logout at bottom */}
+          <div className="px-2 pb-3 pt-2 border-t border-border shrink-0">
+            <button
+              onClick={onLogout}
+              title="Log out"
+              className="w-full flex items-center gap-2.5 px-2 sm:px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            >
+              <LogOut size={18} className="shrink-0" />
+              <span className="hidden sm:block text-sm font-medium">Log out</span>
+            </button>
+          </div>
         </aside>
 
         {/* Main content area */}
         <main ref={mainRef} className="flex-1 overflow-y-auto">
-          <div className="max-w-3xl mx-auto px-4 py-8 space-y-8">
-            {/* Info banner */}
-            <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-sm text-amber-800">
-              <strong>Note:</strong> Leaving a field blank uses the built-in default text. Fill in only the fields you want to override. Use the <strong>Reset to default</strong> button on any field to clear your override — the change takes effect when you save.
-            </div>
+          <div className="max-w-3xl mx-auto px-4 py-6 space-y-5">
 
-            {/* Active section */}
-            <div>
-              <h2 className="text-lg font-bold text-foreground mb-4 pb-2 border-b border-border flex items-center gap-2">
-                <span className="text-primary">{section.icon}</span>
-                {section.title}
-              </h2>
+            {/* Collapsible info banner — only for content sections */}
+            {isContentSection && <InfoBanner />}
 
+            {/* Section content card */}
+            <div className="rounded-2xl border border-border bg-card shadow-sm p-5">
               {section.isAccount ? (
                 <AccountPanel
                   username={username}
@@ -963,22 +1024,26 @@ function Editor({
                 </div>
               )}
             </div>
-
-            {/* Bottom save button — hidden on analytics and account sections */}
-            {!section.isAnalytics && !section.isAccount && (
-              <div className="pt-2 pb-4">
-                <button
-                  onClick={handleSave}
-                  disabled={saving}
-                  className="bg-primary text-primary-foreground rounded-lg px-6 py-2.5 text-sm font-semibold hover:bg-primary/90 disabled:opacity-50 transition-colors"
-                >
-                  {saving ? "Saving…" : "Save All Changes"}
-                </button>
-              </div>
-            )}
           </div>
         </main>
       </div>
+
+      {/* ── Floating Save FAB — mobile only, content sections only ── */}
+      {isContentSection && (
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          aria-label="Save all changes"
+          className="sm:hidden fixed bottom-6 right-4 z-30 flex items-center gap-2 rounded-full bg-primary text-primary-foreground shadow-lg px-5 py-3 text-sm font-semibold hover:bg-primary/90 disabled:opacity-50 transition-colors"
+        >
+          {saving ? (
+            <Loader2 size={16} className="animate-spin" />
+          ) : (
+            <Save size={16} />
+          )}
+          {saving ? "Saving…" : "Save"}
+        </button>
+      )}
     </div>
   );
 }
@@ -1041,7 +1106,6 @@ export default function AdminPage() {
     localStorage.setItem("admin_username", newUser);
     setUsername(newUser);
     if (passwordChanged) {
-      // Server invalidates the session when the password changes; force re-login.
       setAuthed(false);
     }
   }
