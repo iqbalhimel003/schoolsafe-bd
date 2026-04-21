@@ -33,20 +33,24 @@ import { timingSafeEqual } from "node:crypto";
 import { comparePassword, hashPassword, isBcryptHash } from "./password";
 import { logger } from "./logger";
 
-/* Constant-time string compare. Returns false if either input is empty.
- * Pads the shorter buffer to the length of the longer one (compared
- * against zero bytes) so the timing remains constant regardless of
- * length difference — preventing username-length enumeration. */
+/* Constant-time string compare.
+ *
+ * `timingSafeEqual` requires equal-length buffers, so we have to handle
+ * length mismatch ourselves without leaking the comparison through an
+ * early return. When lengths differ we still run a same-length dummy
+ * compare against a zero buffer of `bufA.length` and discard the result,
+ * then return false. That keeps per-call work proportional to the
+ * SUBMITTED value's length only — never the stored value's length —
+ * so the stored username's length cannot be inferred from response time. */
 function timingSafeStringEqual(a: string, b: string): boolean {
   const bufA = Buffer.from(a, "utf8");
   const bufB = Buffer.from(b, "utf8");
-  const maxLen = Math.max(bufA.length, bufB.length, 1);
-  const padA = Buffer.alloc(maxLen);
-  const padB = Buffer.alloc(maxLen);
-  bufA.copy(padA);
-  bufB.copy(padB);
-  const eq = timingSafeEqual(padA, padB);
-  return eq && bufA.length === bufB.length;
+  if (bufA.length !== bufB.length) {
+    // Discard result; only purpose is to keep timing flat.
+    timingSafeEqual(bufA, Buffer.alloc(bufA.length));
+    return false;
+  }
+  return timingSafeEqual(bufA, bufB);
 }
 
 /* No default admin email/username is hardcoded. The effective
