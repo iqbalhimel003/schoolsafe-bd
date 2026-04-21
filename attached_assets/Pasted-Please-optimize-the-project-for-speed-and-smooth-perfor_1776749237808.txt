@@ -1,0 +1,70 @@
+Please optimize the project for speed and smooth performance, especially on low-configuration phones, older Android devices, and weaker mobile browsers.
+
+Primary goal:
+Make the app feel faster, lighter, and smoother without changing the current user-facing behavior.
+
+What I want:
+- improve load speed
+- reduce lag and stutter on low-end phones
+- improve scroll smoothness
+- reduce unnecessary re-renders
+- reduce heavy JavaScript work on initial load
+- reduce unnecessary network requests
+- make the dashboard feel responsive even on weaker devices
+- improve mobile browser performance as much as possible
+
+Very important protection requirement:
+Do NOT change any existing UI, layout, design, styling, visible text, translations, risk logic, calculations, recommendations, admin behavior, forecast behavior, domain settings, analytics behavior, or any current feature behavior unless absolutely required for safe performance optimization.
+
+Specifically do not change:
+- UI appearance
+- spacing, colors, typography, cards, sections, or component structure as seen by users
+- Current Environmental Conditions logic
+- Tomorrow’s Forecast logic
+- Week Ahead logic
+- risk thresholds
+- recommendations text
+- bilingual behavior
+- admin panel behavior
+- data meaning or displayed values
+- print/share behavior
+- routing and domain behavior
+
+Optimization scope:
+Please focus only on safe internal performance improvements such as:
+- removing unnecessary re-renders
+- memoization where appropriate
+- reducing repeated computations
+- optimizing state updates
+- optimizing expensive effects
+- preventing unnecessary API calls
+- batching or deferring non-critical work
+- lazy loading where safe
+- code splitting where safe
+- reducing bundle overhead where safe
+- improving image/icon/component rendering efficiency
+- improving mobile scrolling/rendering performance
+- cleaning up wasteful listeners, timers, or repeated processing
+- reducing unnecessary polling or refresh work
+- keeping current visual output exactly the same
+
+Important rule:
+Prefer the smallest safe code changes that improve performance while preserving all current behavior and appearance.
+
+Validation requirements:
+After optimization, verify that:
+- the app still looks the same
+- the app still behaves the same
+- all existing logic is preserved
+- no current sections are broken
+- no translations are broken
+- no admin features are broken
+
+When complete:
+1. stop immediately
+2. summarize exactly what performance optimizations were made
+3. list files changed
+4. explain which optimizations target low-end phones/mobile browsers
+5. confirm that UI, logic, and current behavior were not changed
+6. report any tradeoffs if there were any
+7. wait for my instruction
