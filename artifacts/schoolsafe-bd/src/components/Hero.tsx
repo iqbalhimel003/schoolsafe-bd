@@ -113,7 +113,7 @@ export default function Hero() {
               onClick={scrollToLocation}
               initial={{ opacity: 0, y: reduce ? 0 : 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: reduce ? 0 : 0.55, ease: "easeOut" }}
+              transition={{ duration: 0.55, delay: reduce ? 0 : 0.45, ease: "easeOut" }}
               className="
                 mt-6 inline-flex items-center gap-2
                 rounded-full bg-primary text-primary-foreground
