@@ -4,6 +4,8 @@ import { siteSettingsTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
 import { checkAdminAuth, getCurrentUsername, adminAuthLimiter } from "../lib/auth";
 import { hashPassword } from "../lib/password";
+import { validateBody } from "../lib/validation";
+import { SettingsUpdateSchema, CredentialsUpdateSchema } from "../lib/schemas";
 
 const router: IRouter = Router();
 
@@ -24,7 +26,14 @@ router.get("/settings", async (_req: Request, res: Response) => {
   }
 });
 
-/* ── PUT /settings — save site content (auth required) ── */
+/* ── PUT /settings — save site content (auth required) ──
+ *
+ * Input is validated by `SettingsUpdateSchema`, which restricts
+ * keys to a whitelist of known site-content keys (bilingual
+ * `<base>_en` / `<base>_bn` plus `contact_*`). `admin_*` keys
+ * are rejected by the whitelist, so this endpoint can never
+ * write the admin username/password (those go through
+ * `PUT /credentials`, which hashes the password). */
 
 router.put("/settings", adminAuthLimiter, async (req: Request, res: Response) => {
   if (!(await checkAdminAuth(req))) {
@@ -32,21 +41,11 @@ router.put("/settings", adminAuthLimiter, async (req: Request, res: Response) =>
     return;
   }
 
-  const body = req.body as Record<string, unknown>;
-  if (!body || typeof body !== "object") {
-    res.status(400).json({ error: "Invalid request body" });
-    return;
-  }
+  const body = validateBody(req, res, SettingsUpdateSchema);
+  if (!body) return;
 
   try {
-    // Hard guard: admin_* keys (admin_username, admin_password) must
-    // never be writable through the generic settings endpoint —
-    // changing them goes through PUT /credentials, which hashes the
-    // password before storage. Silently dropping them prevents any
-    // path that could persist a plaintext admin password here.
-    const entries = Object.entries(body).filter(
-      ([k, v]) => typeof v === "string" && !k.startsWith("admin_"),
-    ) as [string, string][];
+    const entries = Object.entries(body) as [string, string][];
 
     const toDelete = entries
       .filter(([, v]) => v.trim() === "")
@@ -96,11 +95,8 @@ router.put("/credentials", adminAuthLimiter, async (req: Request, res: Response)
     return;
   }
 
-  const body = req.body as { newUsername?: string; newPassword?: string };
-  if (!body || (!body.newUsername && !body.newPassword)) {
-    res.status(400).json({ error: "No changes provided" });
-    return;
-  }
+  const body = validateBody(req, res, CredentialsUpdateSchema);
+  if (!body) return;
 
   try {
     if (body.newUsername?.trim()) {

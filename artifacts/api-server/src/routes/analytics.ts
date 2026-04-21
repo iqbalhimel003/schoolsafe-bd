@@ -5,6 +5,8 @@ import { visitorLogsTable } from "@workspace/db/schema";
 import { desc, sql, count, countDistinct, gte, isNotNull } from "drizzle-orm";
 import { UAParser } from "ua-parser-js";
 import { checkAdminAuth, adminAuthLimiter } from "../lib/auth";
+import { validateBody } from "../lib/validation";
+import { AnalyticsTrackSchema } from "../lib/schemas";
 
 const router: IRouter = Router();
 
@@ -66,18 +68,13 @@ function truncate(s: unknown, max: number): string | null {
 /* ── Public: POST /api/analytics/track ────────────────── */
 
 router.post("/analytics/track", express.json({ limit: "4kb" }), async (req: Request, res: Response) => {
-  try {
-    const body = req.body as Record<string, unknown>;
-    if (!body || typeof body !== "object") {
-      res.status(400).json({ error: "Invalid request body" });
-      return;
-    }
+  const body = validateBody(req, res, AnalyticsTrackSchema);
+  if (!body) return;
 
-    const page = typeof body.page === "string" && body.page.length ? body.page.slice(0, 500) : "/";
-    const sessionId = typeof body.sessionId === "string" && body.sessionId.length
-      ? body.sessionId.slice(0, 64)
-      : "anon";
-    const userAgent = typeof body.userAgent === "string" ? body.userAgent : "";
+  try {
+    const page = body.page && body.page.length ? body.page : "/";
+    const sessionId = body.sessionId && body.sessionId.length ? body.sessionId : "anon";
+    const userAgent = body.userAgent ?? "";
 
     const ua = new UAParser(userAgent).getResult();
     const browser = ua.browser.name ? `${ua.browser.name}${ua.browser.version ? " " + ua.browser.version.split(".")[0] : ""}` : null;
@@ -100,7 +97,7 @@ router.post("/analytics/track", express.json({ limit: "4kb" }), async (req: Requ
     });
 
     res.json({ ok: true });
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: "Failed to track visit" });
   }
 });
