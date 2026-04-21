@@ -8,34 +8,10 @@ import { checkAdminAuth, adminAuthLimiter } from "../lib/auth";
 
 const router: IRouter = Router();
 
-/* ── Simple in-memory rate limiter ───────────────────────
- * Per-IP sliding window. Prevents flooding /track endpoint.
- * Cap: 60 requests per 60s per IP.
- * ────────────────────────────────────────────────────── */
-
-const RATE_WINDOW_MS = 60 * 1000;
-const RATE_MAX = 60;
-const rateBuckets = new Map<string, number[]>();
-
-function rateLimit(req: Request, res: Response, next: NextFunction): void {
-  const key = extractIp(req) || "unknown";
-  const now = Date.now();
-  const arr = rateBuckets.get(key) ?? [];
-  const recent = arr.filter((t) => now - t < RATE_WINDOW_MS);
-  if (recent.length >= RATE_MAX) {
-    res.status(429).json({ error: "Too many requests" });
-    return;
-  }
-  recent.push(now);
-  rateBuckets.set(key, recent);
-  // Occasional cleanup to prevent unbounded growth
-  if (rateBuckets.size > 5000) {
-    for (const [k, v] of rateBuckets) {
-      if (v.every((t) => now - t >= RATE_WINDOW_MS)) rateBuckets.delete(k);
-    }
-  }
-  next();
-}
+/* Per-IP rate limiting for /analytics/track is provided by the
+ * global `globalApiLimiter` mounted in `app.ts` (100 req/min/IP),
+ * which covers every /api/* route. The previous bespoke in-memory
+ * limiter has been removed in favour of that unified system. */
 
 /* ── Helpers ──────────────────────────────────────────── */
 
@@ -89,7 +65,7 @@ function truncate(s: unknown, max: number): string | null {
 
 /* ── Public: POST /api/analytics/track ────────────────── */
 
-router.post("/analytics/track", rateLimit, express.json({ limit: "4kb" }), async (req: Request, res: Response) => {
+router.post("/analytics/track", express.json({ limit: "4kb" }), async (req: Request, res: Response) => {
   try {
     const body = req.body as Record<string, unknown>;
     if (!body || typeof body !== "object") {

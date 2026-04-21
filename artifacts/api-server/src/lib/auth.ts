@@ -32,7 +32,18 @@ import rateLimit from "express-rate-limit";
 import { comparePassword, hashPassword, isBcryptHash } from "./password";
 import { logger } from "./logger";
 
-const DEFAULT_USERNAME = "iqbal.himel003@gmail.com";
+/* No default admin email/username is hardcoded. The effective
+ * username is resolved from (in order): DB `admin_username`,
+ * env `ADMIN_EMAIL`, env `ADMIN_USERNAME`. If none are set, the
+ * username check is treated as "open" (only the password matters)
+ * and `getCurrentUsername` returns an empty string. */
+function envFallbackUsername(): string {
+  return (
+    process.env.ADMIN_EMAIL?.trim() ||
+    process.env.ADMIN_USERNAME?.trim() ||
+    ""
+  );
+}
 
 /* ── Brute-force limiter ─────────────────────────────────
  * 15-minute window, 10 failed attempts per IP. Successful
@@ -95,9 +106,7 @@ export async function checkAdminAuth(req: Request): Promise<boolean> {
     : "none";
   const storedPassword = storedPasswordRaw || fallbackPassword;
   const storedUsername =
-    dbCreds["admin_username"] ??
-    process.env.ADMIN_USERNAME ??
-    DEFAULT_USERNAME;
+    dbCreds["admin_username"] ?? envFallbackUsername();
 
   if (!storedPassword || !token) return false;
 
@@ -125,9 +134,5 @@ export async function getCurrentUsername(): Promise<string> {
     .select()
     .from(siteSettingsTable)
     .where(inArray(siteSettingsTable.key, ["admin_username"]));
-  return (
-    rows[0]?.value ??
-    process.env.ADMIN_USERNAME ??
-    DEFAULT_USERNAME
-  );
+  return rows[0]?.value ?? envFallbackUsername();
 }
