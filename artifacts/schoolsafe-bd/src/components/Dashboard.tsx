@@ -442,7 +442,7 @@ function DashboardPanel({
       `${t("temperature")}: ${weather.temperature.toFixed(1)}°C  ` +
       `${t("humidity")}: ${Math.round(weather.humidity)}%\n` +
       `${t("windSpeed")}: ${weather.windSpeed.toFixed(1)} km/h  ` +
-      `${t("rain")}: ${weather.rain.toFixed(1)} mm\n` +
+      `${t("rain")}: ${weather.precipitation3h.toFixed(1)} mm\n` +
       window.location.href;
     const shareUrl = window.location.href;
 
@@ -569,7 +569,7 @@ function DashboardPanel({
         <MetricCard iconKind="humidity"         label={t("humidity")}                  numericValue={Math.round(weather.humidity)}     decimals={0} suffix="%" />
         <MetricCard iconKind="thermometerHot"   label={t("apparentTemperature")}       numericValue={weather.apparentTemperature}      decimals={1} suffix="°C" />
         <MetricCard iconKind="rain"             label={t("precipitationProbability")} numericValue={Math.round(weather.precipitationProbability)} decimals={0} suffix="%" />
-        <MetricCard iconKind="umbrella"         label={t("rain")}                      numericValue={weather.rain}                     decimals={1} suffix=" mm" />
+        <MetricCard iconKind="umbrella"         label={t("rain")}                      numericValue={weather.precipitation3h}          decimals={1} suffix=" mm" />
         <MetricCard iconKind="wind"             label={t("windSpeed")}                 numericValue={weather.windSpeed}                decimals={1} suffix=" km/h" />
         <MetricCard iconKind="uv"               label={t("uvIndex")}                   numericValue={weather.uvIndex}                  decimals={1} />
         <MetricCard iconKind="visibility"       label={t("visibility")}                rawValue={formatVisibility(weather.visibility)} />

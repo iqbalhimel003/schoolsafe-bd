@@ -49,7 +49,9 @@ export interface WeatherData {
   humidity: number;            /* % */
   apparentTemperature: number; /* °C */
   precipitationProbability: number; /* % */
-  rain: number;                /* mm — current hour */
+  precipitation: number;       /* mm — total precipitation current hour (rain + showers) */
+  precipitation3h: number;     /* mm — total precipitation 3-hour rolling accumulation */
+  rain: number;                /* mm — current hour (large-scale rain only; used by risk engine) */
   rain3h: number;              /* mm — 3-hour rolling accumulation (current + 2 preceding hours) */
   rain6h: number;              /* mm — 6-hour rolling accumulation (current + 5 preceding hours) */
   rain24h: number;             /* mm — 24-hour rolling accumulation (current + 23 preceding hours) */

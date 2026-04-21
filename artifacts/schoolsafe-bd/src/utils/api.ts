@@ -51,6 +51,7 @@ export async function fetchWeather(
       "relativehumidity_2m",
       "apparent_temperature",
       "precipitation_probability",
+      "precipitation",
       "rain",
       "windspeed_10m",
       "uv_index",
@@ -73,6 +74,12 @@ export async function fetchWeather(
   const start3hIdx = Math.max(0, idx - 2);
   for (let i = start3hIdx; i <= idx; i++) {
     rain3h += h.rain[i] ?? 0;
+  }
+
+  /* precipitation3h — total precipitation (rain + showers) rolling 3-hour sum for display */
+  let precipitation3h = 0;
+  for (let i = start3hIdx; i <= idx; i++) {
+    precipitation3h += h.precipitation[i] ?? 0;
   }
 
   /* Sum rain over the current hour and up to 5 preceding hours (6-hour window) */
@@ -107,6 +114,8 @@ export async function fetchWeather(
     humidity:                 h.relativehumidity_2m[idx]       ?? 0,
     apparentTemperature:      h.apparent_temperature[idx]      ?? 0,
     precipitationProbability: h.precipitation_probability[idx] ?? 0,
+    precipitation:            h.precipitation[idx]             ?? 0,
+    precipitation3h,
     rain:                     h.rain[idx]                      ?? 0,
     rain3h,
     rain6h,
