@@ -222,13 +222,18 @@ export async function cleanupExpiredSessions(): Promise<void> {
   }
 }
 
+/* Cookie is scoped to /api so it is never sent to other paths
+ * (least privilege). Both set + clear must use the same path
+ * or browsers will silently keep the old cookie. */
+const SESSION_COOKIE_PATH = "/api";
+
 export function setSessionCookie(res: Response, token: string): void {
   const isProd = process.env.NODE_ENV === "production";
   res.cookie(SESSION_COOKIE, token, {
     httpOnly: true,
     secure: isProd,
     sameSite: "strict",
-    path: "/",
+    path: SESSION_COOKIE_PATH,
     maxAge: SESSION_TTL_MS,
   });
 }
@@ -239,7 +244,7 @@ export function clearSessionCookie(res: Response): void {
     httpOnly: true,
     secure: isProd,
     sameSite: "strict",
-    path: "/",
+    path: SESSION_COOKIE_PATH,
   });
 }
 
