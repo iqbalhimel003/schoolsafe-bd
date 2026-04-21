@@ -39,9 +39,6 @@ export default function Footer() {
                 {t("siteName")}
               </span>
             </div>
-            <p className="text-sm text-white/70 leading-relaxed max-w-xs">
-              {t("siteTagline")}
-            </p>
             {/* Mobile-only separator */}
             <hr className="md:hidden border-white/15 mt-1" />
           </div>
