@@ -13,21 +13,23 @@
  * in as it scrolls into view, honoring reduced-motion users.
  * ========================================================= */
 
-import { useState } from "react";
+import { Suspense, lazy, useState } from "react";
 import Seo from "@/components/Seo";
 import Hero from "@/components/Hero";
 import LocationSelector from "@/components/LocationSelector";
 import Dashboard from "@/components/Dashboard";
 import TomorrowSection from "@/components/TomorrowSection";
 import WeeklySection from "@/components/WeeklySection";
-import ForecastChart from "@/components/ForecastChart";
 import ComparisonSection from "@/components/ComparisonSection";
 import MethodologySection from "@/components/MethodologySection";
 import LimitationsSection from "@/components/LimitationsSection";
 import Reveal from "@/components/animated/Reveal";
 import AnimatedWeatherIcon from "@/components/animated/AnimatedWeatherIcon";
+
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { Upazila } from "@/types";
+
+const ForecastChart = lazy(() => import("@/components/ForecastChart"));
 
 export default function Home() {
   const [selectedUpazila, setSelectedUpazila] = useState<Upazila | null>(null);
@@ -162,7 +164,9 @@ export default function Home() {
       {selectedUpazila && (
         <div className="no-print">
           <Reveal>
-            <ForecastChart selectedUpazila={selectedUpazila} />
+            <Suspense fallback={null}>
+              <ForecastChart selectedUpazila={selectedUpazila} />
+            </Suspense>
           </Reveal>
         </div>
       )}

@@ -4,6 +4,7 @@
  * Sets up routing, language context, and global providers.
  * ========================================================= */
 
+import { Suspense, lazy } from "react";
 import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { HelmetProvider } from "react-helmet-async";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -14,9 +15,10 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Seo from "@/components/Seo";
 import Home from "@/pages/Home";
-import AdminPage from "@/pages/Admin";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { usePageTracking } from "@/hooks/usePageTracking";
+
+const AdminPage = lazy(() => import("@/pages/Admin"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -57,7 +59,13 @@ function AppShell() {
       <div className="flex-1">
         <Switch>
           <Route path="/" component={Home} />
-          <Route path="/admin" component={AdminPage} />
+          <Route path="/admin">
+            {() => (
+              <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><span className="text-muted-foreground text-sm">Loading…</span></div>}>
+                <AdminPage />
+              </Suspense>
+            )}
+          </Route>
           <Route component={NotFound} />
         </Switch>
       </div>

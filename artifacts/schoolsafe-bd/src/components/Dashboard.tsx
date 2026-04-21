@@ -13,7 +13,7 @@
  * All text is bilingual via useLanguage().
  * ========================================================= */
 
-import { useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -63,7 +63,7 @@ function formatVisibility(m: number): string {
 
 /* ── Sub-components ─────────────────────────────────────── */
 
-function MetricCard({
+const MetricCard = memo(function MetricCard({
   iconKind,
   fallbackIcon,
   label,
@@ -109,7 +109,7 @@ function MetricCard({
       </p>
     </div>
   );
-}
+});
 
 function RiskCard({
   iconKind,
@@ -348,6 +348,52 @@ const RECOMMENDATIONS: Rec[] = [
   },
 ];
 
+/* ── Static guidance bullet data (module-level — no runtime cost per render) ── */
+
+const AUTHORITIES_BULLETS: GuidanceBullet[] = [
+  { key: "guidanceAuthorities1", risks: ["heat", "cold", "heavyRain", "storm"] },
+  { key: "guidanceAuthorities2", risks: ALL_RISK_TYPES },
+  { key: "guidanceAuthorities3", risks: ALL_RISK_TYPES },
+  { key: "guidanceAuthorities4", risks: ["heat", "cold", "airQuality", "heavyRain", "flood", "storm"] },
+  { key: "guidanceAuthorities5", risks: ["rain", "heavyRain", "flood", "storm"] },
+];
+
+const TEACHERS_BULLETS: GuidanceBullet[] = [
+  { key: "guidanceTeachers1", risks: ["heat", "cold", "airQuality", "rain", "heavyRain"] },
+  { key: "guidanceTeachers2", risks: ALL_RISK_TYPES },
+  { key: "guidanceTeachers3", risks: ["heat", "cold", "airQuality", "heavyRain", "flood", "storm"] },
+  { key: "guidanceTeachers4", risks: ["heat", "cold", "rain", "airQuality", "heavyRain", "storm"] },
+  { key: "guidanceTeachers5", risks: ["heavyRain", "flood", "storm"] },
+];
+
+const GUARDIANS_BULLETS: GuidanceBullet[] = [
+  { key: "guidanceGuardians1", risks: ["heat", "cold", "rain", "airQuality", "heavyRain", "storm"] },
+  { key: "guidanceGuardians2", risks: ["rain", "heavyRain", "flood", "storm"] },
+  { key: "guidanceGuardians3", risks: ["heat", "cold", "airQuality", "heavyRain", "flood", "storm"] },
+  { key: "guidanceGuardians4", risks: ALL_RISK_TYPES },
+];
+
+const STUDENTS_BULLETS: GuidanceBullet[] = [
+  { key: "guidanceStudents1", risks: ["heat"] },
+  { key: "guidanceStudents2", risks: ["cold"] },
+  { key: "guidanceStudents3", risks: ["rain", "heavyRain", "flood", "storm"] },
+  { key: "guidanceStudents4", risks: ["airQuality", "storm", "heavyRain", "flood"] },
+  { key: "guidanceStudents5", risks: ALL_RISK_TYPES },
+];
+
+const VULN_STUDENTS_BULLETS: GuidanceBullet[] = [
+  { key: "guidanceVulnStudents1", risks: ["heat", "cold", "airQuality", "heavyRain", "flood", "storm"] },
+  { key: "guidanceVulnStudents2", risks: ALL_RISK_TYPES },
+  { key: "guidanceVulnStudents3", risks: ["heat", "cold", "airQuality", "heavyRain", "flood", "storm"] },
+  { key: "guidanceVulnStudents4", risks: ["heat", "cold", "airQuality", "heavyRain", "flood", "storm"] },
+];
+
+const VULN_TEACHERS_BULLETS: GuidanceBullet[] = [
+  { key: "guidanceVulnTeachers1", risks: ["heat", "cold", "airQuality", "heavyRain", "flood", "storm"] },
+  { key: "guidanceVulnTeachers2", risks: ["heavyRain", "flood", "storm"] },
+  { key: "guidanceVulnTeachers3", risks: ["heat", "cold", "airQuality", "heavyRain", "flood", "storm"] },
+];
+
 /* ── Main dashboard panel ───────────────────────────────── */
 
 function DashboardPanel({
@@ -364,60 +410,19 @@ function DashboardPanel({
   onRefresh: () => void;
 }) {
   const { t, lang } = useLanguage();
-  const risk = evaluateRisk(weather, airQuality);
+  /* Memoize the risk engine — only re-runs when weather/AQ data actually changes */
+  const risk = useMemo(
+    () => evaluateRisk(weather, airQuality),
+    [weather, airQuality],
+  );
   const locationName = lang === "bn" ? upazila.nameBn : upazila.nameEn;
   const [showExtraPrecautions, setShowExtraPrecautions] = useState(false);
 
-  /* Set of risk types that are currently above None — used for guidance bullet filtering */
-  const activeRisks = new Set<RiskType>(
-    ALL_RISK_TYPES.filter((k) => risk[k] !== "None")
+  /* Set of risk types above None — memoized so the Set is stable between renders */
+  const activeRisks = useMemo(
+    () => new Set<RiskType>(ALL_RISK_TYPES.filter((k) => risk[k] !== "None")),
+    [risk],
   );
-
-  /* ── Tagged bullet arrays ─────────────────────────────── */
-
-  const authoritiesBullets: GuidanceBullet[] = [
-    { key: "guidanceAuthorities1", risks: ["heat", "cold", "heavyRain", "storm"] },
-    { key: "guidanceAuthorities2", risks: ALL_RISK_TYPES },
-    { key: "guidanceAuthorities3", risks: ALL_RISK_TYPES },
-    { key: "guidanceAuthorities4", risks: ["heat", "cold", "airQuality", "heavyRain", "flood", "storm"] },
-    { key: "guidanceAuthorities5", risks: ["rain", "heavyRain", "flood", "storm"] },
-  ];
-
-  const teachersBullets: GuidanceBullet[] = [
-    { key: "guidanceTeachers1", risks: ["heat", "cold", "airQuality", "rain", "heavyRain"] },
-    { key: "guidanceTeachers2", risks: ALL_RISK_TYPES },
-    { key: "guidanceTeachers3", risks: ["heat", "cold", "airQuality", "heavyRain", "flood", "storm"] },
-    { key: "guidanceTeachers4", risks: ["heat", "cold", "rain", "airQuality", "heavyRain", "storm"] },
-    { key: "guidanceTeachers5", risks: ["heavyRain", "flood", "storm"] },
-  ];
-
-  const guardiansBullets: GuidanceBullet[] = [
-    { key: "guidanceGuardians1", risks: ["heat", "cold", "rain", "airQuality", "heavyRain", "storm"] },
-    { key: "guidanceGuardians2", risks: ["rain", "heavyRain", "flood", "storm"] },
-    { key: "guidanceGuardians3", risks: ["heat", "cold", "airQuality", "heavyRain", "flood", "storm"] },
-    { key: "guidanceGuardians4", risks: ALL_RISK_TYPES },
-  ];
-
-  const studentsBullets: GuidanceBullet[] = [
-    { key: "guidanceStudents1", risks: ["heat"] },
-    { key: "guidanceStudents2", risks: ["cold"] },
-    { key: "guidanceStudents3", risks: ["rain", "heavyRain", "flood", "storm"] },
-    { key: "guidanceStudents4", risks: ["airQuality", "storm", "heavyRain", "flood"] },
-    { key: "guidanceStudents5", risks: ALL_RISK_TYPES },
-  ];
-
-  const vulnStudentsBullets: GuidanceBullet[] = [
-    { key: "guidanceVulnStudents1", risks: ["heat", "cold", "airQuality", "heavyRain", "flood", "storm"] },
-    { key: "guidanceVulnStudents2", risks: ALL_RISK_TYPES },
-    { key: "guidanceVulnStudents3", risks: ["heat", "cold", "airQuality", "heavyRain", "flood", "storm"] },
-    { key: "guidanceVulnStudents4", risks: ["heat", "cold", "airQuality", "heavyRain", "flood", "storm"] },
-  ];
-
-  const vulnTeachersBullets: GuidanceBullet[] = [
-    { key: "guidanceVulnTeachers1", risks: ["heat", "cold", "airQuality", "heavyRain", "flood", "storm"] },
-    { key: "guidanceVulnTeachers2", risks: ["heavyRain", "flood", "storm"] },
-    { key: "guidanceVulnTeachers3", risks: ["heat", "cold", "airQuality", "heavyRain", "flood", "storm"] },
-  ];
 
   /* Translation helpers for risk levels */
   function levelLabel(level: RiskLevel): string {
@@ -692,22 +697,22 @@ function DashboardPanel({
             <div className="grid sm:grid-cols-2 gap-3">
               <FilteredGuidanceSection
                 title={t("guidanceAuthoritiesTitle")}
-                bullets={authoritiesBullets}
+                bullets={AUTHORITIES_BULLETS}
                 activeRisks={activeRisks}
               />
               <FilteredGuidanceSection
                 title={t("guidanceTeachersTitle")}
-                bullets={teachersBullets}
+                bullets={TEACHERS_BULLETS}
                 activeRisks={activeRisks}
               />
               <FilteredGuidanceSection
                 title={t("guidanceGuardiansTitle")}
-                bullets={guardiansBullets}
+                bullets={GUARDIANS_BULLETS}
                 activeRisks={activeRisks}
               />
               <FilteredGuidanceSection
                 title={t("guidanceStudentsTitle")}
-                bullets={studentsBullets}
+                bullets={STUDENTS_BULLETS}
                 activeRisks={activeRisks}
               />
             </div>
@@ -819,12 +824,12 @@ function DashboardPanel({
                   )}
                   <FilteredGuidanceSection
                     title={t("guidanceVulnStudentsTitle")}
-                    bullets={vulnStudentsBullets}
+                    bullets={VULN_STUDENTS_BULLETS}
                     activeRisks={activeRisks}
                   />
                   <FilteredGuidanceSection
                     title={t("guidanceVulnTeachersTitle")}
-                    bullets={vulnTeachersBullets}
+                    bullets={VULN_TEACHERS_BULLETS}
                     activeRisks={activeRisks}
                   />
                 </div>
@@ -849,8 +854,8 @@ function DashboardPanel({
 
 /* ── Main export ────────────────────────────────────────── */
 
-/* Auto-refresh interval: every 5 minutes */
-const REFETCH_INTERVAL_MS = 5 * 60 * 1000;
+/* Auto-refresh interval: every 10 minutes — matches the global QueryClient staleTime */
+const REFETCH_INTERVAL_MS = 10 * 60 * 1000;
 
 export default function Dashboard({ selectedUpazila }: Props) {
   const { t } = useLanguage();
@@ -862,6 +867,7 @@ export default function Dashboard({ selectedUpazila }: Props) {
     staleTime: REFETCH_INTERVAL_MS,
     refetchInterval: REFETCH_INTERVAL_MS,
     refetchIntervalInBackground: false,
+    refetchOnWindowFocus: false,
     retry: 2,
   });
 
@@ -872,6 +878,7 @@ export default function Dashboard({ selectedUpazila }: Props) {
     staleTime: REFETCH_INTERVAL_MS,
     refetchInterval: REFETCH_INTERVAL_MS,
     refetchIntervalInBackground: false,
+    refetchOnWindowFocus: false,
     retry: 2,
   });
 
