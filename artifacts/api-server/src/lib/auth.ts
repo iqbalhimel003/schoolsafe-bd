@@ -185,6 +185,12 @@ export async function destroySession(token: string): Promise<void> {
   await db.delete(adminSessionsTable).where(eq(adminSessionsTable.token, token));
 }
 
+/* Delete every active admin session. Called after a password
+ * change to force re-authentication everywhere. */
+export async function destroyAllSessions(): Promise<void> {
+  await db.delete(adminSessionsTable);
+}
+
 export async function lookupSession(
   token: string,
 ): Promise<{ username: string } | null> {
@@ -237,30 +243,17 @@ export function clearSessionCookie(res: Response): void {
   });
 }
 
-/* ── Main check (cookie first, Bearer fallback) ─────────── */
+/* ── Main check (cookie session only) ───────────────────── */
 
 interface ReqWithCookies extends Request {
   cookies: Record<string, string>;
 }
 
 export async function checkAdminAuth(req: Request): Promise<boolean> {
-  // 1) Cookie session (preferred)
-  const cookieToken =
-    (req as ReqWithCookies).cookies?.[SESSION_COOKIE] ?? "";
-  if (cookieToken) {
-    const session = await lookupSession(cookieToken);
-    if (session) return true;
-  }
-
-  // 2) Legacy Bearer + X-Admin-Username fallback (deprecated).
-  // Will be removed once the frontend is fully migrated.
-  const bearer = (req.headers.authorization ?? "")
-    .replace(/^Bearer\s+/i, "")
-    .trim();
-  const usernameHeader = ((req.headers["x-admin-username"] as string) ?? "").trim();
-  if (!bearer) return false;
-  const result = await verifyCredentials(usernameHeader, bearer);
-  return result.ok;
+  const cookieToken = (req as ReqWithCookies).cookies?.[SESSION_COOKIE] ?? "";
+  if (!cookieToken) return false;
+  const session = await lookupSession(cookieToken);
+  return session !== null;
 }
 
 /* Returns the username associated with the current request's

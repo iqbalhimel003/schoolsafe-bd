@@ -2,7 +2,13 @@ import { Router, type IRouter, type Request, type Response } from "express";
 import { db } from "@workspace/db";
 import { siteSettingsTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
-import { checkAdminAuth, getCurrentUsername, adminAuthLimiter } from "../lib/auth";
+import {
+  checkAdminAuth,
+  getCurrentUsername,
+  adminAuthLimiter,
+  destroyAllSessions,
+  clearSessionCookie,
+} from "../lib/auth";
 import { hashPassword } from "../lib/password";
 import { validateBody } from "../lib/validation";
 import { SettingsUpdateSchema, CredentialsUpdateSchema } from "../lib/schemas";
@@ -109,7 +115,8 @@ router.put("/credentials", adminAuthLimiter, async (req: Request, res: Response)
         });
     }
 
-    if (body.newPassword?.trim()) {
+    const passwordChanged = Boolean(body.newPassword?.trim());
+    if (passwordChanged && body.newPassword) {
       const hashed = await hashPassword(body.newPassword.trim());
       await db
         .insert(siteSettingsTable)
@@ -118,9 +125,13 @@ router.put("/credentials", adminAuthLimiter, async (req: Request, res: Response)
           target: siteSettingsTable.key,
           set: { value: hashed, updatedAt: new Date() },
         });
+      // Revoke every active admin session so the password change
+      // takes effect immediately everywhere (including this client).
+      await destroyAllSessions();
+      clearSessionCookie(res);
     }
 
-    res.json({ ok: true });
+    res.json({ ok: true, passwordChanged });
   } catch {
     res.status(500).json({ error: "Failed to update credentials" });
   }
