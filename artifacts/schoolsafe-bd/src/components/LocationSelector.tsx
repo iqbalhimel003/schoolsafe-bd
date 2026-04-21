@@ -62,6 +62,12 @@ export default function LocationSelector({ onUpazilaSelect }: Props) {
     setDistrictOpen(true);
   }
 
+  /* onClick mirrors onFocus so re-clicking an already-focused input also opens the list */
+  function handleDistrictClick() {
+    if (selectedDistrict) setDistrictSearch("");
+    setDistrictOpen(true);
+  }
+
   function handleDistrictBlur() {
     setTimeout(() => {
       if (districtRef.current && !districtRef.current.contains(document.activeElement)) {
@@ -72,6 +78,12 @@ export default function LocationSelector({ onUpazilaSelect }: Props) {
   }
 
   function handleUpazilaFocus() {
+    if (selectedUpazila) setUpazilaSearch("");
+    setUpazilaOpen(true);
+  }
+
+  /* onClick mirrors onFocus so re-clicking an already-focused input also opens the list */
+  function handleUpazilaClick() {
     if (selectedUpazila) setUpazilaSearch("");
     setUpazilaOpen(true);
   }
@@ -126,6 +138,7 @@ export default function LocationSelector({ onUpazilaSelect }: Props) {
             value={districtSearch}
             onChange={(e) => setDistrictSearch(e.target.value)}
             onFocus={handleDistrictFocus}
+            onClick={handleDistrictClick}
             onBlur={handleDistrictBlur}
             className="w-full px-3 py-2.5 text-sm border border-border rounded-lg bg-card shadow-sm outline-none placeholder:text-muted-foreground"
           />
@@ -170,6 +183,7 @@ export default function LocationSelector({ onUpazilaSelect }: Props) {
             value={upazilaSearch}
             onChange={(e) => setUpazilaSearch(e.target.value)}
             onFocus={handleUpazilaFocus}
+            onClick={handleUpazilaClick}
             onBlur={handleUpazilaBlur}
             disabled={!selectedDistrict}
             className="w-full px-3 py-2.5 text-sm border border-border rounded-lg bg-card shadow-sm outline-none placeholder:text-muted-foreground"
