@@ -7,13 +7,34 @@
     <meta name="generator" content="SafeSchool" />
 
     <!--
-      Static fallbacks for crawlers and the first paint.
-      Per-route values (title/description/canonical/hreflang/robots/OG/Twitter)
+      Static defaults for the first paint and for non-JS social crawlers.
+      Per-route values (canonical, hreflang, robots, JSON-LD, html lang)
       are managed dynamically by the <Seo> component (react-helmet-async).
-      Only minimal, non-conflicting defaults live here.
+      OG / Twitter tags below are dedup-safe because Helmet replaces meta
+      tags by matching name=/property= attribute.
     -->
     <title>SafeSchool — Environmental School Safety, Preparedness &amp; Guidance for Bangladesh</title>
     <meta name="description" content="SafeSchool helps school authorities, teachers, students and guardians in Bangladesh make safer daily decisions using live weather, air quality, rainfall outlook and bilingual school-focused risk guidance." />
+
+    <!-- Open Graph (static fallback) -->
+    <meta property="og:site_name" content="SafeSchool" />
+    <meta property="og:title" content="SafeSchool — Environmental School Safety for Bangladesh" />
+    <meta property="og:description" content="Live weather, air quality and bilingual school-safety guidance for Bangladesh." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="%VITE_SITE_URL%/" />
+    <meta property="og:image" content="%VITE_SITE_URL%/opengraph.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="SafeSchool — Environmental School Safety for Bangladesh" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="bn_BD" />
+
+    <!-- Twitter / X Card (static fallback) -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SafeSchool — Environmental School Safety for Bangladesh" />
+    <meta name="twitter:description" content="Live weather, air quality and bilingual school-safety guidance for Bangladesh." />
+    <meta name="twitter:image" content="%VITE_SITE_URL%/opengraph.jpg" />
+    <meta name="twitter:image:alt" content="SafeSchool — Environmental School Safety for Bangladesh" />
 
     <!-- Icons & manifest -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

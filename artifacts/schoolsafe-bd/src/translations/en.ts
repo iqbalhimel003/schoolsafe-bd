@@ -379,6 +379,13 @@ const en = {
   shareButton: "Share / শেয়ার",
   shareToastCopied: "Link copied to clipboard!",
   shareToastFailed: "Could not share. Please copy the link manually.",
+
+  /* ── SEO ─────────────────────────────────────────── */
+  seoAdminTitle: "Admin",
+  seoAdminDescription: "SafeSchool admin panel — restricted access.",
+  seoNotFoundTitle: "Page not found",
+  seoNotFoundDescription:
+    "The page you are looking for could not be found on SafeSchool.",
 };
 
 export default en;

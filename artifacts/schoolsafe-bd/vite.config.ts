@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
+import { seoFilesPlugin } from "./vite-plugin-seo-files";
 
 /* PORT, BASE_PATH, and VITE_SITE_URL are injected by the Replit artifact runtime.
  * Safe defaults allow ad-hoc local builds outside that environment. */
@@ -28,6 +29,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
     runtimeErrorOverlay(),
+    seoFilesPlugin(),
     ...(process.env.NODE_ENV !== "production" &&
     process.env.REPL_ID !== undefined
       ? [

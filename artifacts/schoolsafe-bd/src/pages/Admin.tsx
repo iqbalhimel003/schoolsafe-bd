@@ -8,6 +8,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Seo from "@/components/Seo";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 import { toast } from "sonner";
 import { Home, LayoutGrid, FileText, Phone, BarChart2, User } from "lucide-react";
@@ -1045,10 +1046,11 @@ export default function AdminPage() {
     }
   }
 
+  const { t: tForSeo } = useLanguage();
   const adminSeo = (
     <Seo
-      title="Admin"
-      description="SafeSchool admin panel — restricted access."
+      title={tForSeo("seoAdminTitle")}
+      description={tForSeo("seoAdminDescription")}
       pathname="/admin"
       noindex
     />

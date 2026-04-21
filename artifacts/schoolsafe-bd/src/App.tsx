@@ -15,6 +15,7 @@ import Footer from "@/components/Footer";
 import Seo from "@/components/Seo";
 import Home from "@/pages/Home";
 import AdminPage from "@/pages/Admin";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { usePageTracking } from "@/hooks/usePageTracking";
 
 const queryClient = new QueryClient({
@@ -28,16 +29,17 @@ const queryClient = new QueryClient({
 });
 
 function NotFound() {
+  const { t } = useLanguage();
   return (
     <>
       <Seo
-        title="Page not found"
-        description="The page you are looking for could not be found."
+        title={t("seoNotFoundTitle")}
+        description={t("seoNotFoundDescription")}
         pathname="/404"
         noindex
       />
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-muted-foreground text-lg">Page not found.</p>
+        <p className="text-muted-foreground text-lg">{t("seoNotFoundTitle")}</p>
       </div>
     </>
   );

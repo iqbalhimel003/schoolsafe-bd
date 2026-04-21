@@ -382,6 +382,13 @@ const bn = {
   shareButton: "Share / শেয়ার",
   shareToastCopied: "লিংক ক্লিপবোর্ডে কপি হয়েছে!",
   shareToastFailed: "শেয়ার করা যায়নি। লিংকটি নিজে কপি করুন।",
+
+  /* ── SEO ─────────────────────────────────────────── */
+  seoAdminTitle: "অ্যাডমিন",
+  seoAdminDescription: "সেফস্কুল অ্যাডমিন প্যানেল — সীমিত প্রবেশাধিকার।",
+  seoNotFoundTitle: "পেজ পাওয়া যায়নি",
+  seoNotFoundDescription:
+    "আপনি যে পেজটি খুঁজছেন তা সেফস্কুলে পাওয়া যায়নি।",
 };
 
 export default bn satisfies typeof en;

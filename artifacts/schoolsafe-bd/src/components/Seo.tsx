@@ -71,9 +71,6 @@ export default function Seo({
   const xDefaultUrl = enUrl;
   const canonical = lang === "bn" ? bnUrl : enUrl;
 
-  const finalOgImage = ogImage ? abs(ogImage) : abs("/opengraph.jpg");
-  const ogLocale = lang === "bn" ? "bn_BD" : "en_US";
-  const ogLocaleAlt = lang === "bn" ? "en_US" : "bn_BD";
   const htmlLang = lang === "bn" ? "bn" : "en";
 
   return (
@@ -95,25 +92,13 @@ export default function Seo({
       <link rel="alternate" hrefLang="bn" href={bnUrl} />
       <link rel="alternate" hrefLang="x-default" href={xDefaultUrl} />
 
-      {/* Open Graph */}
-      <meta property="og:site_name" content={siteName} />
-      <meta property="og:title" content={finalTitle} />
-      <meta property="og:description" content={finalDescription} />
-      <meta property="og:type" content="website" />
-      <meta property="og:url" content={canonical} />
-      <meta property="og:image" content={finalOgImage} />
-      <meta property="og:image:width" content="1200" />
-      <meta property="og:image:height" content="630" />
-      <meta property="og:image:alt" content={finalTitle} />
-      <meta property="og:locale" content={ogLocale} />
-      <meta property="og:locale:alternate" content={ogLocaleAlt} />
-
-      {/* Twitter / X */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={finalTitle} />
-      <meta name="twitter:description" content={finalDescription} />
-      <meta name="twitter:image" content={finalOgImage} />
-      <meta name="twitter:image:alt" content={finalTitle} />
+      {/*
+        Open Graph / Twitter tags are intentionally NOT emitted here.
+        index.html already ships a static OG/Twitter baseline that social
+        crawlers (Facebook, LinkedIn, Twitter/X) — which do not execute JS —
+        can read. Emitting them again from Helmet would create duplicate
+        meta entries in the hydrated DOM. Keep the static set authoritative.
+      */}
 
       {/* Optional Google Search Console verification */}
       {GSC_TOKEN ? (
