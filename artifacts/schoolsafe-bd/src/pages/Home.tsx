@@ -13,7 +13,8 @@
  * in as it scrolls into view, honoring reduced-motion users.
  * ========================================================= */
 
-import { Suspense, lazy, useState } from "react";
+import { Suspense, lazy, useRef, useState } from "react";
+import { useInView } from "framer-motion";
 import Seo from "@/components/Seo";
 import Hero from "@/components/Hero";
 import LocationSelector from "@/components/LocationSelector";
@@ -30,6 +31,26 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import type { Upazila } from "@/types";
 
 const ForecastChart = lazy(() => import("@/components/ForecastChart"));
+
+/**
+ * Mounts ForecastChart only once its sentinel div approaches the viewport.
+ * The recharts chunk is not requested until the user scrolls near the chart,
+ * reducing JS parse/eval work on initial load for low-end devices.
+ */
+function ViewportForecastChart({ selectedUpazila }: { selectedUpazila: Upazila }) {
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  /* 300px margin ensures the chunk loads slightly before entering view */
+  const shouldMount = useInView(sentinelRef, { once: true, margin: "300px 0px 0px 0px" });
+  return (
+    <div ref={sentinelRef}>
+      {shouldMount && (
+        <Suspense fallback={null}>
+          <ForecastChart selectedUpazila={selectedUpazila} />
+        </Suspense>
+      )}
+    </div>
+  );
+}
 
 export default function Home() {
   const [selectedUpazila, setSelectedUpazila] = useState<Upazila | null>(null);
@@ -160,13 +181,11 @@ export default function Home() {
         </div>
       )}
 
-      {/* 24-Hour Forecast Chart */}
+      {/* 24-Hour Forecast Chart — mounted only when near viewport */}
       {selectedUpazila && (
         <div className="no-print">
           <Reveal>
-            <Suspense fallback={null}>
-              <ForecastChart selectedUpazila={selectedUpazila} />
-            </Suspense>
+            <ViewportForecastChart selectedUpazila={selectedUpazila} />
           </Reveal>
         </div>
       )}
