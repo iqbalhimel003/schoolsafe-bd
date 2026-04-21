@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "4WVEntHIP0MZ0lqNSYK1-"
+uri = "file://PROJECT_LOGIC.md"
+type = "text"
+title = "SchoolSafe BD — Complete Project Logic (Bangla)"
