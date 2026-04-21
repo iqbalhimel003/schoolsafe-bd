@@ -656,13 +656,31 @@ function AccountPanel({
   const inputClass =
     "w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary";
 
+  const [canonicalUsername, setCanonicalUsername] = useState(username);
   const [newUsername, setNewUsername] = useState(username);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [saving, setSaving] = useState(false);
 
+  useEffect(() => {
+    fetch(`${API_BASE}/me`, {
+      headers: {
+        Authorization: `Bearer ${password}`,
+        "X-Admin-Username": username,
+      },
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: { username: string } | null) => {
+        if (data?.username) {
+          setCanonicalUsername(data.username);
+          setNewUsername(data.username);
+        }
+      })
+      .catch(() => {});
+  }, [password, username]);
+
   async function handleSave() {
-    const usernameChanged = newUsername.trim() !== username;
+    const usernameChanged = newUsername.trim() !== canonicalUsername;
     const passwordChanged = newPassword.trim() !== "";
 
     if (!usernameChanged && !passwordChanged) {
@@ -685,7 +703,7 @@ function AccountPanel({
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${password}`,
-          "X-Admin-Username": username,
+          "X-Admin-Username": canonicalUsername,
         },
         body: JSON.stringify({
           newUsername: usernameChanged ? newUsername.trim() : undefined,
