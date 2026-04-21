@@ -42,12 +42,14 @@ export default function Footer() {
             <p className="text-sm text-white/70 leading-relaxed max-w-xs">
               {t("siteTagline")}
             </p>
+            {/* Mobile-only separator */}
+            <hr className="md:hidden border-white/15 mt-1" />
           </div>
 
           {/* Column 2 — About */}
           <div className="flex flex-col gap-3 md:border-l md:border-white/15 md:pl-6">
             <h2 className="text-xs font-semibold uppercase tracking-widest text-white/50">
-              About
+              {t("siteName")}
             </h2>
             <p className="text-sm text-white/80 leading-relaxed">
               {t("footerPurpose")}
@@ -176,7 +178,7 @@ export default function Footer() {
             {t("footerCreditAfter")}
           </p>
           <p className="text-xs text-white/40 shrink-0">
-            © {new Date().getFullYear()} {t("siteName")}
+            © 2025 SafeSchool
           </p>
         </div>
       </div>
