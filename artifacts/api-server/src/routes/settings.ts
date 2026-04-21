@@ -2,7 +2,8 @@ import { Router, type IRouter, type Request, type Response } from "express";
 import { db } from "@workspace/db";
 import { siteSettingsTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
-import { checkAdminAuth, getCurrentUsername } from "../lib/auth";
+import { checkAdminAuth, getCurrentUsername, adminAuthLimiter } from "../lib/auth";
+import { hashPassword } from "../lib/password";
 
 const router: IRouter = Router();
 
@@ -25,7 +26,7 @@ router.get("/settings", async (_req: Request, res: Response) => {
 
 /* ── PUT /settings — save site content (auth required) ── */
 
-router.put("/settings", async (req: Request, res: Response) => {
+router.put("/settings", adminAuthLimiter, async (req: Request, res: Response) => {
   if (!(await checkAdminAuth(req))) {
     res.status(401).json({ error: "Unauthorized" });
     return;
@@ -38,8 +39,13 @@ router.put("/settings", async (req: Request, res: Response) => {
   }
 
   try {
+    // Hard guard: admin_* keys (admin_username, admin_password) must
+    // never be writable through the generic settings endpoint —
+    // changing them goes through PUT /credentials, which hashes the
+    // password before storage. Silently dropping them prevents any
+    // path that could persist a plaintext admin password here.
     const entries = Object.entries(body).filter(
-      ([, v]) => typeof v === "string",
+      ([k, v]) => typeof v === "string" && !k.startsWith("admin_"),
     ) as [string, string][];
 
     const toDelete = entries
@@ -69,7 +75,7 @@ router.put("/settings", async (req: Request, res: Response) => {
 
 /* ── GET /me — current admin username (auth required) ── */
 
-router.get("/me", async (req: Request, res: Response) => {
+router.get("/me", adminAuthLimiter, async (req: Request, res: Response) => {
   if (!(await checkAdminAuth(req))) {
     res.status(401).json({ error: "Unauthorized" });
     return;
@@ -84,7 +90,7 @@ router.get("/me", async (req: Request, res: Response) => {
 
 /* ── PUT /credentials — update username/password (auth required) ── */
 
-router.put("/credentials", async (req: Request, res: Response) => {
+router.put("/credentials", adminAuthLimiter, async (req: Request, res: Response) => {
   if (!(await checkAdminAuth(req))) {
     res.status(401).json({ error: "Unauthorized" });
     return;
@@ -108,12 +114,13 @@ router.put("/credentials", async (req: Request, res: Response) => {
     }
 
     if (body.newPassword?.trim()) {
+      const hashed = await hashPassword(body.newPassword.trim());
       await db
         .insert(siteSettingsTable)
-        .values({ key: "admin_password", value: body.newPassword.trim() })
+        .values({ key: "admin_password", value: hashed })
         .onConflictDoUpdate({
           target: siteSettingsTable.key,
-          set: { value: body.newPassword.trim(), updatedAt: new Date() },
+          set: { value: hashed, updatedAt: new Date() },
         });
     }
 

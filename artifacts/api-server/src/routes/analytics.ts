@@ -4,7 +4,7 @@ import { db } from "@workspace/db";
 import { visitorLogsTable } from "@workspace/db/schema";
 import { desc, sql, count, countDistinct, gte, isNotNull } from "drizzle-orm";
 import { UAParser } from "ua-parser-js";
-import { checkAdminAuth } from "../lib/auth";
+import { checkAdminAuth, adminAuthLimiter } from "../lib/auth";
 
 const router: IRouter = Router();
 
@@ -68,14 +68,16 @@ function classifyDevice(uaResult: ReturnType<UAParser["getResult"]>): "mobile" |
 }
 
 function requireAdmin(req: Request, res: Response, next: NextFunction): void {
-  checkAdminAuth(req).then((ok) => {
-    if (!ok) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
-    next();
-  }).catch(() => {
-    res.status(500).json({ error: "Auth check failed" });
+  adminAuthLimiter(req, res, () => {
+    checkAdminAuth(req).then((ok) => {
+      if (!ok) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+      }
+      next();
+    }).catch(() => {
+      res.status(500).json({ error: "Auth check failed" });
+    });
   });
 }
 

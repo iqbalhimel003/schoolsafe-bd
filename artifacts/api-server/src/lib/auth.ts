@@ -6,17 +6,76 @@
  *
  * Username is sent via X-Admin-Username header.
  * Password is sent via Authorization: Bearer <password>.
+ *
+ * Security:
+ *  - Stored DB passwords are bcrypt-hashed.
+ *  - Legacy plain-text passwords auto-migrate to bcrypt on
+ *    the first successful login (transparent to admin).
+ *  - Brute-force protection is provided by `adminAuthLimiter`
+ *    (express-rate-limit, IP-keyed, 15 min / 10 failed
+ *    attempts → 429). Successful responses (status < 400)
+ *    don't count against the limit, so legitimate admins are
+ *    not penalised for one mistyped password.
+ *  - Rate-limit key uses `req.ip`, which is derived through
+ *    `app.set('trust proxy', 'loopback, linklocal, uniquelocal')`
+ *    in `app.ts`. `X-Forwarded-For` is honoured only when the
+ *    connection comes from a private/internal address (the
+ *    Replit edge proxy), so external clients cannot spoof it
+ *    to evade the limiter.
  * ========================================================= */
 
 import { db } from "@workspace/db";
 import { siteSettingsTable } from "@workspace/db/schema";
 import { inArray } from "drizzle-orm";
 import type { Request } from "express";
+import rateLimit from "express-rate-limit";
+import { comparePassword, hashPassword, isBcryptHash } from "./password";
+import { logger } from "./logger";
 
 const DEFAULT_USERNAME = "iqbal.himel003@gmail.com";
 
+/* ── Brute-force limiter ─────────────────────────────────
+ * 15-minute window, 10 failed attempts per IP. Successful
+ * responses do not count, so a legitimate admin who mistypes
+ * once is not punished. */
+export const adminAuthLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  skipSuccessfulRequests: true,
+  // Only HTTP 401 (auth failure) counts toward the limit. Validation
+  // errors, server errors, and successful requests are all treated as
+  // "successful" so they don't accidentally lock out a real admin.
+  requestWasSuccessful: (_req, res) => res.statusCode !== 401,
+  handler: (_req, res, _next, options) => {
+    const retryAfterSec = Math.ceil(options.windowMs / 1000);
+    res.setHeader("Retry-After", String(retryAfterSec));
+    res.status(options.statusCode ?? 429).json({
+      error: "Too many failed attempts. Please try again later.",
+      retryAfterSeconds: retryAfterSec,
+    });
+  },
+});
+
+/* ── Persist a freshly-hashed password back to DB ───────── */
+
+async function persistHashedPassword(hash: string): Promise<void> {
+  await db
+    .insert(siteSettingsTable)
+    .values({ key: "admin_password", value: hash })
+    .onConflictDoUpdate({
+      target: siteSettingsTable.key,
+      set: { value: hash, updatedAt: new Date() },
+    });
+}
+
+/* ── Main check ─────────────────────────────────────────── */
+
 export async function checkAdminAuth(req: Request): Promise<boolean> {
-  const token = (req.headers.authorization ?? "").replace(/^Bearer\s+/i, "").trim();
+  const token = (req.headers.authorization ?? "")
+    .replace(/^Bearer\s+/i, "")
+    .trim();
   const usernameHeader = ((req.headers["x-admin-username"] as string) ?? "").trim();
 
   const dbRows = await db
@@ -27,8 +86,14 @@ export async function checkAdminAuth(req: Request): Promise<boolean> {
   const dbCreds: Record<string, string> = {};
   for (const r of dbRows) dbCreds[r.key] = r.value;
 
-  const storedPassword =
-    dbCreds["admin_password"] ?? process.env.ADMIN_PASSWORD ?? "";
+  const storedPasswordRaw = dbCreds["admin_password"] ?? "";
+  const fallbackPassword = process.env.ADMIN_PASSWORD ?? "";
+  const passwordSource: "db" | "env" | "none" = storedPasswordRaw
+    ? "db"
+    : fallbackPassword
+    ? "env"
+    : "none";
+  const storedPassword = storedPasswordRaw || fallbackPassword;
   const storedUsername =
     dbCreds["admin_username"] ??
     process.env.ADMIN_USERNAME ??
@@ -36,10 +101,23 @@ export async function checkAdminAuth(req: Request): Promise<boolean> {
 
   if (!storedPassword || !token) return false;
 
-  const passwordOk = token === storedPassword;
+  const passwordOk = await comparePassword(token, storedPassword);
   const usernameOk = !usernameHeader || usernameHeader === storedUsername;
 
-  return passwordOk && usernameOk;
+  if (!passwordOk || !usernameOk) return false;
+
+  // Auto-migrate legacy plain-text DB password to bcrypt hash.
+  if (passwordSource === "db" && !isBcryptHash(storedPassword)) {
+    try {
+      const hash = await hashPassword(token);
+      await persistHashedPassword(hash);
+      logger.info("Migrated legacy admin password to bcrypt hash");
+    } catch (err) {
+      logger.warn({ err }, "Failed to migrate admin password to bcrypt");
+    }
+  }
+
+  return true;
 }
 
 export async function getCurrentUsername(): Promise<string> {
