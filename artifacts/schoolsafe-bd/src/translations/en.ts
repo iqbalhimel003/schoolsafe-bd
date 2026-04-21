@@ -381,6 +381,10 @@ const en = {
   shareToastFailed: "Could not share. Please copy the link manually.",
 
   /* ── SEO ─────────────────────────────────────────── */
+  seoHomeTitle:
+    "Environmental School Safety, Preparedness & Guidance for Bangladesh",
+  seoHomeDescription:
+    "SafeSchool gives schools, teachers, students and guardians in Bangladesh live weather, air quality, rainfall outlook and bilingual school-focused safety guidance for daily decisions.",
   seoAdminTitle: "Admin",
   seoAdminDescription: "SafeSchool admin panel — restricted access.",
   seoNotFoundTitle: "Page not found",

@@ -66,7 +66,12 @@ export default function Home() {
 
   return (
     <main>
-      <Seo pathname="/" jsonLd={jsonLd} />
+      <Seo
+        pathname="/"
+        title={t("seoHomeTitle")}
+        description={t("seoHomeDescription")}
+        jsonLd={jsonLd}
+      />
       <div className="no-print">
         <Hero />
       </div>
