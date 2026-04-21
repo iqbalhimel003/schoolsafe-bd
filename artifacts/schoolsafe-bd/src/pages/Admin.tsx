@@ -121,10 +121,7 @@ function ForgotPasswordModal({ onClose }: { onClose: () => void }) {
             Once logged in, go to the <strong>Account</strong> tab in the admin panel to
             change your username and password.
           </li>
-          <li>
-            Contact the site administrator:{" "}
-            <strong>iqbal.himel003@gmail.com</strong>
-          </li>
+          <li>Contact the site administrator.</li>
         </ol>
         <button
           onClick={onClose}
@@ -139,15 +136,13 @@ function ForgotPasswordModal({ onClose }: { onClose: () => void }) {
 
 /* ── Login Form ───────────────────────────────────────── */
 
-const DEFAULT_ADMIN_USERNAME = "iqbal.himel003@gmail.com";
-
 function LoginForm({
   onLogin,
 }: {
   onLogin: (password: string, username: string) => void;
 }) {
   const [username, setUsername] = useState(
-    localStorage.getItem("admin_username") ?? DEFAULT_ADMIN_USERNAME,
+    localStorage.getItem("admin_username") ?? "",
   );
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -1011,7 +1006,7 @@ export default function AdminPage() {
   );
   const [username, setUsername] = useState<string>(
     () =>
-      localStorage.getItem("admin_username") ?? DEFAULT_ADMIN_USERNAME,
+      localStorage.getItem("admin_username") ?? "",
   );
 
   function handleLogin(pw: string, user: string) {

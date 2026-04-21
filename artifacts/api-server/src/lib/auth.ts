@@ -29,8 +29,25 @@ import { siteSettingsTable } from "@workspace/db/schema";
 import { inArray } from "drizzle-orm";
 import type { Request } from "express";
 import rateLimit from "express-rate-limit";
+import { timingSafeEqual } from "node:crypto";
 import { comparePassword, hashPassword, isBcryptHash } from "./password";
 import { logger } from "./logger";
+
+/* Constant-time string compare. Returns false if either input is empty.
+ * Pads the shorter buffer to the length of the longer one (compared
+ * against zero bytes) so the timing remains constant regardless of
+ * length difference — preventing username-length enumeration. */
+function timingSafeStringEqual(a: string, b: string): boolean {
+  const bufA = Buffer.from(a, "utf8");
+  const bufB = Buffer.from(b, "utf8");
+  const maxLen = Math.max(bufA.length, bufB.length, 1);
+  const padA = Buffer.alloc(maxLen);
+  const padB = Buffer.alloc(maxLen);
+  bufA.copy(padA);
+  bufB.copy(padB);
+  const eq = timingSafeEqual(padA, padB);
+  return eq && bufA.length === bufB.length;
+}
 
 /* No default admin email/username is hardcoded. The effective
  * username is resolved from (in order): DB `admin_username`,
@@ -111,7 +128,14 @@ export async function checkAdminAuth(req: Request): Promise<boolean> {
   if (!storedPassword || !token) return false;
 
   const passwordOk = await comparePassword(token, storedPassword);
-  const usernameOk = !usernameHeader || usernameHeader === storedUsername;
+  // Username check is "open" when:
+  //  - the client didn't send a username header (backward compat), OR
+  //  - no admin username is configured anywhere (DB or env).
+  // Otherwise both must match (constant-time compare).
+  const usernameOk =
+    !usernameHeader ||
+    !storedUsername ||
+    timingSafeStringEqual(usernameHeader, storedUsername);
 
   if (!passwordOk || !usernameOk) return false;
 
