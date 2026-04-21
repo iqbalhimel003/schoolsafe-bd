@@ -2,7 +2,7 @@
  * SchoolSafe BD — Footer (Premium)
  *
  * Dark-green footer matching the Header's brand colour.
- * Three-column layout on desktop, stacked on mobile.
+ * Two-column layout on desktop (About + Contact), stacked on mobile.
  * Contact info is read from site settings (DB-driven).
  * ========================================================= */
 
@@ -48,7 +48,7 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Column 3 — Contact */}
+          {/* Column 2 — Contact */}
           {hasContact && (
             <div className="flex flex-col gap-3 md:border-l md:border-white/15 md:pl-6">
               <h2 className="text-xs font-semibold uppercase tracking-widest text-white/50">
